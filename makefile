@@ -49,9 +49,9 @@ all: check_environment \
 ##########################################
 check_environment:
 ifeq ($(IS_DOCKER), false)
-	@echo "[+] It appears you are not running this command inside the compiler Docker container"
-	@echo "[+] You can build it with: docker build -t compiler ."
-	@echo "[+] You can run it with: docker run --rm -v ".:/tmp/workdir" -it compiler"
+	@echo "[+] It appears you are not running this command inside the Dittobytes Docker container"
+	@echo "[+] You can build it with: docker build -t dittobytes ."
+	@echo "[+] You can run it with: docker run --rm -v ".:/tmp/workdir" -it dittobytes"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside Docker..." ;; \
