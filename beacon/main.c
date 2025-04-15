@@ -24,10 +24,6 @@
  * @return int A return value of your shellcode.
  */
 int EntryFunction() {
-    int a = 10;
-    int b = 10;
-
-    int r = a + b;
-
-    return r;
+    
+    return 0xAA;
 }

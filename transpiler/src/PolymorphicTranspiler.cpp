@@ -11,11 +11,31 @@
  */
 
 /**
+ * Example compilation commands.
+ * 
+ * - clang -O0 -emit-llvm -c beacon/test.c -o builds/test.bc
+ * - llc -stop-after=finalize-isel builds/test.bc -o builds/test.mir
+ * - llc --load=./transpiler/build/libPolymorphicTranspiler.so --run-pass "PolymorphicTranspiler" ./builds/test.mir -o ./builds/test.exe
+ */
+
+/**
  * LLVM includes
  */
+#include "llvm/CodeGen/MachineFunctionPass.h"
+#include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
+#include "llvm/CodeGen/MachinePassRegistry.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/CodeGen/MachinePassManager.h"
+#include "llvm/CodeGen/MachineInstrBuilder.h"
+#include "llvm/CodeGen/MachineRegisterInfo.h"
+#include "llvm/CodeGen/TargetPassConfig.h"
+#include "llvm/TargetParser/Triple.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/InitializePasses.h"
+#include "llvm/Pass.h"
+#include "llvm/Support/Debug.h"
 
 /**
  * Namespace(s) to use
@@ -25,138 +45,77 @@ using namespace llvm;
 /**
  * LLVM function pass that logs the name of each function it visits.
  *
- * PolymorphicTranspiler is a custom LLVM pass derived from PassInfoMixin.
- * It operates at the function level and is intended for use with LLVM's new
- * pass manager. This pass currently performs no transformation but serves
- * as a base for future instrumentation or analysis.
+ * PolymorphicTranspiler is a custom LLVM pass derived from MachineFunctionPass.
+ * It operates at the machine function level. This pass currently performs 
+ * no transformation but serves as a base for future instrumentation or analysis.
  */
-struct PolymorphicTranspiler : PassInfoMixin<PolymorphicTranspiler> {
+class PolymorphicTranspiler : public MachineFunctionPass {
+
+public:
+
+    /**
+     * Pass ID
+     */
+    static char ID;  // Pass ID
+
+    /**
+     * Constructor for the PolymorphicTranspiler pass.
+     * 
+     * Initializes the pass with the unique ID.
+     */
+    PolymorphicTranspiler() : MachineFunctionPass(ID) {
+
+    }
+
+    /**
+     * Retrieves the name of the pass.
+     * 
+     * This function returns the pass name, used for identification when running
+     * the pass through LLVM's pass manager.
+     * 
+     * @return StringRef The name of the pass.
+     */
+    StringRef getPassName() const override {
+        return "PolymorphicTranspiler";
+    }
 
     /**
      * Main execution method for the PolymorphicTranspiler pass.
      *
-     * This function is called by LLVM when the pass is run on a function. It logs
-     * the function name and indicates that all analyses are preserved (i.e., the IR is unchanged).
-     *
-     * @param Function& F The function to run the pass on.
-     * @param FunctionAnalysisManager& Unused, but required by the pass interface.
-     * @return PreservedAnalyses Indicates that the function was not modified.
+     * This function is called by LLVM when the pass is run on a machine function.
+     * It iterates through the machine basic blocks and checks each machine instruction.
+     * If a `mov` instruction is found, it logs the instruction and marks the function as modified.
+     * 
+     * @param MachineFunction& MF The machine function to run the pass on.
+     * @return bool Indicates if the machine function was modified (i.e., any `mov` instruction found).
      */
-    PreservedAnalyses run(Function &F, FunctionAnalysisManager &) {
-        static bool RandSeeded = false;
-        if (!RandSeeded) {
-            srand(time(nullptr));
-            RandSeeded = true;
-        }
-
-        errs() << "    - Found function: " << F.getName() << "\n";
-
+    bool runOnMachineFunction(MachineFunction &MF) override {
         bool Modified = false;
+        const TargetInstrInfo *TII = MF.getSubtarget().getInstrInfo();
 
-        for (auto &BB : F) {
-            for (auto It = BB.begin(), End = BB.end(); It != End; ) {
-                Instruction *Inst = &*It++;
-                if (auto *AddInst = dyn_cast<BinaryOperator>(Inst)) {
-                    if (AddInst->getOpcode() == Instruction::Add && AddInst->getType()->isIntegerTy()) {
-                        IRBuilder<> Builder(AddInst);
-                        Value *A = AddInst->getOperand(0);
-                        Value *B = AddInst->getOperand(1);
-                        Value *Result = nullptr;
+        for (MachineBasicBlock &MBB : MF) {
+            for (MachineInstr &MI : MBB) {
 
-                        switch (rand() % 5) {
-                            case 0: {
-                                // Original add
-                                Result = Builder.CreateAdd(A, B, "add_orig");
-                                break;
-                            }
-                            case 1: {
-                                // A - (-B)
-                                Value *NegB = Builder.CreateNeg(B, "neg_b");
-                                Result = Builder.CreateSub(A, NegB, "sub_neg_b");
-                                break;
-                            }
-                            case 2: {
-                                // (A ^ B) + 2 * (A & B)
-                                Value *Xor = Builder.CreateXor(A, B, "xor_ab");
-                                Value *And = Builder.CreateAnd(A, B, "and_ab");
-                                Value *Shl = Builder.CreateShl(And, 1, "shl2_ab");
-                                Result = Builder.CreateAdd(Xor, Shl, "opt_add1");
-                                break;
-                            }
-                            case 3: {
-                                // (A | B) + (A & B)
-                                Value *Or = Builder.CreateOr(A, B, "or_ab");
-                                Value *And = Builder.CreateAnd(A, B, "and_ab2");
-                                Result = Builder.CreateAdd(Or, And, "opt_add2");
-                                break;
-                            }
-                            case 4: {
-                                // A + (B - 0)
-                                Value *Zero = ConstantInt::get(A->getType(), 0);
-                                Value *Temp = Builder.CreateSub(B, Zero, "temp_b");
-                                Result = Builder.CreateAdd(A, Temp, "opt_add3");
-                                break;
-                            }
-                        }
-
-                        AddInst->replaceAllUsesWith(Result);
-                        AddInst->eraseFromParent();
-                        Modified = true;
+                if (MI.isMoveImmediate() || MI.isMoveReg()) {
+                    errs() << "Found a 'mov' instruction: " << MI << "\n"; // Log to console.
+                    for (const MachineOperand &MO : MI.operands()) {
+                      errs() << "  Operand: " << MO << "\n";
                     }
+
+                    Modified = true; 
                 }
             }
         }
 
-        return Modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
+        return Modified;
     }
-
 
 };
 
 /**
- * Provides metadata and registration callbacks for the PolymorphicTranspiler pass plugin.
+ * Define the Pass ID and register the PolymorphicTranspiler pass with LLVM.
  *
- * This function defines the plugin's name, version, and the callbacks used to register
- * the custom pass with LLVM's new pass manager. It is called by llvmGetPassPluginInfo().
- *
- * @return PassPluginLibraryInfo Struct containing the plugin's metadata and registration hooks.
+ * This ensures that `llc -run-pass` can recognize and run the pass by name.
  */
-PassPluginLibraryInfo getPolymorphicTranspilerPluginInfo() {
-    return {
-        LLVM_PLUGIN_API_VERSION, 
-        "PolymorphicTranspiler", 
-        LLVM_VERSION_STRING, 
-        [](PassBuilder &PB) {
-            PB.registerPipelineParsingCallback(
-                [](StringRef Name, FunctionPassManager &FPM, ArrayRef<PassBuilder::PipelineElement>) {
-                    if (Name == "polymorphic-transpiler") {
-                        FPM.addPass(PolymorphicTranspiler());
-                        return true;
-                    }
-
-                    return false;
-                }
-            );
-
-            PB.registerPipelineStartEPCallback(
-                [](ModulePassManager &MPM, OptimizationLevel Level) {
-                    FunctionPassManager FPM;
-                    FPM.addPass(PolymorphicTranspiler());
-                    MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
-                }
-            );
-        }
-    };
-}
-
-/**
- * Entry point for the LLVM pass plugin.
- *
- * This function is required by LLVM to identify and load the plugin. It returns
- * metadata about the plugin, including its name, version, and callback hooks.
- *
- * @return ::llvm::PassPluginLibraryInfo Struct containing plugin metadata and callbacks.
- */
-extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo llvmGetPassPluginInfo() {
-    return getPolymorphicTranspilerPluginInfo();
-}
+char PolymorphicTranspiler::ID = 0;
+static llvm::RegisterPass<PolymorphicTranspiler> X("PolymorphicTranspiler", "The Dittobytes polymorphic transpiler!");

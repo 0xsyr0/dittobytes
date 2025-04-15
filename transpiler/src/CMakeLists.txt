@@ -9,15 +9,11 @@
 # include this same license and copyright notice.
 
 cmake_minimum_required(VERSION 3.13.4)
-project(PolymorphicTranspiler)
+project(MyMachineFunctionPassPlugin)
 
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# Uncomment these two lines if you want to pass the LLVM Path
-# set(LT_LLVM_INSTALL_DIR "" CACHE PATH "LLVM installation directory")
-# list(APPEND CMAKE_PREFIX_PATH "${LT_LLVM_INSTALL_DIR}/lib/cmake/llvm/")
 
 find_package(LLVM 20.1.2 REQUIRED CONFIG)
 
@@ -37,5 +33,5 @@ endif()
 
 add_library(PolymorphicTranspiler SHARED PolymorphicTranspiler.cpp)
 
-# Link against LLVM libraries
 target_link_libraries(PolymorphicTranspiler ${llvm_libs})
+

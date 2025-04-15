@@ -14,4 +14,4 @@
 
 # ... except for these ones.
 !.gitignore
-libPolymorphicTranspiler.so
+!libPolymorphicTranspiler.so
