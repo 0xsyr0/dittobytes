@@ -16,25 +16,11 @@ RUN apt upgrade -qqy
 
 # Install APT dependencies
 RUN apt install -qqy --no-install-recommends \
-        git gnupg2 wget ca-certificates apt-transport-https \
+        gnupg2 wget ca-certificates apt-transport-https \
         autoconf automake cmake dpkg-dev file make patch libc6-dev mingw-w64 nano python3 python3-pip xxd \
-        gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
+        build-essential subversion python3-dev libncurses5-dev libxml2-dev libedit-dev swig doxygen graphviz xz-utils gdb git 
 
-# Install Python dependencies
-RUN pip3 install lief==0.16.4 --break-system-packages
-
-# Install MacOS SDK
-RUN cd /opt && \
-        git clone https://github.com/alexey-lysiuk/macos-sdk.git
-
-# Install LLVM (For Windows & Linux X86/ARM64)
-RUN cd /opt && \
-        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
-        tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
-        mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin && \
-        rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
-
-# Install LLVM (For MacOS X86/ARM64)
+# Install LLVM
 RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
         > /etc/apt/sources.list.d/llvm.list && \
     wget -qO /etc/apt/trusted.gpg.d/llvm.asc \
@@ -50,7 +36,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
     rm -rf /var/lib/apt/lists/*
 
 # Define identification for the containers
-RUN touch /.docker-beacons-compiler-env
+RUN touch /.docker-transpiler-compiler-env
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir

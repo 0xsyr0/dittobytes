@@ -20,13 +20,13 @@ RUN apt install -qqy --no-install-recommends \
         autoconf automake cmake dpkg-dev file make patch libc6-dev mingw-w64 nano python3 python3-pip xxd \
         build-essential subversion python3-dev libncurses5-dev libxml2-dev libedit-dev swig doxygen graphviz xz-utils gdb git 
 
-# Install LLVM (For MacOS X86/ARM64)
-RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-20 main" \
+# Install LLVM
+RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
         > /etc/apt/sources.list.d/llvm.list && \
     wget -qO /etc/apt/trusted.gpg.d/llvm.asc \
         https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt update -qqy && \
-    apt install -qqy -t llvm-toolchain-bookworm-20 clang-20 clang-tidy-20 clang-format-20 lld-20 libc++-20-dev libc++abi-20-dev && \
+    apt install -qqy -t llvm-toolchain-bookworm-18 clang-18 clang-tidy-18 clang-format-18 lld-18 libc++-18-dev libc++abi-18-dev && \
     for f in /usr/lib/llvm-*/bin/*; do ln -sf "$f" /usr/bin; done && \
     ln -sf clang /usr/bin/cc && \
     ln -sf clang /usr/bin/c89 && \
@@ -36,7 +36,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-20 main" \
     rm -rf /var/lib/apt/lists/*
 
 # Define identification for the containers
-RUN touch /.dockertranspilerenv
+RUN touch /.docker-transpiler-compiler-env
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir

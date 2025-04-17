@@ -11,14 +11,6 @@
  */
 
 /**
- * Example compilation commands.
- * 
- * - clang -O0 -emit-llvm -c beacon/test.c -o builds/test.bc
- * - llc -stop-after=finalize-isel builds/test.bc -o builds/test.mir
- * - llc --load=./transpiler/build/libPolymorphicTranspiler.so --run-pass "PolymorphicTranspiler" ./builds/test.mir -o ./builds/test.exe
- */
-
-/**
  * LLVM includes
  */
 #include "llvm/CodeGen/MachineFunctionPass.h"
@@ -36,6 +28,8 @@
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
 #include "llvm/Support/Debug.h"
+#include "llvm/MC/TargetRegistry.h"
+#include "llvm/CodeGen/TargetInstrInfo.h"
 
 /**
  * Namespace(s) to use
@@ -45,11 +39,11 @@ using namespace llvm;
 /**
  * LLVM function pass that logs the name of each function it visits.
  *
- * PolymorphicTranspiler is a custom LLVM pass derived from MachineFunctionPass.
+ * MachineTranspiler is a custom LLVM pass derived from MachineFunctionPass.
  * It operates at the machine function level. This pass currently performs 
  * no transformation but serves as a base for future instrumentation or analysis.
  */
-class PolymorphicTranspiler : public MachineFunctionPass {
+class MachineTranspiler : public MachineFunctionPass {
 
 public:
 
@@ -59,11 +53,11 @@ public:
     static char ID;  // Pass ID
 
     /**
-     * Constructor for the PolymorphicTranspiler pass.
+     * Constructor for the MachineTranspiler pass.
      * 
      * Initializes the pass with the unique ID.
      */
-    PolymorphicTranspiler() : MachineFunctionPass(ID) {
+    MachineTranspiler() : MachineFunctionPass(ID) {
 
     }
 
@@ -76,11 +70,11 @@ public:
      * @return StringRef The name of the pass.
      */
     StringRef getPassName() const override {
-        return "PolymorphicTranspiler";
+        return "MachineTranspiler";
     }
 
     /**
-     * Main execution method for the PolymorphicTranspiler pass.
+     * Main execution method for the MachineTranspiler pass.
      *
      * This function is called by LLVM when the pass is run on a machine function.
      * It iterates through the machine basic blocks and checks each machine instruction.
@@ -91,21 +85,8 @@ public:
      */
     bool runOnMachineFunction(MachineFunction &MF) override {
         bool Modified = false;
-        const TargetInstrInfo *TII = MF.getSubtarget().getInstrInfo();
 
-        for (MachineBasicBlock &MBB : MF) {
-            for (MachineInstr &MI : MBB) {
-
-                if (MI.isMoveImmediate() || MI.isMoveReg()) {
-                    errs() << "Found a 'mov' instruction: " << MI << "\n"; // Log to console.
-                    for (const MachineOperand &MO : MI.operands()) {
-                      errs() << "  Operand: " << MO << "\n";
-                    }
-
-                    Modified = true; 
-                }
-            }
-        }
+        errs() << "    - Running MachineTranspiler on function...\n";
 
         return Modified;
     }
@@ -113,9 +94,9 @@ public:
 };
 
 /**
- * Define the Pass ID and register the PolymorphicTranspiler pass with LLVM.
+ * Define the Pass ID and register the MachineTranspiler pass with LLVM.
  *
  * This ensures that `llc -run-pass` can recognize and run the pass by name.
  */
-char PolymorphicTranspiler::ID = 0;
-static llvm::RegisterPass<PolymorphicTranspiler> X("PolymorphicTranspiler", "The Dittobytes polymorphic transpiler!");
+char MachineTranspiler::ID = 0;
+static llvm::RegisterPass<MachineTranspiler> X("MachineTranspiler", "The Dittobytes polymorphic transpiler!");

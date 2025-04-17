@@ -8,30 +8,19 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
-cmake_minimum_required(VERSION 3.13.4)
-project(MyMachineFunctionPassPlugin)
+cmake_minimum_required(VERSION 3.25.0)
+project(IntermediateTranspiler)
 
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(LLVM 20.1.2 REQUIRED CONFIG)
+find_package(LLVM 18.1.8 REQUIRED CONFIG)
 
-# Include directories specified by LLVM in the project's include path
 include_directories(${LLVM_INCLUDE_DIRS})
-# Include definitions specified by LLVM in the project's options
 add_definitions(${LLVM_DEFINITIONS})
 link_directories(${LLVM_LIBRARY_DIR})
 
-# Use the same C++ standard as LLVM does
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
+add_library(IntermediateTranspiler SHARED IntermediateTranspiler.cpp)
 
-# LLVM is normally built without RTTI. Be consistent with that.
-if(NOT LLVM_ENABLE_RTTI)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-endif()
-
-add_library(PolymorphicTranspiler SHARED PolymorphicTranspiler.cpp)
-
-target_link_libraries(PolymorphicTranspiler ${llvm_libs})
-
+target_link_libraries(IntermediateTranspiler ${llvm_libs})

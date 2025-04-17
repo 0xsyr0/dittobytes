@@ -8,10 +8,9 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
-# .gitignore sample
 # Ignore all files in this dir...
 *
 
-# ... except for these ones.
+# Except for these
 !.gitignore
 !libPolymorphicTranspiler.so

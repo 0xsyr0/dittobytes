@@ -13,14 +13,14 @@
 ##########################################
 
 BUILD_DIR              := build
-IS_DOCKER              := $(shell test -f /.dockertranspilerenv && echo "true" || echo "false")
+IS_DOCKER              := $(shell test -f /.docker-transpiler-compiler-env && echo "true" || echo "false")
 
 ##########################################
 ## Default run                          ##
 ##########################################
 all: check_environment $(BUILD_DIR)
 	mkdir -p build 
-	cd build && cmake -DLT_LLVM_INSTALL_DIR=$LLVM_PATH ../src/
+	cd build && cmake ../src/
 	cd build && cmake --build . 
 
 ##########################################
@@ -28,7 +28,7 @@ all: check_environment $(BUILD_DIR)
 ##########################################
 check_environment:
 ifeq ($(IS_DOCKER), false)
-	@echo "[+] It appears you are not running this command inside the Dittobytes transpiler Docker container"
+	@echo "[+] It appears you are not running this command inside the Dittobytes Transpiler Docker container"
 	@echo "[+] You can build it with: docker build -t dittobytes-transpiler ."
 	@echo "[+] You can run it with: docker run --rm -v ".:/tmp/workdir" -it dittobytes-transpiler"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
@@ -42,13 +42,12 @@ endif
 ## Utility targets                      ##
 ##########################################
 
-# Windows x86_64 beacon
 $(BUILD_DIR):
 	@echo "[+] Creating build directory"
 	@mkdir -p $(BUILD_DIR)
 
 clean:
 	@echo "[+] Cleaning build folder"
-	@rm -f $(BUILD_DIR)/*
+	@rm -rf $(BUILD_DIR)/*
 
 .PHONY: all clean

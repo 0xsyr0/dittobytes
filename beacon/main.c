@@ -11,19 +11,58 @@
  */
 
 /**
- * Integers.
+ * Define the EntryFunction that MUST be the first function.
+ * Do NOT modify this function or its location.
  * 
- * Defines macros that specify limits of integer types corresponding to types defined in other standard headers.
- * https://pubs.opengroup.org/onlinepubs/009696899/basedefs/stdint.h.html
+ * @return int A return value of your shellcode.
  */
-#include <stdint.h>
+int MainShellcode();
+int EntryFunction() {
+    return MainShellcode();
+}
+
+/**
+ * Windows demo
+ */    
+#ifdef __WINDOWS__
+#include "demo/windows.c"    
+#endif
+
+/**
+ * Windows demo
+ */    
+#ifdef __LINUX__
+#include "demo/linux.c"    
+#endif
+
+/**
+ * Windows demo
+ */    
+#ifdef __MACOS__
+#include "demo/macos.c"    
+#endif
 
 /**
  * The main function of your shellcode.
  * 
  * @return int A return value of your shellcode.
  */
-int EntryFunction() {
-    
-    return 0xAA;
+int MainShellcode() {
+
+    // As example on Windows, we pop a message box and calculator
+    #ifdef __WINDOWS__
+        WindowsExample();
+    #endif
+
+    // As example on Windows, we pop a message box and calculator
+    #ifdef __LINUX__
+        LinuxExample();
+    #endif
+
+    // As example on Windows, we pop a message box and calculator
+    #ifdef __MACOS__
+        MacOsExample();
+    #endif
+
+    return 0xDEADBEEF;
 }

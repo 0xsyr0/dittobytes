@@ -29,18 +29,18 @@ RUN cd /opt && \
 
 # Install LLVM (For Windows & Linux X86/ARM64)
 RUN cd /opt && \
-        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
-        tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
-        mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin && \
-        rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20250402/llvm-mingw-20250402-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
+        tar -xf llvm-mingw-20250402-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
+        mv llvm-mingw-20250402-msvcrt-ubuntu-20.04-x86_64 llvm-winlin && \
+        rm llvm-mingw-20250402-msvcrt-ubuntu-20.04-x86_64.tar.xz
 
 # Install LLVM (For MacOS X86/ARM64)
-RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
+RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-20 main" \
         > /etc/apt/sources.list.d/llvm.list && \
     wget -qO /etc/apt/trusted.gpg.d/llvm.asc \
         https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt update -qqy && \
-    apt install -qqy -t llvm-toolchain-bookworm-18 clang-18 clang-tidy-18 clang-format-18 lld-18 libc++-18-dev libc++abi-18-dev && \
+    apt install -qqy -t llvm-toolchain-bookworm-20 clang-20 clang-tidy-20 clang-format-20 lld-20 libc++-20-dev libc++abi-20-dev && \
     for f in /usr/lib/llvm-*/bin/*; do ln -sf "$f" /usr/bin; done && \
     ln -sf clang /usr/bin/cc && \
     ln -sf clang /usr/bin/c89 && \
@@ -49,8 +49,9 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
     ln -sf clang++ /usr/bin/g++ && \
     rm -rf /var/lib/apt/lists/*
 
+
 # Define identification for the containers
-RUN touch /.docker-beacons-compiler-env
+RUN touch /.docker-loaders-compiler-env
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir

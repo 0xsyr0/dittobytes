@@ -16,9 +16,9 @@
     <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_linux.svg" alt="Linux logo" height="45" />
 </p>
 <p align="center">
-    <b>Polymorphic cross-compilation of C-code to Truly Position Independent Code (PIC).<br>In Memory of In-Memory Signatures &#10013;</b>
+    <b>Polymorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
     <br/>
-    <sup>Built with ♥ by <a href="https://x.com/tijme">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
+    <sup>RIP In-Memory Signatures. Built with ♥ by <a href="https://x.com/tijme">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
     <br/>
 </p>
 <p align="center">

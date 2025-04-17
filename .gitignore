@@ -112,3 +112,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Dittobytes specific
+TODO.md
