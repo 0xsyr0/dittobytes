@@ -25,7 +25,7 @@ LIN_ARM64_LOADER_NAME  := loader-linux-arm64
 MAC_AMD64_LOADER_NAME  := loader-macos-x64
 MAC_ARM64_LOADER_NAME  := loader-macos-arm64
 
-IS_DOCKER              := $(shell test -f /.docker-loaders-compiler-env && echo "true" || echo "false")
+IS_DOCKER              := $(shell test -f /.dittobytes-loaders-env && echo "true" || echo "false")
 
 ##########################################
 ## Default runs                         ##
@@ -43,9 +43,10 @@ all: check_environment \
 ##########################################
 check_environment:
 ifeq ($(IS_DOCKER), false)
-	@echo "[+] It appears you are not running this command inside the Dittobytes Loaders Docker container"
-	@echo "[+] You can build it with: docker build -t dittobytes-loaders ."
-	@echo "[+] You can run it with: docker run --rm -v "../:/tmp/workdir" -it dittobytes-loaders"
+	@echo "[+] It appears you are not running this command inside the \`Dittobytes Loaders Docker Compiler\`."
+	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
+	@echo "    $ docker build -t dittobytes-loaders -f ./loaders/Dockerfile ."
+	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes-loaders"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside Docker..." ;; \

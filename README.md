@@ -64,7 +64,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     dittobytes/
     ├── beacon/                         # You C-code that will compile to shellcode.
     │   ├── main.c                       
-    ├── loader/                         # Simple shellcode loader for testing purposes.
+    ├── loaders/                        # Simple shellcode loaders for testing purposes.
     │   └── [platform]/
     │       ├── src/
     │       │   └── main.c
@@ -74,16 +74,18 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     │   ├── beacon-[platform]-[arch].bin
     │   ├── loader-[platform]-[arch].[ext]
     │   └── ...
-    ├── scripts/                        # Helper scripts used by the makefile.
+    ├── scripts/                        # Helper scripts used by the makefile(s).
     │   ├── extract-text-segment.py
     │   └── ...
-    └── transpiler/                     # The LLVM plugin that acts as polymorphic engine.
-        ├── src/
-        │   ├── PolymorphicTranspiler.cpp
-        │   └── ...
-        ├── build/
-        │   └── libPolymorphicTranspiler.so
-        └── ...
+    └── transpilers/                    # The LLVM plugins that act as polymorphic engine.
+        ├── intermediate/
+        │   └── src/
+        │       ├── IntermediateTranspiler.cpp
+        │       └── ...
+        └── machine/
+            └── src/
+                ├── MachineTranspiler.cpp
+                └── ...
 
 <hr>
 </details>

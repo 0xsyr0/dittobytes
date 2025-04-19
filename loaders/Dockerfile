@@ -51,7 +51,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-20 main" \
 
 
 # Define identification for the containers
-RUN touch /.docker-loaders-compiler-env
+RUN touch /.dittobytes-loaders-env
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir

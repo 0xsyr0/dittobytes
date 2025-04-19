@@ -36,7 +36,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
     rm -rf /var/lib/apt/lists/*
 
 # Define identification for the containers
-RUN touch /.docker-transpiler-compiler-env
+RUN touch /.dittobytes-transpilers-env
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir
