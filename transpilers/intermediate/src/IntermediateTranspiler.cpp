@@ -22,30 +22,21 @@
  * Original source: https://github.com/SheLLVM/SheLLVM/tree/master
  */
 
-
 /**
-
-Copyright (c) 2018 SheLLVM Development Team. All rights reserved.
-
-
-Developed by: SheLLVM Development Team
-https://github.com/SheLLVM
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal with the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers.
-Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimers in the documentation and/or other materials provided with the distribution.
-Neither the names of SheLLVM Development Team, SheLLVM, nor the names of its contributors may be used to endorse or promote products derived from this Software without specific prior written permission.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
-
-*/
-
-
-
-/**
- * LLVM includes
+ * Copyright (c) 2018 SheLLVM Development Team. All rights reserved.
+ * 
+ * Developed by: SheLLVM Development Team
+ * https://github.com/SheLLVM
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal with the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * 
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimers in the documentation and/or other materials provided with the distribution.
+ * Neither the names of SheLLVM Development Team, SheLLVM, nor the names of its contributors may be used to endorse or promote products derived from this Software without specific prior written permission.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
  */
+
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Support/raw_ostream.h"
@@ -53,51 +44,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
-
-/**
- * Namespace(s) to use
- */
-using namespace llvm;
-
-#ifndef GLOBAL_TO_STACK_PASS_H
-#define GLOBAL_TO_STACK_PASS_H
-
-#include "llvm/IR/PassManager.h"
-
-using namespace llvm;
-
-struct IntermediateTranspiler : PassInfoMixin<IntermediateTranspiler> {
-
-  bool shouldInline(GlobalVariable &G);
-
-  void disaggregateVars(Instruction *After, Value *Ptr,
-                        SmallVectorImpl<Value *> &Idx, ConstantAggregate &C,
-                        SmallSetVector<GlobalVariable *, 4> &Vars);
-
-  void extractValuesFromStore(StoreInst *inst,
-                              SmallSetVector<GlobalVariable *, 4> &Vars);
-
-  void inlineGlobals(Function *F, SmallSetVector<GlobalVariable *, 4> &Vars);
-
-  llvm::PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM);
-}; // end of struct IntermediateTranspiler
-
-#endif
-
-
-
-
 #include "llvm/ADT/MapVector.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallSet.h"
-#include "llvm/IR/Constants.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Pass.h"
-#include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/GlobalOpt.h"
-
+#include "IntermediateTranspiler.h"
 
 using namespace std;
 using namespace llvm;
@@ -289,8 +244,10 @@ void IntermediateTranspiler::inlineGlobals(Function *F,
   }
 }
 
-llvm::PreservedAnalyses IntermediateTranspiler::run(Module &M,
-                                           ModuleAnalysisManager &AM) {
+llvm::PreservedAnalyses IntermediateTranspiler::run(Module &M, ModuleAnalysisManager &AM) {
+
+  errs() << "      ↺ IntermediateTranspiler passed module " << M.getName() << ".\n";
+
 
   SmallMapVector<Function *, SmallSetVector<GlobalVariable *, 4>, 4> Usage;
 
@@ -325,23 +282,19 @@ PassPluginLibraryInfo getIntermediateTranspilerPluginInfo() {
         "IntermediateTranspiler", 
         LLVM_VERSION_STRING, 
         [](PassBuilder &PB) {
-
-
             PB.registerPipelineParsingCallback(
                 [](StringRef Name, ModulePassManager &MPM, ArrayRef<PassBuilder::PipelineElement>) {
                     if (Name == "intermediate-transpiler") {
-                        MPM.addPass(IntermediateTranspiler()); // ✅ Correct
+                        MPM.addPass(IntermediateTranspiler());
                         return true;
                     }
                     return false;
                 }
             );
 
-
-
             PB.registerPipelineStartEPCallback(
                 [](ModulePassManager &MPM, OptimizationLevel Level) {
-                    MPM.addPass(IntermediateTranspiler()); // ✅ Correct
+                    MPM.addPass(IntermediateTranspiler());
                 }
             );
         }

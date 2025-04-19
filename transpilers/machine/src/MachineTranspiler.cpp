@@ -86,7 +86,7 @@ public:
     bool runOnMachineFunction(MachineFunction &MF) override {
         bool Modified = false;
 
-        errs() << "    - Running MachineTranspiler on function...\n";
+        errs() << "      ↺ MachineTranspiler passed function " << MF.getName() << ".\n";
 
         return Modified;
     }
@@ -99,4 +99,7 @@ public:
  * This ensures that `llc -run-pass` can recognize and run the pass by name.
  */
 char MachineTranspiler::ID = 0;
-static llvm::RegisterPass<MachineTranspiler> X("MachineTranspiler", "The Dittobytes polymorphic transpiler!");
+static llvm::RegisterPass<MachineTranspiler> MachineTranspilerRegistration(
+    "MachineTranspiler", 
+    "The Dittobytes MachineFunctionPass Transpiler!"
+);
