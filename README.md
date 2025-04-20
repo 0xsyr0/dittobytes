@@ -179,6 +179,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
             <li>Compile the loaders:<br><code>make</code></li>
         </ul>
     </p>
+    <hr>
 </details>
 
 <details>
@@ -193,7 +194,6 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
             <li>Move to the right directory:<br><code>cd ./transpilers/[type]/</code></li>
             <li>Compile the transpiler:<br><code>make</code></li>
         </ul>
-        <br>
         Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the polymorphism.
     </p>
     <hr>
