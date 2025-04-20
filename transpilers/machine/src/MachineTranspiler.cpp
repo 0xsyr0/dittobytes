@@ -32,18 +32,30 @@
 #include "llvm/CodeGen/TargetInstrInfo.h"
 
 /**
+ * Modules
+ */
+#include "modules/TestSubstitution.c"
+
+/**
  * Namespace(s) to use
  */
 using namespace llvm;
 
 /**
- * LLVM function pass that logs the name of each function it visits.
+ * LLVM function pass that calls specific modules of each function it visits.
  *
  * MachineTranspiler is a custom LLVM pass derived from MachineFunctionPass.
  * It operates at the machine function level. This pass currently performs 
- * no transformation but serves as a base for future instrumentation or analysis.
+ * no transformation on its own, but calls several modules that do so.
  */
 class MachineTranspiler : public MachineFunctionPass {
+
+private:
+
+    /**
+     * Modules tthat can transform machine functions.
+     */
+    TestSubstitution test;
 
 public:
 
@@ -57,8 +69,8 @@ public:
      * 
      * Initializes the pass with the unique ID.
      */
-    MachineTranspiler() : MachineFunctionPass(ID) {
-
+    MachineTranspiler() : MachineFunctionPass(ID), test() {
+        std::srand(std::time(nullptr));
     }
 
     /**
@@ -78,15 +90,16 @@ public:
      *
      * This function is called by LLVM when the pass is run on a machine function.
      * It iterates through the machine basic blocks and checks each machine instruction.
-     * If a `mov` instruction is found, it logs the instruction and marks the function as modified.
      * 
      * @param MachineFunction& MF The machine function to run the pass on.
-     * @return bool Indicates if the machine function was modified (i.e., any `mov` instruction found).
+     * @return bool Indicates if the machine function was modified.
      */
     bool runOnMachineFunction(MachineFunction &MF) override {
         bool Modified = false;
 
         errs() << "      ↺ MachineTranspiler passed function " << MF.getName() << ".\n";
+
+        Modified = test.runOnMachineFunction(MF) || Modified;
 
         return Modified;
     }

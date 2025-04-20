@@ -11,35 +11,21 @@
  */
 
 /**
- * Define the EntryFunction that MUST be the first function.
- * Do NOT modify this function or its location.
- * 
- * @return int A return value of your shellcode.
- */
-int MainShellcode();
-int EntryFunction() {
-    return MainShellcode();
-}
-
-/**
  * Windows demo
  */    
 #ifdef __WINDOWS__
-#include "demo/windows.c"    
 #endif
 
 /**
  * Windows demo
  */    
 #ifdef __LINUX__
-#include "demo/linux.c"    
 #endif
 
 /**
  * Windows demo
  */    
 #ifdef __MACOS__
-#include "demo/macos.c"    
 #endif
 
 /**
@@ -47,22 +33,7 @@ int EntryFunction() {
  * 
  * @return int A return value of your shellcode.
  */
-int MainShellcode() {
-
-    // As example on Windows, we pop a message box and calculator
-    #ifdef __WINDOWS__
-        WindowsExample();
-    #endif
-
-    // As example on Windows, we pop a message box and calculator
-    #ifdef __LINUX__
-        LinuxExample();
-    #endif
-
-    // As example on Windows, we pop a message box and calculator
-    #ifdef __MACOS__
-        MacOsExample();
-    #endif
+int EntryFunction() {
 
     return 0xDEADBEEF;
 }

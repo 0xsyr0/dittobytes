@@ -40,7 +40,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-20 main" \
     wget -qO /etc/apt/trusted.gpg.d/llvm.asc \
         https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt update -qqy && \
-    apt install -qqy -t llvm-toolchain-bookworm-20 clang-20 clang-tidy-20 clang-format-20 lld-20 libc++-20-dev libc++abi-20-dev && \
+    apt install -qqy -t llvm-toolchain-bookworm-20 llvm-20-dev clang-20 clang-tidy-20 clang-format-20 lld-20 libc++-20-dev libc++abi-20-dev && \
     for f in /usr/lib/llvm-*/bin/*; do ln -sf "$f" /usr/bin; done && \
     ln -sf clang /usr/bin/cc && \
     ln -sf clang /usr/bin/c89 && \

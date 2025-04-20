@@ -50,7 +50,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     <ul>
         <li>Use Git to clone this repo:<br><code>git clone https://github.com/tijme/dittobytes.git</code></li>
         <li><a href="https://github.com/tijme/dittobytes/blob/master/.github/laughing.gif">Review</a> the code so you know what you're compiling and running.</li>
-        <li>Finally, cd into the project and start developing:<br><code>cd dittobytes</code></li>
+        <li>Finally, cd into the project and start developing:<br><code>cd ./dittobytes/</code></li>
     </ul>
     <hr>
 </details>
@@ -123,6 +123,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     </p>
     <p>
         An example would become quite large, thus for now I'd like to forward you to <a href="https://github.com/tijme/relocatable">Relocatable</a>. This is a Position Independent Code (PIC) which pops a message box and calculator as example.
+    </p>
     <hr>
 </details>
 
@@ -142,7 +143,9 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
 <details>
     <summary>Compile your code on your host (advanced)</summary>
     <hr>
-    Clang and LLVM are used to cross-compile the loader and beacon. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+    <p>
+        Clang and LLVM are used to cross-compile the loader and beacon. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+    </p>
     <hr>
 </details>
 
@@ -158,6 +161,41 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
             <code>./builds/loader-[os]-[arch].[ext] ./builds/beacon-[os]-[arch].bin</code>
         </li>
     </ul>
+    <hr>
+</details>
+
+### 6. Advanced
+
+<details>
+    <summary>Mofification & compilation of the pre-shipped loaders</summary>
+    <hr>
+    <p>
+        You can modify the pre-shipped loaders by editing the code in <code>./loaders/[platform]/src/main.c</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
+        <br>
+        <ul>
+            <li>Build the Docker container:<br><code>docker build -t dittobytes-loaders -f ./loaders/Dockerfile .</code></li>
+            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes-loaders</code></li>
+            <li>Move to the right directory:<br><code>cd ./loaders/</code></li>
+            <li>Compile the loaders:<br><code>make</code></li>
+        </ul>
+    </p>
+</details>
+
+<details>
+    <summary>Modification & compilation of the pre-shipped transpilers</summary>
+    <hr>
+    <p>
+        You can modify the pre-shipped transpiler(s) by editing the code in <code>./transpilers/[type]/src/[type].cpp</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
+        <br>
+        <ul>
+            <li>Build the Docker container:<br><code>docker build -t dittobytes-transpilers -f ./transpilers/Dockerfile .</code></li>
+            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes-transpilers</code></li>
+            <li>Move to the right directory:<br><code>cd ./transpilers/[type]/</code></li>
+            <li>Compile the transpiler:<br><code>make</code></li>
+        </ul>
+        <br>
+        Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the polymorphism.
+    </p>
     <hr>
 </details>
 
