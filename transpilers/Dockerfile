@@ -33,12 +33,12 @@ RUN apt install -qqy --no-install-recommends \
 WORKDIR /src
 RUN git clone --depth 1 --branch ${LLVM_PROJECT} https://github.com/llvm/llvm-project.git
 
-# Configure LLVM build with Clang and LLD for all targets
+# Configure LLVM build with Clang and LLD for all required targets
 WORKDIR /src/llvm-project/build
 RUN cmake -G Ninja ../llvm \
     -DLLVM_ENABLE_PROJECTS="clang;lld" \
     -DCMAKE_BUILD_TYPE=Release \
-    -DLLVM_TARGETS_TO_BUILD="all" \
+    -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
     -DCMAKE_INSTALL_PREFIX=/opt/llvm
 
 # Build and install LLVM
