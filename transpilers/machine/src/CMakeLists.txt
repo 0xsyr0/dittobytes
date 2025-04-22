@@ -8,19 +8,51 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
+# Project & CMAKE settings
 cmake_minimum_required(VERSION 3.25.0)
 project(MachineTranspiler)
 
-set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-set(CMAKE_C_COMPILER /usr/bin/clang)
+# Set specific compiler(s) & linker(s)
+set(CMAKE_C_COMPILER "/opt/llvm/bin/clang")
+set(CMAKE_CXX_COMPILER "/opt/llvm/bin/clang++")
+set(CMAKE_LINKER "/opt/llvm/bin/lld")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Find LLVM
 find_package(LLVM 18.1.8 REQUIRED CONFIG)
 
-include_directories(${LLVM_INCLUDE_DIRS})
-add_definitions(${LLVM_DEFINITIONS})
+# Print LLVM information
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+# Add LLVM definitions and includes
 link_directories(${LLVM_LIBRARY_DIR})
+add_definitions(${LLVM_DEFINITIONS})
+include_directories(
+    ${LLVM_INCLUDE_DIRS}
+    ${LLVM_INCLUDE_DIRS}/llvm/Target/X86/
+)
 
-add_library(MachineTranspiler SHARED MachineTranspiler.cpp)
+# Add the machine transpiler source code
+add_library(MachineTranspiler SHARED
+    MachineTranspiler.cpp
+)
 
-target_link_libraries(MachineTranspiler ${llvm_libs})
+# Link against LLVM libraries
+target_link_libraries(MachineTranspiler
+    PRIVATE
+    LLVMCore
+    LLVMCodeGen
+    LLVMSupport
+    LLVMTarget
+    LLVMAnalysis
+    LLVMScalarOpts
+    LLVMX86CodeGen
+    LLVMX86Desc
+    LLVMX86Info
+)
+
+# Set compilation flags
+target_compile_options(MachineTranspiler PRIVATE
+    -fno-rtti
+)

@@ -42,6 +42,8 @@ RUN cmake -G Ninja ../llvm \
     -DCMAKE_INSTALL_PREFIX=/opt/llvm
 
 # Build and install LLVM
+# If the following installation commands fail on Windows with a gRPC connection error,
+# run these Dockerfile commands in a WSL container: `wsl --install --distribution Debian`.
 RUN ninja && ninja install
 
 # Add LLVM binaries to system PATH

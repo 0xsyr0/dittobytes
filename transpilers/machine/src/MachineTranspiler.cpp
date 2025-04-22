@@ -34,7 +34,7 @@
 /**
  * Modules
  */
-#include "modules/TestSubstitution.c"
+#include "modules/ModifyImmediateModule.c"
 
 /**
  * Namespace(s) to use
@@ -55,7 +55,7 @@ private:
     /**
      * Modules tthat can transform machine functions.
      */
-    TestSubstitution test;
+    ModifyImmediateModule cModifyImmediate;
 
 public:
 
@@ -99,7 +99,7 @@ public:
 
         errs() << "      ↺ MachineTranspiler passed function " << MF.getName() << ".\n";
 
-        Modified = test.runOnMachineFunction(MF) || Modified;
+        Modified = cModifyImmediate.runOnMachineFunction(MF) || Modified;
 
         return Modified;
     }

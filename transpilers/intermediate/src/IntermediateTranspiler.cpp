@@ -15,7 +15,7 @@
  * ###############################################################################
  * ###############################################################################
  * 
- * The author and owner of this specific function pass is the Shellvm organisation: 
+ * The author and owner of this specific function pass is the SheLLVM organisation: 
  * https://github.com/SheLLVM/SheLLVM. Copyright may apply. Please refer to the 
  * original source.
  * 
