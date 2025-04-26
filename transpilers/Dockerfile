@@ -48,6 +48,9 @@ RUN cd /opt && \
 WORKDIR /src
 RUN git clone --depth 1 --branch ${LLVM_PROJECT} https://github.com/tijme/forked-dittobytes-llvm-project.git llvm-project
 
+# Fix unsupported use of `regalloc` option
+RUN sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /src/llvm-project/llvm/lib/CodeGen/LiveVariables.cpp
+
 # Configure LLVM build with Clang and LLD for all required targets
 WORKDIR /src/llvm-project/build
 RUN cmake -G Ninja ../llvm \

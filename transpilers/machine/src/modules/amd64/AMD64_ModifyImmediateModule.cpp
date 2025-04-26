@@ -3,10 +3,10 @@
  *
  * Copyright (c) 2025 Tijme Gommers (@tijme).
  *
- * This source code file is part of Dittobytes. Dittobytes is 
- * licensed under GNU General Public License, version 2.0, and 
- * you are free to use, modify, and distribute this file under 
- * its terms. However, any modified versions of this file must 
+ * This source code file is part of Dittobytes. Dittobytes is
+ * licensed under GNU General Public License, version 2.0, and
+ * you are free to use, modify, and distribute this file under
+ * its terms. However, any modified versions of this file must
  * include this same license and copyright notice.
  */
 
@@ -53,7 +53,7 @@
 using namespace llvm;
 
 /**
- * A class to obfuscate `mov` immediate values.
+ * A class to obfuscate mov immediate values.
  */
 class AMD64_ModifyImmediateModule {
 
@@ -72,41 +72,83 @@ public:
 
         errs() << "        ↳ Running AMD64 architecture specific implementation.\n";
 
-        for (auto &MachineBasicBlock : MF) {
-            for (auto MachineInstruction = MachineBasicBlock.begin(); MachineInstruction != MachineBasicBlock.end(); ) {
-                MachineInstr &Instruction = *MachineInstruction++;
- 
-                // Only modify `mov` instructions with immediate values
-                if (!isMovImmediate(Instruction)) {
-                    continue;
-                }
-
-                // Print debug information
-                errs() << "          ↳ Found AMD64 `mov` instruction: ";
-                Instruction.print(errs());
-            }
-        }
-
         return Modified;
     }
 
 private:
+
+    size_t getMovImmediateSize(const MachineInstr &instruction) {
+        unsigned opcode = instruction.getOpcode();
+
+        switch (opcode) {
+            case X86::MOV8ri:
+                return 8;
+                break;
+            case X86::MOV16ri:
+                return 16;
+                break;
+            case X86::MOV32ri:
+                return 32;
+                break;
+            case X86::MOV64ri:            
+            case X86::MOV64ri32:
+                return 64;
+                break;
+
+            // case X86::MOV8ri:
+            // case X86::MOV8mi:
+            // case X86::MOV16mi:
+            // case X86::MOV32mi:
+            // case X86::MOV32ri64:
+            // case X86::MOV64ri32:
+            // case X86::MOV64mi32:
+            // case X86::MOV32mi64:
+            default:
+                report_fatal_error(formatv("AMD64_ModifyImmediateModule - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                return 0;
+        }
+    }
+
+    unsigned getMovSizeXorReplacement(const MachineInstr &instruction) {
+        unsigned opcode = instruction.getOpcode();
+
+        switch (opcode) {
+            case X86::MOV8ri: return X86::XOR8rr;
+            case X86::MOV16ri: return X86::XOR16rr;
+            case X86::MOV32ri: return X86::XOR32rr;
+            case X86::MOV64ri: return X86::XOR64rr;
+            case X86::MOV64ri32: return X86::XOR64rr;
+
+            // case X86::MOV8ri: return X86::XOR8rr;
+            // case X86::MOV8mi: return X86::XOR8mi;
+            // case X86::MOV16mi: return X86::XOR16mi;
+            // case X86::MOV32mi: return X86::XOR32mi;
+            // case X86::MOV32ri64: return X86::XOR64rr;
+            // case X86::MOV32mi64: return X86::XOR32mi;
+            // case X86::MOV64ri32: return X86::XOR64rr;
+            // case X86::MOV64mi32: return X86::XOR64mi32;
+            default:
+                report_fatal_error(formatv("AMD64_ModifyImmediateModule - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                return 0;
+        }
+    }
 
     bool isMovImmediate(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
         switch (opcode) {
             case X86::MOV8ri:
-            // case X86::MOV8mi:
             case X86::MOV16ri:
-            // case X86::MOV16mi:
             case X86::MOV32ri:
-            // case X86::MOV32mi:
-            case X86::MOV32ri64:
-            // case X86::MOV32mi64:
             case X86::MOV64ri:
+            case X86::MOV64ri32:
+
+            // case X86::MOV8mi:
+            // case X86::MOV16mi:
+            // case X86::MOV32mi:
+            // case X86::MOV32ri64:
+            // case X86::MOV32mi64:
             // case X86::MOV64mi:
-            case X86::MOV64ri32: 
             // case X86::MOV64mi32:
                 return true;
                 break;

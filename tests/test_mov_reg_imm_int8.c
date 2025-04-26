@@ -15,9 +15,9 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present C3 (TODO).
+ * @verify hex_not_present 80 (-128 is 0x80 in HEX).
  * 
- * @return uint8_t The return value to verify: `-128` (which must still be the case after transpilation).
+ * @return int8_t The return value to verify: `-128` (which must still be the case after transpilation).
  */
 int8_t EntryFunction() {
     return (int8_t) -128;

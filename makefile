@@ -14,6 +14,7 @@
 ## Globals                              ##
 ##########################################
 
+DEBUG                  := false
 BUILD_DIR              := ./builds
 TEST_FILES             := $(wildcard ./tests/*)
 BEACON_PATH            ?= ./beacon/main.c
@@ -65,24 +66,19 @@ test:
 	@set -e; \
 	for TEST_FILE in $(TEST_FILES); do \
 		echo "[+] Testing \`$$TEST_FILE\`."; \
-		$(MAKE) BEACON_PATH="$$TEST_FILE" --no-print-directory test-internal; \
+		$(MAKE) DEBUG=true BEACON_PATH="$$TEST_FILE" --no-print-directory test-internal; \
 	done
 
 test-compile:
 	@set -e; \
 	for TEST_FILE in $(TEST_FILES); do \
 		echo "[+] Testing \`$$TEST_FILE\`."; \
-		$(MAKE) BEACON_PATH="$$TEST_FILE" --no-print-directory beacons; \
-		$(MAKE) BEACON_PATH="$$TEST_FILE" --no-print-directory test-internal; \
+		$(MAKE) DEBUG=true BEACON_PATH="$$TEST_FILE" --no-print-directory beacon-lin-amd64; \
+		$(MAKE) DEBUG=true BEACON_PATH="$$TEST_FILE" --no-print-directory test-internal; \
 	done
 
 test-internal:
-	@$(PYTHON_PATH) ./scripts/verify-feature-test.py $(BEACON_PATH) $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME).bin
-	@$(PYTHON_PATH) ./scripts/verify-feature-test.py $(BEACON_PATH) $(BUILD_DIR)/$(WIN_ARM64_BEACON_NAME).bin
 	@$(PYTHON_PATH) ./scripts/verify-feature-test.py $(BEACON_PATH) $(BUILD_DIR)/$(LIN_AMD64_BEACON_NAME).bin
-	@$(PYTHON_PATH) ./scripts/verify-feature-test.py $(BEACON_PATH) $(BUILD_DIR)/$(LIN_ARM64_BEACON_NAME).bin
-	@$(PYTHON_PATH) ./scripts/verify-feature-test.py $(BEACON_PATH) $(BUILD_DIR)/$(MAC_AMD64_BEACON_NAME).bin
-	@$(PYTHON_PATH) ./scripts/verify-feature-test.py $(BEACON_PATH) $(BUILD_DIR)/$(MAC_ARM64_BEACON_NAME).bin
 
 ##########################################
 ## Environment check                    ##
@@ -111,7 +107,7 @@ WIN_AMD64_DEFINES           := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellco
 WIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)
 WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident
 WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64
-WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs  
+WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs
 
 $(WIN_AMD64_BEACON_PATH).ll: $(BEACON_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_AMD64_BEACON_NAME)."
@@ -139,8 +135,10 @@ $(WIN_AMD64_BEACON_PATH).bin: $(WIN_AMD64_BEACON_PATH).lkd
 	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
 
 $(WIN_AMD64_BEACON_NAME): $(WIN_AMD64_BEACON_PATH).bin
+ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm $(WIN_AMD64_BEACON_PATH).lkd $(WIN_AMD64_BEACON_PATH).obj $(WIN_AMD64_BEACON_PATH).*mir $(WIN_AMD64_BEACON_PATH).ll
+endif
 	@echo "    - Done building $@."
 
 ##########################################
@@ -180,8 +178,10 @@ $(WIN_ARM64_BEACON_PATH).bin: $(WIN_ARM64_BEACON_PATH).lkd
 	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
 
 $(WIN_ARM64_BEACON_NAME): $(WIN_ARM64_BEACON_PATH).bin
+ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm $(WIN_ARM64_BEACON_PATH).lkd $(WIN_ARM64_BEACON_PATH).obj $(WIN_ARM64_BEACON_PATH).*mir $(WIN_ARM64_BEACON_PATH).ll
+endif
 	@echo "    - Done building $@."
 
 ##########################################
@@ -221,8 +221,10 @@ $(LIN_AMD64_BEACON_PATH).bin: $(LIN_AMD64_BEACON_PATH).lkd
 	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
 
 $(LIN_AMD64_BEACON_NAME): $(LIN_AMD64_BEACON_PATH).bin
+ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm $(LIN_AMD64_BEACON_PATH).lkd $(LIN_AMD64_BEACON_PATH).obj $(LIN_AMD64_BEACON_PATH).*mir $(LIN_AMD64_BEACON_PATH).ll
+endif
 	@echo "    - Done building $@."
 
 ##########################################
@@ -262,8 +264,10 @@ $(LIN_ARM64_BEACON_PATH).bin: $(LIN_ARM64_BEACON_PATH).lkd
 	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
 
 $(LIN_ARM64_BEACON_NAME): $(LIN_ARM64_BEACON_PATH).bin
+ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm $(LIN_ARM64_BEACON_PATH).lkd $(LIN_ARM64_BEACON_PATH).obj $(LIN_ARM64_BEACON_PATH).*mir $(LIN_ARM64_BEACON_PATH).ll
+endif
 	@echo "    - Done building $@."
 
 ##########################################
@@ -303,8 +307,10 @@ $(MAC_AMD64_BEACON_PATH).bin: $(MAC_AMD64_BEACON_PATH).lkd
 	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
 
 $(MAC_AMD64_BEACON_NAME): $(MAC_AMD64_BEACON_PATH).bin
+ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm $(MAC_AMD64_BEACON_PATH).lkd $(MAC_AMD64_BEACON_PATH).obj $(MAC_AMD64_BEACON_PATH).*mir $(MAC_AMD64_BEACON_PATH).ll
+endif
 	@echo "    - Done building $@."
 
 ##########################################
@@ -344,8 +350,10 @@ $(MAC_ARM64_BEACON_PATH).bin: $(MAC_ARM64_BEACON_PATH).lkd
 	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
 
 $(MAC_ARM64_BEACON_NAME): $(MAC_ARM64_BEACON_PATH).bin
+ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm $(MAC_ARM64_BEACON_PATH).lkd $(MAC_ARM64_BEACON_PATH).obj $(MAC_ARM64_BEACON_PATH).*mir $(MAC_ARM64_BEACON_PATH).ll
+endif
 	@echo "    - Done building $@."
 
 ##########################################

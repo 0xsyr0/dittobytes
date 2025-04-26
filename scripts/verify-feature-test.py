@@ -113,10 +113,13 @@ def verify_result(code_path, shellcode_path):
         result_return_value_pattern = r'Got result from shellcode \(' + expected_return_type + r'\): +0x\w+ \((signed|unsigned) (-?\d+)\)'
         result_return_value_matches = re.findall(result_return_value_pattern, executable_result.stdout)
 
-        return result_return_value_matches[0][1] == expected_return_value
+        return (
+            result_return_value_matches[0][1] == expected_return_value,
+            'Got {} instead of {}.'.format(result_return_value_matches[0][1], expected_return_value)
+        )
     except Exception as exception:
         __print_exception(exception)
-        return False
+        return (False, None)
 
 def main():
     """
@@ -131,19 +134,20 @@ def main():
     code_path = sys.argv[1]
     shellcode_path = sys.argv[2]
 
-    print('    - VerifyFeatureTest: Checking if we can run the shellcode on this system and architecture.')
+    # print('    - VerifyFeatureTest: Checking if we can run the shellcode on this system and architecture.')
     if not verify_system_and_architecture(code_path, shellcode_path):
-        print('    - VerifyFeatureTest: Cannot run shellcode for this system and architecture.')
+        # print('    - VerifyFeatureTest: Cannot run shellcode for this system and architecture.')
         sys.exit(0x0000000)
 
-    print('    - VerifyFeatureTest: Checking if transpiler succeeded.')
+    print('    - VerifyFeatureTest: Checking if transpiler succeeded for `{}`.'.format(shellcode_path))
     if not verify_transpilation(code_path, shellcode_path):
         print('    - VerifyFeatureTest: Transpilation failed.')
         sys.exit(0x00000001)
 
-    print('    - VerifyFeatureTest: Checking if return value is still correct.')
-    if not verify_result(code_path, shellcode_path):
-        print('    - VerifyFeatureTest: Return value is invalid.')
+    print('    - VerifyFeatureTest: Checking if return value is still correct for `{}`.'.format(shellcode_path))
+    result = verify_result(code_path, shellcode_path)
+    if not result[0]:
+        print('    - VerifyFeatureTest: Return value is invalid. {}'.format(result[1]))
         sys.exit(0x00000002)
 
     print('    - VerifyFeatureTest: Finished successfully!')

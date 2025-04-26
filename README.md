@@ -48,7 +48,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     <summary>Requirements to compile with Docker (easy)</summary>
     <hr>
     <p>
-        Compiling the shellcode <a href="#compiling">can be easily done</a> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, which requires quite some memory and disk space in your container. I got it to work with the following Docker resource settings:
+        Compiling the shellcode <a href="#compiling">can be easily done</a> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, which requires quite some memory and disk space in your container. I got it to work with the following Docker resource settings (which seem to be a minimum for now):
         <br>
         <ul>
             <li>CPU limit: 8</li>
@@ -198,6 +198,20 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
             Run and test your shellcode using the pre-shipped shellcode loader:
             <br>
             <code>./builds/loader-[os]-[arch].[ext] ./builds/beacon-[os]-[arch].bin</code>
+        </li>
+    </ul>
+    <hr>
+</details>
+
+<details>
+    <summary>Running feature tests</summary>
+    <hr>
+    <ul>
+        <li>
+            Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
+            <br>
+            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+            <li>Run the tests:<br><code>make test</code></li>
         </li>
     </ul>
     <hr>

@@ -15,8 +15,8 @@
 /**
  * The main function of your shellcode.
  * 
- * @return int A return value of your shellcode.
+ * @return uint64_t A return value of your shellcode.
  */
-int EntryFunction() {
-    return 0x00000000;
+uint64_t EntryFunction() {
+    return (uint64_t) 0x1234567812345678ULL;
 }

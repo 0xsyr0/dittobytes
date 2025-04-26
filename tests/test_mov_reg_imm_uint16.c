@@ -15,7 +15,7 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present C3 (TODO).
+ * @verify hex_not_present FFFF (65535 is 0xFFFF in HEX).
  * 
  * @return uint16_t The return value to verify: `65535` (which must still be the case after transpilation).
  */

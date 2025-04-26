@@ -15,11 +15,10 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present FFFFFFFFFFFFFFFF (18446744073709551615 is 0xFFFFFFFFFFFFFFFF in HEX).
- * @verify hex_not_present FFFF (18446744073709551615 is 0xFFFFFFFFFFFFFFFF in HEX, potentially shortened in assembly).
+ * @verify hex_not_present FFFF (18446744073709551615 is 0xFFFFFFFFFFFFFFFF in HEX).
  * 
  * @return uint64_t The return value to verify: `18446744073709551615` (which must still be the case after transpilation).
  */
 uint64_t EntryFunction() {
-    return (uint64_t) 18446744073709551615;
+    return (uint64_t) 18446744073709551615ULL;
 }
