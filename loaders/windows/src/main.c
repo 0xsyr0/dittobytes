@@ -51,6 +51,14 @@
 #include <ntstatus.h>
 
 /**
+ * Fixed size integer types.
+ * 
+ * Defines a number of macros to be used with printf and scanf family of functions, as well as functions for working with the intmax_t type.
+ * https://pubs.opengroup.org/onlinepubs/009695399/basedefs/inttypes.h.html
+ */
+#include <inttypes.h>
+
+/**
  * Custom helper functions that do not use global variables
  */
 #include "../lib/console.c"
@@ -71,8 +79,8 @@ int main(int argc, char** argv) {
     DWORD dwShellcodeSize = INVALID_FILE_SIZE;
     DWORD dwShellcodeSizeRead = 0;
     DWORD lpMemoryProtection = PAGE_READWRITE;
-    DWORD (*lpCallable)();
-    DWORD dwCallableResult = 0;
+    size_t (*lpCallable)();
+    size_t dwCallableResult = 0;
 
     // Show banner of the simple shellcode loader
     PrintBanner();
@@ -146,9 +154,17 @@ int main(int argc, char** argv) {
 
     // Execute shellcode
     PRINT_SUCCESS("Executing the shellcode (this might take a while or crash).");
-    lpCallable = (DWORD (*)()) lpShellcode;
+    lpCallable = (size_t (*)()) lpShellcode;
     dwCallableResult = lpCallable();
-    PRINT_SUCCESS("Got result from shellcode: 0x%lX (DWORD %lu).", dwCallableResult, dwCallableResult);
+
+    PRINT_SUCCESS("Got result from shellcode (int64_t):  0x%016" PRIx64 " (signed %" PRId64 ").", (int64_t) dwCallableResult, (int64_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint64_t): 0x%016" PRIx64 " (unsigned %" PRIu64 ").", (uint64_t) dwCallableResult, (uint64_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (int32_t):  0x%08" PRIx32 " (signed %" PRId32 ").", (int32_t) dwCallableResult, (int32_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint32_t): 0x%08" PRIx32 " (unsigned %" PRIu32 ").", (uint32_t) dwCallableResult, (uint32_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (int16_t):  0x%04" PRIx16 " (signed %" PRId16 ").", (int16_t) dwCallableResult, (int16_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint16_t): 0x%04" PRIx16 " (unsigned %" PRIu16 ").", (uint16_t) dwCallableResult, (uint16_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (int8_t):   0x%02" PRIx8 " (signed %" PRId8 ").", (int8_t) dwCallableResult, (int8_t) dwCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint8_t):  0x%02" PRIx8 " (unsigned %" PRIu8 ").", (uint8_t) dwCallableResult, (uint8_t) dwCallableResult);
 
     dwResult = STATUS_SUCCESS;
     goto CLEANUP_AND_RETURN;

@@ -10,6 +10,8 @@
  * include this same license and copyright notice.
  */
 
+#pragma once
+
 /**
  * LLVM includes
  */
@@ -35,9 +37,14 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
-#include "llvm/Target/X86/X86.h"
-#include "llvm/Target/X86/X86InstrInfo.h"
+#include "llvm/Target/AArch64/AArch64.h"
+#include "llvm/Target/AArch64/AArch64InstrInfo.h"
 #include "llvm/TargetParser/Triple.h"
+
+/**
+ * Regular includes
+ */
+#include "../../helpers/RandomHelper.cpp"
 
 /**
  * Namespace(s) to use
@@ -47,41 +54,51 @@ using namespace llvm;
 /**
  * A class to obfuscate `mov` immediate values.
  */
-class ModifyImmediateModule {
+class ARM64_ModifyImmediateModule {
 
 public:
 
     /**
-     * Constructor for the ModifyImmediateModule class.
-     */
-    ModifyImmediateModule() {
-
-    }
-
-    /**
-     * Main execution method for the ModifyImmediateModule class.
+     * Main execution method for the ARM64_ModifyImmediateModule class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @return bool Indicates if the machine function was modified.
      */
-    bool runOnMachineFunction(MachineFunction &MF)  {
+    bool runOnMachineFunction(MachineFunction &MF) {
+        const TargetInstrInfo *TII = MF.getSubtarget().getInstrInfo();
+        MachineRegisterInfo &MRI = MF.getRegInfo();
         bool Modified = false;
 
-        errs() << "      ↺ ModifyImmediateModule passed function " << MF.getName() << ".\n";
+        errs() << "        ↳ Running ARM64 architecture specific implementation.\n";
 
-		const auto *TII = MF.getSubtarget().getInstrInfo();
+        for (auto &MachineBasicBlock : MF) {
+            for (auto MachineInstruction = MachineBasicBlock.begin(); MachineInstruction != MachineBasicBlock.end(); ) {
+                MachineInstr &Instruction = *MachineInstruction++;
+ 
+                // Only modify `mov` instructions with immediate values
+                if (!isMovImmediate(Instruction)) {
+                    continue;
+                }
 
-		for (const auto &MBB : MF) {
-			for (const auto &MI : MBB) {
-				if (X86::isMOV(MI.getOpcode())) {
-					errs() << "         Found X86 MOV Instruction (using X86::isMov()): ";
-					MI.print(errs());
-					errs() << "\n";
-				}
-			}
-		}
+                // Print debug information
+                errs() << "          ↳ Found ARM64 `mov` instruction: ";
+                Instruction.print(errs());
+            }
+        }
 
-		return false; 
-	}
+        return Modified;
+    }
+
+private:
+
+    bool isMovImmediate(const MachineInstr &MI)  {
+        unsigned Opcode = MI.getOpcode();
+
+        return 
+            Opcode == AArch64::MOVi32imm    ||
+            Opcode == AArch64::MOVi64imm    || 
+            Opcode == AArch64::ORRXri       || 
+            Opcode == AArch64::ORRWri;
+    }
 
 };

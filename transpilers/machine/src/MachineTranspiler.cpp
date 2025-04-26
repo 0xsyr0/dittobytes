@@ -34,7 +34,8 @@
 /**
  * Modules
  */
-#include "modules/ModifyImmediateModule.c"
+#include "modules/amd64/AMD64_ModifyImmediateModule.cpp"
+#include "modules/arm64/ARM64_ModifyImmediateModule.cpp"
 
 /**
  * Namespace(s) to use
@@ -50,26 +51,19 @@ using namespace llvm;
  */
 class MachineTranspiler : public MachineFunctionPass {
 
-private:
-
-    /**
-     * Modules tthat can transform machine functions.
-     */
-    ModifyImmediateModule cModifyImmediate;
-
 public:
 
     /**
      * Pass ID
      */
-    static char ID;  // Pass ID
+    static char ID; 
 
     /**
      * Constructor for the MachineTranspiler pass.
      * 
      * Initializes the pass with the unique ID.
      */
-    MachineTranspiler() : MachineFunctionPass(ID), test() {
+    MachineTranspiler() : MachineFunctionPass(ID) {
         std::srand(std::time(nullptr));
     }
 
@@ -97,10 +91,25 @@ public:
     bool runOnMachineFunction(MachineFunction &MF) override {
         bool Modified = false;
 
-        errs() << "      ↺ MachineTranspiler passed function " << MF.getName() << ".\n";
+        const Triple &TT = MF.getTarget().getTargetTriple();
 
-        Modified = cModifyImmediate.runOnMachineFunction(MF) || Modified;
+        errs() << "      ↺ MachineTranspiler passing function " << MF.getName() << ".\n";
 
+        switch (TT.getArch()) {
+            // case Triple::x86:
+            case Triple::x86_64:
+                Modified = AMD64_ModifyImmediateModule().runOnMachineFunction(MF) || Modified;
+                break;
+            case Triple::aarch64:
+            // case Triple::aarch64_be:
+            // case Triple::aarch64_32:
+                Modified = ARM64_ModifyImmediateModule().runOnMachineFunction(MF) || Modified;
+                break;
+            default:
+                report_fatal_error(formatv("MachineTranspiler failed due to unknown architecture: {0}.", TT.getArchName()));
+                break;
+        }
+        
         return Modified;
     }
 

@@ -12,7 +12,6 @@ FROM debian:bookworm-slim AS intermediate
 
 # Update & upgrade
 RUN apt update -qqy
-RUN apt upgrade -qqy
 
 # Install APT dependencies
 RUN apt install -qqy --no-install-recommends \
@@ -25,7 +24,7 @@ RUN pip3 install lief==0.16.4 --break-system-packages
 
 # Install MacOS SDK
 RUN cd /opt && \
-        git clone https://github.com/alexey-lysiuk/macos-sdk.git
+        git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git macos-sdk
 
 # Install LLVM (For Windows & Linux X86/ARM64)
 RUN cd /opt && \
@@ -50,7 +49,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
     rm -rf /var/lib/apt/lists/*
 
 # Define identification for the containers
-RUN touch /.dittobytes-beacons-env
+RUN touch /.dittobytes-env-beacons
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir

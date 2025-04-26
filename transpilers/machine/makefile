@@ -1,3 +1,5 @@
+#!/usr/bin/make -f
+
 # GNU General Public License, version 2.0.
 #
 # Copyright (c) 2025 Tijme Gommers (@tijme).
@@ -13,30 +15,33 @@
 ##########################################
 
 BUILD_DIR              := build
-IS_DOCKER              := $(shell test -f /.dittobytes-transpilers-env && echo "true" || echo "false")
+IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default run                          ##
 ##########################################
+
 all: check_environment $(BUILD_DIR)
-	mkdir -p build 
-	cd build && cmake ../src/
-	cd build && cmake --build . 
+	@mkdir -p build 
+	@cd build && cmake ../src/
+	@cd build && cmake --build . -- -s
 
 ##########################################
 ## Environment check                    ##
 ##########################################
+
 check_environment:
-ifeq ($(IS_DOCKER), false)
-	@echo "[+] It appears you are not running this command inside the \`Dittobytes Transpilers Docker Compiler\`."
+ifeq ($(IS_CONTAINER), false)
+	@echo "[+] It appears you are not running this command inside the \`Dittobytes Transpilers Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
-	@echo "    $ docker build -t dittobytes-transpilers -f ./transpilers/Dockerfile ."
+	@echo "    $ docker buildx build -t dittobytes-transpilers -f ./transpilers/Dockerfile ."
 	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes-transpilers"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \
-		[yY][eE][sS]|[yY]) echo "[+] Continuing outside Docker..." ;; \
+		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
 		*) echo "[!] Aborting." && exit 1 ;; \
 	esac
+	$(eval IS_CONTAINER := true)
 endif
 
 ##########################################
@@ -44,11 +49,11 @@ endif
 ##########################################
 
 $(BUILD_DIR):
-	@echo "[+] Creating build directory"
+	@echo "[+] Creating machine transpiler build folder."
 	@mkdir -p $(BUILD_DIR)
 
 clean:
-	@echo "[+] Cleaning build folder"
+	@echo "[+] Removing machine transpiler from build folder."
 	@rm -rf $(BUILD_DIR)/*
 
 .PHONY: all clean

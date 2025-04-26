@@ -9,14 +9,3 @@
  * its terms. However, any modified versions of this file must 
  * include this same license and copyright notice.
  */
-
-#include <stdint.h>
-
-/**
- * The main function of your shellcode.
- * 
- * @return int A return value of your shellcode.
- */
-int EntryFunction() {
-    return 0x00000000;
-}

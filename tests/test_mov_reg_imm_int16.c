@@ -13,10 +13,13 @@
 #include <stdint.h>
 
 /**
- * The main function of your shellcode.
+ * The main function of the code to test.
  * 
- * @return int A return value of your shellcode.
+ * @verify hex_not_present 0080 (-32768 is 0x8000 in HEX for Little Endian).
+ * @verify hex_not_present 8000 (-32768 is 0x8000 in HEX for Big Endian).
+ *
+ * @return int16_t The return value to verify: `-32768` (which must still be the case after transpilation).
  */
-int EntryFunction() {
-    return 0x00000000;
+int16_t EntryFunction() {
+    return (int16_t) -32768;
 }

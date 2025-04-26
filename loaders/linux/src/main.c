@@ -83,6 +83,14 @@
 #include <string.h>
 
 /**
+ * Fixed size integer types.
+ * 
+ * Defines a number of macros to be used with printf and scanf family of functions, as well as functions for working with the intmax_t type.
+ * https://pubs.opengroup.org/onlinepubs/009695399/basedefs/inttypes.h.html
+ */
+#include <inttypes.h>
+
+/**
  * Custom helper functions that do not use global variables
  */
 #include "../lib/console.c"
@@ -102,8 +110,8 @@ int main(int argc, char** argv) {
     int hShellcodeFile = -1;           // File descriptor for the shellcode file
     off_t iShellcodeSize = -1;         // Size of the shellcode file (off_t for large files)
     ssize_t iShellcodeSizeRead = 0;    // Bytes read by read() (ssize_t handles errors)
-    int (*lpCallable)();               // Function pointer to execute the shellcode
-    int iCallableResult = 0;           // Potential return value of the executed shellcode
+    size_t (*lpCallable)();            // Function pointer to execute the shellcode
+    size_t iCallableResult = 0;        // Potential return value of the executed shellcode
     struct stat sFileStat;             // The size of the shellcode file
 
     // Show banner of the simple shellcode loader
@@ -178,9 +186,17 @@ int main(int argc, char** argv) {
 
     // Execute shellcode
     PRINT_SUCCESS("Executing the shellcode (this might take a while or crash).");
-    lpCallable = (int (*)()) lpShellcode;
+    lpCallable = (size_t (*)()) lpShellcode;
     iCallableResult = lpCallable();
-    PRINT_SUCCESS("Got result from shellcode: 0x%X (DWORD %d).", iCallableResult, iCallableResult);
+
+    PRINT_SUCCESS("Got result from shellcode (int64_t):  0x%016" PRIx64 " (signed %" PRId64 ").", (int64_t) iCallableResult, (int64_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint64_t): 0x%016" PRIx64 " (unsigned %" PRIu64 ").", (uint64_t) iCallableResult, (uint64_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (int32_t):  0x%08" PRIx32 " (signed %" PRId32 ").", (int32_t) iCallableResult, (int32_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint32_t): 0x%08" PRIx32 " (unsigned %" PRIu32 ").", (uint32_t) iCallableResult, (uint32_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (int16_t):  0x%04" PRIx16 " (signed %" PRId16 ").", (int16_t) iCallableResult, (int16_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint16_t): 0x%04" PRIx16 " (unsigned %" PRIu16 ").", (uint16_t) iCallableResult, (uint16_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (int8_t):   0x%02" PRIx8 " (signed %" PRId8 ").", (int8_t) iCallableResult, (int8_t) iCallableResult);
+    PRINT_SUCCESS("Got result from shellcode (uint8_t):  0x%02" PRIx8 " (unsigned %" PRIu8 ").", (uint8_t) iCallableResult, (uint8_t) iCallableResult);
 
     iResult = EXIT_SUCCESS;
     goto CLEANUP_AND_RETURN;

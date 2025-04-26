@@ -31,6 +31,7 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(
     ${LLVM_INCLUDE_DIRS}
     ${LLVM_INCLUDE_DIRS}/llvm/Target/X86/
+    ${LLVM_INCLUDE_DIRS}/llvm/Target/AArch64/
 )
 
 # Add the machine transpiler source code

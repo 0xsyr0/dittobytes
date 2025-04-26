@@ -13,10 +13,12 @@
 #include <stdint.h>
 
 /**
- * The main function of your shellcode.
+ * The main function of the code to test.
  * 
- * @return int A return value of your shellcode.
+ * @verify hex_not_present C3 (TODO).
+ * 
+ * @return int64_t The return value to verify: `-9223372036854775808` (which must still be the case after transpilation).
  */
-int EntryFunction() {
-    return 0x00000000;
+int64_t EntryFunction() {
+    return (int64_t) -9223372036854775808;
 }

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # GNU General Public License, version 2.0.
 #
 # Copyright (c) 2025 Tijme Gommers (@tijme).
@@ -141,8 +143,9 @@ def main():
     Main entry point of the script. Handles command-line arguments and
     uses the TextSegmentExtractor to extract the .text segment.
     """
+
     if len(sys.argv) != 3:
-        print("Usage: python extract_text.py <input_file> <output_file>")
+        print("Usage: python extract-text-segment.py <input_file> <output_file>")
         sys.exit(1)
 
     input_file = sys.argv[1]

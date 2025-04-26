@@ -1,3 +1,5 @@
+#!/usr/bin/make -f
+
 # GNU General Public License, version 2.0.
 #
 # Copyright (c) 2025 Tijme Gommers (@tijme).
@@ -18,18 +20,19 @@ LLVM_DIR_WIN           := /opt/llvm-winlin/bin
 LLVM_DIR_LIN           := /opt/llvm-winlin/bin
 LLVM_DIR_MAC           := /usr/bin
 
-WIN_AMD64_LOADER_NAME  := loader-windows-x64
-WIN_ARM64_LOADER_NAME  := loader-windows-arm64
-LIN_AMD64_LOADER_NAME  := loader-linux-x64
-LIN_ARM64_LOADER_NAME  := loader-linux-arm64
-MAC_AMD64_LOADER_NAME  := loader-macos-x64
-MAC_ARM64_LOADER_NAME  := loader-macos-arm64
+WIN_AMD64_LOADER_NAME  := loader-win-amd64
+WIN_ARM64_LOADER_NAME  := loader-win-arm64
+LIN_AMD64_LOADER_NAME  := loader-lin-amd64
+LIN_ARM64_LOADER_NAME  := loader-lin-arm64
+MAC_AMD64_LOADER_NAME  := loader-mac-amd64
+MAC_ARM64_LOADER_NAME  := loader-mac-arm64
 
-IS_DOCKER              := $(shell test -f /.dittobytes-loaders-env && echo "true" || echo "false")
+IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /.dittobytes-env-loaders ] || [ -f /.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default runs                         ##
 ##########################################
+
 all: check_environment \
 	$(WIN_AMD64_LOADER_NAME) \
 	$(WIN_ARM64_LOADER_NAME) \
@@ -41,17 +44,19 @@ all: check_environment \
 ##########################################
 ## Environment check                    ##
 ##########################################
+
 check_environment:
-ifeq ($(IS_DOCKER), false)
-	@echo "[+] It appears you are not running this command inside the \`Dittobytes Loaders Docker Compiler\`."
+ifeq ($(IS_CONTAINER), false)
+	@echo "[+] It appears you are not running this command inside the \`Dittobytes Loaders Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
-	@echo "    $ docker build -t dittobytes-loaders -f ./loaders/Dockerfile ."
+	@echo "    $ docker buildx build -t dittobytes-loaders -f ./loaders/Dockerfile ."
 	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes-loaders"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \
-		[yY][eE][sS]|[yY]) echo "[+] Continuing outside Docker..." ;; \
+		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
 		*) echo "[!] Aborting." && exit 1 ;; \
 	esac
+	$(eval IS_CONTAINER := true)
 endif
 
 ##########################################
@@ -61,7 +66,7 @@ endif
 WIN_AMD64_TARGET         := x86_64-w64-mingw32
 WIN_AMD64_DEFINES        := -D__WINDOWS__ -D__AMD64__
 WIN_AMD64_LOADER_PATH    := $(BUILD_DIR)/$(WIN_AMD64_LOADER_NAME)
-WIN_AMD64_LOADER_FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld 
+WIN_AMD64_LOADER_FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld --rtlib=compiler-rt
 
 $(WIN_AMD64_LOADER_PATH).exe: windows/src/main.c | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_AMD64_LOADER_NAME)."
@@ -78,7 +83,7 @@ $(WIN_AMD64_LOADER_NAME): $(WIN_AMD64_LOADER_PATH).exe
 WIN_ARM64_TARGET         := aarch64-w64-mingw32
 WIN_ARM64_DEFINES        := -D__WINDOWS__ -D__ARM64__
 WIN_ARM64_LOADER_PATH    := $(BUILD_DIR)/$(WIN_ARM64_LOADER_NAME)
-WIN_ARM64_LOADER_FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld
+WIN_ARM64_LOADER_FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld --rtlib=compiler-rt
 
 $(WIN_ARM64_LOADER_PATH).exe: windows/src/main.c | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_ARM64_LOADER_NAME)."
@@ -112,7 +117,7 @@ $(LIN_AMD64_LOADER_NAME): $(LIN_AMD64_LOADER_PATH)
 LIN_ARM64_TARGET         := aarch64-linux-gnu
 LIN_ARM64_DEFINES        := -D__LINUX__ -D__ARM64__ -DEntryFunction=shellcode
 LIN_ARM64_LOADER_PATH    := $(BUILD_DIR)/$(LIN_ARM64_LOADER_NAME)
-LIN_ARM64_LOADER_FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -fuse-ld=lld
+LIN_ARM64_LOADER_FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -fuse-ld=lld --sysroot=/
 
 $(LIN_ARM64_LOADER_PATH): linux/src/main.c | $(BUILD_DIR)
 	@echo "[+] Compiling $(LIN_ARM64_LOADER_NAME)."
@@ -161,17 +166,17 @@ $(MAC_ARM64_LOADER_NAME): $(MAC_ARM64_LOADER_PATH)
 ##########################################
 
 $(BUILD_DIR):
-	@echo "[+] Creating build directory"
+	@echo "[+] Creating loaders build folder."
 	@mkdir -p $(BUILD_DIR)
 
+clean:
+	@echo "[+] Removing loaders from build folder."
+	@rm -rf $(BUILD_DIR)/loader-*
+
 dependencies:
-	@echo "[+] Installing Python dependencies"
+	@echo "[+] Installing Python dependencies."
 	@$(PYTHON_PATH) -m pip install --upgrade pip
 	@$(PYTHON_PATH) -m pip install -r scripts/requirements.txt --break-system-packages
-
-clean:
-	@echo "[+] Cleaning build folder"
-	@rm -f $(BUILD_DIR)/loader*
 
 list:
 	@echo "[+] Available loader targets:"

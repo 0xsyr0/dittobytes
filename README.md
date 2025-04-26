@@ -24,6 +24,8 @@
 <p align="center">
     <a href="#abstract">Abstract</a>
     •
+    <a href="#requirements">Requirements</a>
+    •
     <a href="#getting-started">Getting started</a>
     •
     <a href="#issues--requests">Issues & requests</a>
@@ -39,6 +41,40 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used to load and test your compiled shellcode.
 
 ![Dittobytes Overview](https://gist.githubusercontent.com/tijme/fe693d86e15cd015764bc6ea85225a66/raw/07037ee07c69d5425a2839150ccac15c8b96ce1f/overview.svg)
+
+# Requirements
+
+<details>
+    <summary>Requirements to compile with Docker (easy)</summary>
+    <hr>
+    <p>
+        Compiling the shellcode <a href="#compiling">can be easily done</a> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, which requires quite some memory and disk space in your container. I got it to work with the following Docker resource settings:
+        <br>
+        <ul>
+            <li>CPU limit: 8</li>
+            <li>Memory limit: 10 GB</li>
+            <li>Swap: 2 GB</li>
+            <li>Disk usage limit: 1 TB (but this can likely be much lower)</li>
+        </ul>
+        If the container has insufficient resources, the build might fail with the following error: <code>ERROR: failed to solve: ResourceExhausted: process "/bin/sh -c ninja && ninja install" did not complete successfully: cannot allocate memory`</code>.
+    </p>
+    <hr>
+</details>
+
+<details>
+    <summary>Requirements to compile on your host (advanced)</summary>
+    <hr>
+    <p>
+        Compiling the shellcode <a href="#compiling">can be done</a> on your host as well. However, as you would need to build <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, quite some memory and disk space is required. I got it to work with the following resources:
+        <br>
+        <ul>
+            <li>CPU cores: 8</li>
+            <li>Memory: 16 GB</li>
+            <li>Disk space: 1 TB (but this can likely be much lower)</li>
+        </ul>
+    </p>
+    <hr>
+</details>
 
 # Getting started
 
@@ -76,6 +112,9 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     │   └── ...
     ├── scripts/                        # Helper scripts used by the makefile(s).
     │   ├── extract-text-segment.py
+    │   └── ...
+    ├── tests/                          # C-code files used for feature testing.
+    │   ├── [feature-test].c
     │   └── ...
     └── transpilers/                    # The LLVM plugins that act as polymorphic engine.
         ├── intermediate/
