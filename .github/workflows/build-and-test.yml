@@ -1,0 +1,103 @@
+name: Build and Test
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build:
+    runs-on: debian-12
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache LLVM build
+        uses: actions/cache@v4
+        with:
+          path: /opt/llvm
+          key: llvm-${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            llvm-${{ runner.os }}
+
+      - name: Cache LLVM-MinGW
+        uses: actions/cache@v4
+        with:
+          path: /opt/llvm-winlin
+          key: llvm-mingw-${{ runner.os }}
+          restore-keys: |
+            llvm-mingw-${{ runner.os }}
+
+      - name: Cache MacOS SDK
+        uses: actions/cache@v4
+        with:
+          path: /opt/macos-sdk
+          key: macos-sdk-${{ runner.os }}
+          restore-keys: |
+            macos-sdk-${{ runner.os }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update -qqy
+          sudo apt install -qqy --no-install-recommends \
+            gnupg2 wget ca-certificates apt-transport-https \
+            autoconf automake cmake dpkg-dev file make patch \
+            libc6-dev mingw-w64 nano python3 python3-pip xxd \
+            build-essential subversion python3-dev \
+            libncurses5-dev libxml2-dev libedit-dev \
+            swig doxygen graphviz xz-utils gdb git \
+            ninja-build python3-distutils curl zlib1g-dev libffi-dev \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
+
+      - name: Install Python dependencies
+        run: |
+          pip3 install lief==0.16.4 --break-system-packages
+
+      - name: Setup MacOS SDK if missing
+        if: steps.cache-macos-sdk.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git /opt/macos-sdk
+
+      - name: Setup LLVM-MinGW if missing
+        if: steps.cache-llvm-mingw.outputs.cache-hit != 'true'
+        run: |
+          cd /opt
+          wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+          tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+          mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin
+          rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+
+      - name: Build and install LLVM if missing
+        if: steps.cache-llvm-build.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch llvmorg-18.1.8 https://github.com/tijme/forked-dittobytes-llvm-project.git /src/llvm-project
+          sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /src/llvm-project/llvm/lib/CodeGen/LiveVariables.cpp
+          mkdir -p /src/llvm-project/build
+          cd /src/llvm-project/build
+          cmake -G Ninja ../llvm \
+            -DLLVM_ENABLE_PROJECTS="clang;lld" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
+            -DCMAKE_INSTALL_PREFIX=/opt/llvm \
+            -DBUILD_SHARED_LIBS=On
+          ninja
+          ninja install
+          cp -r /src/llvm-project/build/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+          cp -r /src/llvm-project/llvm/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+          cp -r /src/llvm-project/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+          cp -r /src/llvm-project/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+
+      - name: Set LLVM in PATH
+        run: echo "/opt/llvm/bin" >> $GITHUB_PATH
+
+      - name: Build Dittobytes
+        working-directory: ${{ github.workspace }}
+        run: |
+          make extensive
+
+      - name: Run feature tests
+        working-directory: ${{ github.workspace }}
+        run: |
+          make test-compile
