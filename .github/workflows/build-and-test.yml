@@ -48,7 +48,7 @@ jobs:
             build-essential subversion python3-dev \
             libncurses5-dev libxml2-dev libedit-dev \
             swig doxygen graphviz xz-utils gdb git \
-            ninja-build python3-distutils curl zlib1g-dev libffi-dev \
+            ninja-build curl zlib1g-dev libffi-dev \
             gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
 
       - name: Install Python dependencies
