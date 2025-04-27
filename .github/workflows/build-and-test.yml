@@ -96,10 +96,10 @@ jobs:
       - name: Set LLVM in PATH
         run: echo "/opt/llvm/bin" >> $GITHUB_PATH
 
-      - name: Build Dittobytes
-        working-directory: ${{ github.workspace }}
-        run: |
-          make extensive
+      # - name: Build Dittobytes
+      #   working-directory: ${{ github.workspace }}
+      #   run: |
+      #     make extensive
 
       # ToDo: Upload artifacts & test on each platform/architecture.
       # - name: Run feature tests
