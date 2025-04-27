@@ -40,6 +40,7 @@ jobs:
           key: cache-macos-sdk-project-${{ runner.os }}
           restore-keys: |
             cache-macos-sdk-project-${{ runner.os }}
+          enableCrossOsArchive: true
 
       - name: Install system dependencies
         run: |
@@ -72,34 +73,35 @@ jobs:
           mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin
           rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
 
-      # - name: Build and install LLVM if missing
-      #   if: steps.cache-llvm-build.outputs.cache-hit != 'true'
-      #   run: |
-      #     git clone --depth 1 --branch llvmorg-18.1.8 https://github.com/tijme/forked-dittobytes-llvm-project.git /opt/llvm-source
-      #     sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /opt/llvm-source/llvm/lib/CodeGen/LiveVariables.cpp
-      #     mkdir -p /opt/llvm-source/build
-      #     cd /opt/llvm-source/build
-      #     cmake -G Ninja ../llvm \
-      #       -DLLVM_ENABLE_PROJECTS="clang;lld" \
-      #       -DCMAKE_BUILD_TYPE=Release \
-      #       -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
-      #       -DCMAKE_INSTALL_PREFIX=/opt/llvm \
-      #       -DBUILD_SHARED_LIBS=On
-      #     ninja
-      #     ninja install
-      #     cp -r /opt/llvm-source/build/lib/Target/X86/ /opt/llvm/include/llvm/Target/
-      #     cp -r /opt/llvm-source/llvm/lib/Target/X86/ /opt/llvm/include/llvm/Target/
-      #     cp -r /opt/llvm-source/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
-      #     cp -r /opt/llvm-source/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+      - name: Build and install LLVM if missing
+        if: steps.cache-llvm-build.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch llvmorg-18.1.8 https://github.com/tijme/forked-dittobytes-llvm-project.git /opt/llvm-source
+          sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /opt/llvm-source/llvm/lib/CodeGen/LiveVariables.cpp
+          mkdir -p /opt/llvm-source/build
+          cd /opt/llvm-source/build
+          cmake -G Ninja ../llvm \
+            -DLLVM_ENABLE_PROJECTS="clang;lld" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
+            -DCMAKE_INSTALL_PREFIX=/opt/llvm \
+            -DBUILD_SHARED_LIBS=On
+          ninja
+          ninja install
+          cp -r /opt/llvm-source/build/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+          cp -r /opt/llvm-source/llvm/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+          cp -r /opt/llvm-source/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+          cp -r /opt/llvm-source/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
 
-      # - name: Set LLVM in PATH
-      #   run: echo "/opt/llvm/bin" >> $GITHUB_PATH
+      - name: Set LLVM in PATH
+        run: echo "/opt/llvm/bin" >> $GITHUB_PATH
 
-      # - name: Build Dittobytes
-      #   working-directory: ${{ github.workspace }}
-      #   run: |
-      #     make extensive
+      - name: Build Dittobytes
+        working-directory: ${{ github.workspace }}
+        run: |
+          make extensive
 
+      # ToDo: Upload artifacts & test on each platform/architecture.
       # - name: Run feature tests
       #   working-directory: ${{ github.workspace }}
       #   run: |
