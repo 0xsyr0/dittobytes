@@ -76,7 +76,7 @@ RUN cp -r /src/llvm-project/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Targ
 ENV PATH="/opt/llvm/bin:$PATH"
 
 # Add custom marker for environment identification
-RUN touch /.dittobytes-env-all-encompassing
+RUN touch /tmp/.dittobytes-env-all-encompassing
 
 # Create shared work directory (used as a volume)
 RUN mkdir -p /tmp/workdir

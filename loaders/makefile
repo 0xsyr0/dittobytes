@@ -27,7 +27,7 @@ LIN_ARM64_LOADER_NAME  := loader-lin-arm64
 MAC_AMD64_LOADER_NAME  := loader-mac-amd64
 MAC_ARM64_LOADER_NAME  := loader-mac-arm64
 
-IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /.dittobytes-env-loaders ] || [ -f /.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-loaders ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default runs                         ##

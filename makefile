@@ -30,7 +30,7 @@ LIN_ARM64_BEACON_NAME  := beacon-lin-arm64
 MAC_AMD64_BEACON_NAME  := beacon-mac-amd64
 MAC_ARM64_BEACON_NAME  := beacon-mac-arm64
 
-IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /.dittobytes-env-beacons ] || [ -f /.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-beacons ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default runs                         ##

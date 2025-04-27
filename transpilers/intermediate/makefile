@@ -15,7 +15,7 @@
 ##########################################
 
 BUILD_DIR              := build
-IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default run                          ##

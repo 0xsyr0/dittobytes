@@ -49,7 +49,7 @@ RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
     rm -rf /var/lib/apt/lists/*
 
 # Define identification for the containers
-RUN touch /.dittobytes-env-beacons
+RUN touch /tmp/.dittobytes-env-beacons
 
 # Create output directory (expected to be a shared volume)
 RUN mkdir -p /tmp/workdir
