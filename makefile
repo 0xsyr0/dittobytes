@@ -41,29 +41,27 @@ ifeq ($(OS),Windows_NT)
 	PYTHON_PATH      := python
 	ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
 		CURRENT_ARCHITECTURE := amd64
+	else ifeq ($(PROCESSOR_ARCHITECTURE),ARM64)
+		CURRENT_ARCHITECTURE := arm64
 	else
-		$(error "Dittobytes does not work on 32-bit platforms")
+		$(error "Dittobytes does not work on Windows-based platforms with architecture: $(UNAME_M)")
 	endif
 else
 	UNAME_S := $(shell uname -s)
+	UNAME_M := $(shell uname -m)
 	ifeq ($(UNAME_S),Linux)
 		CURRENT_PLATFORM := lin
-	endif
-	ifeq ($(UNAME_S),Darwin)
+	else ifeq ($(UNAME_S),Darwin)
 		CURRENT_PLATFORM := mac
+	else
+		$(error "Dittobytes does not recognize platform: $(UNAME_S)")
 	endif
-	UNAME_M := $(shell uname -m)
 	ifeq ($(UNAME_M),x86_64)
 		CURRENT_ARCHITECTURE := amd64
-	endif
-	ifeq ($(UNAME_M),aarch64)
+	else ifeq ($(filter $(UNAME_M),aarch64 arm64),$(UNAME_M))
 		CURRENT_ARCHITECTURE := arm64
-	endif
-	ifeq ($(UNAME_M),armv7l)
-		$(error "Dittobytes does not work on 32-bit platforms")
-	endif
-	ifeq ($(UNAME_M),i386)
-		$(error "Dittobytes does not work on 32-bit platforms")
+	else
+		$(error "Dittobytes does not work on Unix-based platforms with architecture: $(UNAME_M)")
 	endif
 endif
 
