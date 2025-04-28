@@ -1,19 +1,36 @@
-name: Build and Test
+# GNU General Public License, version 2.0.
+#
+# Copyright (c) 2025 Tijme Gommers (@tijme).
+#
+# This source code file is part of Dittobytes. Dittobytes is 
+# licensed under GNU General Public License, version 2.0, and 
+# you are free to use, modify, and distribute this file under 
+# its terms. However, any modified versions of this file must 
+# include this same license and copyright notice.
 
+# Name of our GitHub workflow
+name: Validation
+
+# When to perform the jobs
 on:
   push:
-    branches: ["**"]
+    branches: ["**"] # Trigger on any push to any branch.
   pull_request:
-    branches: ["**"]
+    branches: ["**"] # Trigger on any pull request to any branch.
 
+# The different jobs (stages) to execute
 jobs:
-  build:
+
+  # The first job builds the environment and all Dittobytes tests
+  build-environment-and-tests:
     runs-on: ubuntu-latest
 
     steps:
+      # Clone the Dittobytes repository into the runner.
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
+      # Cache the LLVM build artifacts to speed up future builds.
       - name: Cache LLVM build
         uses: actions/cache@v4
         id: cache-llvm-build
@@ -23,6 +40,7 @@ jobs:
           restore-keys: |
             cache-llvm-build-${{ runner.os }}
 
+      # Cache the LLVM MinGW project to speed up future builds.
       - name: Cache LLVM-MinGW Project
         uses: actions/cache@v4
         id: cache-llvm-mingw-project
@@ -32,6 +50,7 @@ jobs:
           restore-keys: |
             cache-llvm-mingw-project-${{ runner.os }}
 
+      # Cache the MacOS SDK project to speed up future builds.
       - name: Cache MacOS SDK Project
         uses: actions/cache@v4
         id: cache-macos-sdk-project
@@ -42,6 +61,7 @@ jobs:
             cache-macos-sdk-project-${{ runner.os }}
           enableCrossOsArchive: true
 
+      # Install all required dependencies to build all Dittobytes tests
       - name: Install system dependencies
         run: |
           sudo apt update -qqy
@@ -55,15 +75,18 @@ jobs:
             ninja-build curl zlib1g-dev libffi-dev \
             gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
 
+      # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
         run: |
           pip3 install lief==0.16.4 --break-system-packages
 
-      - name: Setup MacOS SDK if missing
+      # If not cached, install the MacOS SDK project.
+      - name: Setup MacOS SDK project if missing
         if: steps.cache-macos-sdk-project.outputs.cache-hit != 'true'
         run: |
           git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git /opt/macos-sdk
 
+      # If not cached, install the LLVM-MinGW project.
       - name: Setup LLVM-MinGW if missing
         if: steps.cache-llvm-mingw-project.outputs.cache-hit != 'true'
         run: |
@@ -73,6 +96,7 @@ jobs:
           mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin
           rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
 
+      # If not cached, install and compile LLVM from source
       - name: Build and install LLVM if missing
         if: steps.cache-llvm-build.outputs.cache-hit != 'true'
         run: |
@@ -93,19 +117,64 @@ jobs:
           cp -r /opt/llvm-source/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
           cp -r /opt/llvm-source/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
 
+      # If LLVM install is successful, update the path environment variable.
       - name: Set LLVM in PATH
         run: echo "/opt/llvm/bin" >> $GITHUB_PATH
 
+      # Let the Dittobytes `makefile`'s know that this is a Dittobytes environment
       - name: Indicate that this is a Dittobytes environment
         run: touch /tmp/.dittobytes-env-beacons
 
-      - name: Build Dittobytes
+      # Build all tests artifacts
+      - name: Build Dittobytes tests
         working-directory: ${{ github.workspace }}
-        run: |
-          make extensive
+        run: make tests-build
 
-      # ToDo: Upload artifacts & test on each platform/architecture.
-      # - name: Run feature tests
-      #   working-directory: ${{ github.workspace }}
-      #   run: |
-      #     make test-compile
+      # Upload the test artifacts for use in other jobs
+      - name: Upload artifacts
+        uses: actions/upload-artifact-${{ github.run_id }}-${{ github.ref }}@v4
+        with:
+          name: dittobytes-tests
+          path: ./builds/
+
+  # The second job runs all available Dittobytes tests
+  run-all-tests:
+    needs: build-environment-and-tests
+
+    # Target OS's are an intersection of Dittobytes/GitHub supported platforms & architectures
+    strategy:
+      matrix:
+        os: [
+          windows-2022,   # Windows AMD64
+                          # Windows ARM64 (not yet supported in GitHub Actions)
+          ubuntu-24.04,   # Ubuntu AMD64
+                          # Ubuntu ARM64 (not yet supported in GitHub Actions)
+          macos-15-large, # MacOS AMD64
+          macos-15,       # MacOS ARM64
+        ]
+
+    # Specify that this job needs to run on the beforementioned target OS strategy
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # Clone the Dittobytes repository into the runner.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Download the test artifacts from the build jobs
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dittobytes-tests-${{ github.run_id }}-${{ github.ref }}
+          path: ./builds/
+
+      # Run all available tests
+      - name: Run tests
+        run:  make test-suite-test
+
+      # Always delete the artifacts in the end
+      - name: Delete artifacts
+        uses: actions/delete-artifact@v1
+        with:
+          name: dittobytes-tests-${{ github.run_id }}-${{ github.ref }}
+        if: ${{ always() }}
