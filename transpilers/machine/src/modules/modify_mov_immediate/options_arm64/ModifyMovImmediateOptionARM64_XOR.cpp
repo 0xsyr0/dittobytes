@@ -72,39 +72,132 @@ public:
      * @return bool Indicates if the machine function was modified.
      */
     bool runOnMachineFunction(MachineFunction &MF) {
+        // Local variables
         const TargetInstrInfo *TII = MF.getSubtarget().getInstrInfo();
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
-        dbgs() << "        ↳ Running ARM64 architecture specific implementation.\n";
+        // Inform user that we are running this option of the module
+        dbgs() << "        ↳ Running ARM64 ModifyMovImmediate module with random option `XOR`.\n";
 
+        // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
             for (auto MachineInstruction = MachineBasicBlock.begin(); MachineInstruction != MachineBasicBlock.end(); ) {
                 MachineInstr &Instruction = *MachineInstruction++;
- 
+
                 // Only modify `mov` instructions with immediate values
                 if (!isMovImmediate(Instruction)) {
                     continue;
                 }
 
-                // Print debug information
-                dbgs() << "          ↳ Found ARM64 `mov` instruction: ";
+                // Inform user that we encountered a `mov` instruction with immediate value
+                dbgs() << "          ↳ Found ARM64 mov instruction with immediate: ";
                 Instruction.print(dbgs());
+
+                // Obtain information about the instruction
+                const DebugLoc& debugLocation = Instruction.getDebugLoc();
+                Register destinationRegister = Instruction.getOperand(0).getReg();
+                size_t immediateValue = (size_t) Instruction.getOperand(1).getImm();
+                size_t immediateSize = getMovImmediateSize(Instruction);
+                size_t originalOpcode = Instruction.getOpcode();
+                unsigned xorOpcode = getMovSizeXorReplacement(Instruction);
+
+                // Generate XOR key on compile time
+                size_t xorKey = RandomHelper::getSimilarIntegerForDestination(immediateSize, immediateValue, false);
+
+                // `xor` the immediate value and mask it to the correct size
+                size_t immediateValueEncoded = immediateValue ^ xorKey;
+                int64_t immediateMask = (immediateSize == 64) ? -1 : ((1ULL << immediateSize) - 1);
+                immediateValueEncoded = immediateValueEncoded & immediateMask;
+
+                // 1. mov [original register], [encoded immediate value]
+                // 2. xor [original register], [xor key register]
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), destinationRegister).addImm(immediateValueEncoded);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode), destinationRegister).addReg(destinationRegister).addImm(xorKey);
+
+                // Erase the original instruction after inserting the new ones
+                Instruction.eraseFromParent();
+
+                // Inform module and user that we've successfully substituted the immediate value.
+                modified = true;
+                dbgs() << "          ✓ Modified immediate value using random option `XOR`.\n";
             }
         }
-
+        
         return modified;
     }
 
 private:
 
-    bool isMovImmediate(const MachineInstr &MI)  {
-        unsigned Opcode = MI.getOpcode();
+    /**
+     * Determines the size of the immediate value for a given machine instruction.
+     * 
+     * This function checks the opcode of the provided `MachineInstr` and returns the size
+     * of the immediate value associated with the instruction. The size is returned in bits
+     * (e.g., 8, 16, 32, or 64 bits) based on the instruction type.
+     * 
+     * If the opcode does not match any known MOV instruction types, a fatal error is reported.
+     *
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine the immediate size.
+     * @return size_t The size of the immediate value in bits (32 or 64).
+     */
+    size_t getMovImmediateSize(const MachineInstr &instruction) {
+        unsigned opcode = instruction.getOpcode();
 
-        return 
-            Opcode == AArch64::MOVi32imm    ||
-            Opcode == AArch64::MOVi64imm    || 
-            Opcode == AArch64::ORRXri       || 
-            Opcode == AArch64::ORRWri;
+        switch (opcode) {
+            case AArch64::MOVi32imm:
+                return 32;
+                break;
+            case AArch64::MOVi64imm:
+                return 64;
+                break;
+            default:
+                report_fatal_error(formatv("ModifyMovImmediateOptionARM64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                return 0;
+        }
+    }
+
+    /**
+     * Determines the XOR replacement opcode for a given MOV instruction opcode.
+     * 
+     * This function maps certain MOV instruction opcodes to corresponding XOR opcodes
+     * for AMD64 instructions. The provided `MachineInstr`'s opcode is checked and
+     * replaced with an appropriate XOR opcode based on the MOV instruction's immediate size.
+     * 
+     * If the opcode does not match any known MOV instruction types, a fatal error is reported.
+     *
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding XOR opcode.
+     * @return unsigned The corresponding XOR opcode for the MOV instruction's immediate size.
+     */
+    unsigned getMovSizeXorReplacement(const MachineInstr &instruction) {
+        unsigned opcode = instruction.getOpcode();
+
+        switch (opcode) {
+            case AArch64::MOVi32imm: return AArch64::EORWri;
+            case AArch64::MOVi64imm: return AArch64::EORXri;
+            default:
+                report_fatal_error(formatv("ModifyMovImmediateOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                return 0;
+        }
+    }
+
+    /**
+     * Checks if the given instruction is a MOV instruction with an immediate operand.
+     * 
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine if it's a MOV with an immediate operand.
+     * @return bool Returns `true` if the instruction is a MOV immediate instruction, otherwise `false`.
+     */
+    bool isMovImmediate(const MachineInstr &instruction) {
+        unsigned opcode = instruction.getOpcode();
+
+        switch (opcode) {
+            case AArch64::MOVi32imm:
+            case AArch64::MOVi64imm:
+                return true;
+                break;
+            default:
+                return false;
+                break;
+        }
     }
 
 };

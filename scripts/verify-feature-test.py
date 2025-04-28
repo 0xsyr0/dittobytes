@@ -82,7 +82,7 @@ def verify_system_and_architecture(source_path, shellcode_path):
     return shellcode_name.startswith('beacon-{}-{}'.format(current_system, current_architecture))
 
 def verify_transpilation(source_path, shellcode_path):
-    verify_pattern = r'@verify (\w+) (\w+) \('
+    verify_pattern = r'@verify (\w+) (\w+) (\w+) \('
     verify_matches = re.findall(verify_pattern, __read_file(source_path))
 
     available_verifications = {
@@ -90,11 +90,14 @@ def verify_transpilation(source_path, shellcode_path):
     }
 
     for verification in verify_matches:
-        if verification[0] not in available_verifications:
-            return (False, 'Invalid verification method {}.'.format(verification[0]))
+        if verification[0].lower() not in ['any', __get_architecture()]:
+            continue
 
-        if not available_verifications[verification[0]](verification[1], shellcode_path):
-            return (False, 'Verification method {}({}) failed.'.format(verification[0], verification[1]))
+        if verification[1] not in available_verifications:
+            return (False, 'Invalid verification method {}.'.format(verification[1]))
+
+        if not available_verifications[verification[1]](verification[2], shellcode_path):
+            return (False, 'Verification method {}({}) failed.'.format(verification[1], verification[2]))
 
     return (True, '{} validator(s) executed successfully.'.format(len(verify_matches)))
 

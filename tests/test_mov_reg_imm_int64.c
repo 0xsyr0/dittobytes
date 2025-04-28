@@ -15,8 +15,8 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present 0080 (-9223372036854775808 is 0x8000000000000000 in HEX for Little Endian).
- * @verify hex_not_present 8000 (-9223372036854775808 is 0x8000000000000000 in HEX for Big Endian).
+ * @verify ANY hex_not_present 0080 (-9223372036854775808 is 0x8000000000000000 in HEX for Little Endian).
+ * @verify ANY hex_not_present 8000 (-9223372036854775808 is 0x8000000000000000 in HEX for Big Endian).
  * 
  * @return int64_t The return value to verify: `-9223372036854775808` (which must still be the case after transpilation).
  */

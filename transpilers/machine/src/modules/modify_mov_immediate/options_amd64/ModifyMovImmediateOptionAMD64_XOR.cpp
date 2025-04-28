@@ -180,7 +180,7 @@ private:
             // case X86::MOV64mi32:
             // case X86::MOV32mi64:
             default:
-                report_fatal_error(formatv("AMD64_ModifyImmediateModule - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("ModifyMovImmediateOptionAMD64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -215,7 +215,7 @@ private:
             // case X86::MOV64ri32: return X86::XOR64rr;
             // case X86::MOV64mi32: return X86::XOR64mi32;
             default:
-                report_fatal_error(formatv("AMD64_ModifyImmediateModule - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("ModifyMovImmediateOptionAMD64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }

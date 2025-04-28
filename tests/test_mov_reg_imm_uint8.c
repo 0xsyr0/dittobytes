@@ -15,7 +15,7 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present FF (255 is 0xFF in HEX).
+ * @verify ANY hex_not_present FF (255 is 0xFF in HEX).
  * 
  * @return uint8_t The return value to verify: `255` (which must still be the case after transpilation).
  */

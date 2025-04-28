@@ -15,7 +15,8 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present 80 (-128 is 0x80 in HEX).
+ * @verify AMD64 hex_not_present B080 (mov -128 contains 0xBO80 in HEX).
+ * @verify ARM64 hex_not_present 1080 (mov -128 contains 0x1080 in HEX).
  * 
  * @return int8_t The return value to verify: `-128` (which must still be the case after transpilation).
  */

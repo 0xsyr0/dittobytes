@@ -15,7 +15,7 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present FFFF (18446744073709551615 is 0xFFFFFFFFFFFFFFFF in HEX).
+ * @verify ANY hex_not_present FFFF (18446744073709551615 is 0xFFFFFFFFFFFFFFFF in HEX).
  * 
  * @return uint64_t The return value to verify: `18446744073709551615` (which must still be the case after transpilation).
  */

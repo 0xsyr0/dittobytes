@@ -15,7 +15,7 @@
 /**
  * The main function of the code to test.
  * 
- * @verify hex_not_present FFFF (4294967295 is 0xFFFFFFFF in HEX).
+ * @verify ANY hex_not_present FFFF (4294967295 is 0xFFFFFFFF in HEX).
  * 
  * @return uint32_t The return value to verify: `4294967295` (which must still be the case after transpilation).
  */
