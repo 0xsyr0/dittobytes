@@ -126,6 +126,11 @@ jobs:
         run: touch /tmp/.dittobytes-env-beacons
 
       # Build all tests artifacts
+      - name: Build Dittobytes transpilers
+        working-directory: ${{ github.workspace }}
+        run: make transpilers
+
+      # Build all tests artifacts
       - name: Build Dittobytes tests
         working-directory: ${{ github.workspace }}
         run: make test-suite-build
@@ -148,12 +153,12 @@ jobs:
     strategy:
       matrix:
         os: [
-          windows-2022,   # Windows AMD64
-                          # Windows ARM64 (not yet supported in GitHub Actions)
-          ubuntu-24.04,   # Ubuntu AMD64
-                          # Ubuntu ARM64 (not yet supported in GitHub Actions)
-          macos-15-large, # MacOS AMD64
-          macos-15,       # MacOS ARM64
+          windows-2022,      # Windows AMD64
+                             # Windows ARM64 (not yet supported in GitHub Actions)
+          ubuntu-24.04,      # Ubuntu AMD64
+                             # Ubuntu ARM64 (not yet supported in GitHub Actions)
+          # macos-15-large,  # MacOS AMD64 (not supported in our subscription)
+          macos-15,          # MacOS ARM64
         ]
 
     # Specify that this job needs to run on the beforementioned target OS strategy
@@ -170,6 +175,10 @@ jobs:
         with:
           name: dittobytes-tests-${{ github.run_id }}
           path: ./builds/
+
+      # Let the Dittobytes `makefile`'s know that this is a Dittobytes environment
+      - name: Indicate that this is a Dittobytes environment
+        run: touch /tmp/.dittobytes-env-beacons
 
       # Run all available tests
       - name: Run tests
