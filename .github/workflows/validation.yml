@@ -174,10 +174,3 @@ jobs:
       # Run all available tests
       - name: Run tests
         run:  make test-suite-test
-
-      # Always delete the artifacts in the end
-      - name: Delete artifacts
-        uses: actions/delete-artifact@v4
-        with:
-          name: dittobytes-tests-${{ github.run_id }}
-        if: ${{ always() }}

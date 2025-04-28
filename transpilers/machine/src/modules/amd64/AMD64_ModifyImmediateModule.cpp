@@ -71,7 +71,7 @@ public:
         bool Modified = false;
 
         errs() << "        ↳ Running AMD64 architecture specific implementation.\n";
-
+        
         return Modified;
     }
 
