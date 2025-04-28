@@ -128,7 +128,7 @@ jobs:
       # Build all tests artifacts
       - name: Build Dittobytes tests
         working-directory: ${{ github.workspace }}
-        run: make tests-build
+        run: make test-suite-build
 
       # Upload the test artifacts for use in other jobs
       - name: Upload artifacts
