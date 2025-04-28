@@ -135,10 +135,6 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: make test-suite-build
 
-      # Make the loaders executable
-      - name: Make the loaders executable
-        run: chmod +x ./builds/loader-*
-
       # Upload the test artifacts for use in other jobs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -179,6 +175,16 @@ jobs:
         with:
           name: dittobytes-tests-${{ github.run_id }}
           path: ./builds/
+
+      # Make the loaders executable
+      - name: Make the loaders executable
+        shell: bash
+        run: chmod +x ./builds/loader-*
+
+      # List all the ./builds/ files
+      - name: List all the build files
+        shell: bash
+        run: ls -lah ./builds/
 
       # Run all available tests
       - name: Run tests

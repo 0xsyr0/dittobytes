@@ -206,14 +206,17 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
 <details>
     <summary>Running feature tests</summary>
     <hr>
-    <ul>
-        <li>
-            Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
-            <br>
-            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Run the tests:<br><code>make test</code></li>
-        </li>
-    </ul>
+    <p>
+        Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
+        <br>
+        <ul>
+            <li>
+                <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+                <li>Build the tests:<br><code>make test-suite-build</code></li>
+                <li>Run the tests:<br><code>make test-suite-test</code></li>
+            </li>
+        </ul>
+    </p>
     <hr>
 </details>
 
