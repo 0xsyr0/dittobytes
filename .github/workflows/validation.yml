@@ -135,6 +135,10 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: make test-suite-build
 
+      # Make the loaders executable
+      - name: Make the loaders executable
+        run: chmod +x ./builds/loader-*
+
       # Upload the test artifacts for use in other jobs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -176,10 +180,6 @@ jobs:
           name: dittobytes-tests-${{ github.run_id }}
           path: ./builds/
 
-      # Let the Dittobytes `makefile`'s know that this is a Dittobytes environment
-      - name: Indicate that this is a Dittobytes environment
-        run: touch /tmp/.dittobytes-env-beacons
-
       # Run all available tests
       - name: Run tests
-        run:  make test-suite-test
+        run:  make IS_CONTAINER=true test-suite-test
