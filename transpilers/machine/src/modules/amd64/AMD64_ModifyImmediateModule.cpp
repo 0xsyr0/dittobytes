@@ -71,6 +71,83 @@ public:
         bool Modified = false;
 
         errs() << "        ↳ Running AMD64 architecture specific implementation.\n";
+
+        for (auto &MachineBasicBlock : MF) {
+            for (auto MachineInstruction = MachineBasicBlock.begin(); MachineInstruction != MachineBasicBlock.end(); ) {
+                MachineInstr &Instruction = *MachineInstruction++;
+
+                // Only modify mov instructions with immediate values
+                if (!isMovImmediate(Instruction)) {
+                    continue;
+                }
+
+                // Print debug information
+                errs() << "          ↳ Found AMD64 mov instruction: ";
+                Instruction.print(errs());
+
+                // Get original variables
+                const DebugLoc& DebugLocation = Instruction.getDebugLoc();
+                size_t opcode = Instruction.getOpcode();
+                Register destination = Instruction.getOperand(0).getReg();
+                size_t immediate = (size_t) Instruction.getOperand(1).getImm();
+                size_t movSize = getMovImmediateSize(Instruction);
+
+                // Generate XOR key
+                size_t xorKey = RandomHelper::getSimilarIntegerForDestination(
+                    movSize,
+                    immediate
+                );
+
+                size_t immediateEncoded = immediate ^ xorKey;
+                int64_t mask = (movSize == 64) ? -1 : ((1ULL << movSize) - 1);
+                immediateEncoded = immediateEncoded & mask;
+
+                Register KeyReg;
+                Register TargetReg = destination;
+
+                  // Allocate virtual registers
+                switch (movSize) {
+                    case 64:
+                        KeyReg = MRI.createVirtualRegister(&X86::GR64RegClass);
+                        // TargetReg = MRI.createVirtualRegister(&X86::GR64RegClass);
+                        break;
+                    case 32:
+                        KeyReg = MRI.createVirtualRegister(&X86::GR32RegClass);
+                        // TargetReg = MRI.createVirtualRegister(&X86::GR32RegClass);
+                        break;
+                    case 16:
+                        KeyReg = MRI.createVirtualRegister(&X86::GR16RegClass);
+                        // TargetReg = MRI.createVirtualRegister(&X86::GR16RegClass);
+                        break;
+                    default:
+                        KeyReg = MRI.createVirtualRegister(&X86::GR8RegClass);
+                        // TargetReg = MRI.createVirtualRegister(&X86::GR8RegClass);
+                        break;
+                }
+
+                MachineBasicBlock::iterator InsertPoint = MachineInstruction; // Get iterator to the current instruction
+
+                // 1. mov keyReg, imm
+                BuildMI(MachineBasicBlock, InsertPoint, DebugLocation, TII->get(opcode), KeyReg).addImm(xorKey);
+
+                // 2. mov targetReg, encoded_imm
+                BuildMI(MachineBasicBlock, InsertPoint, DebugLocation, TII->get(opcode), TargetReg).addImm(immediateEncoded);
+
+                // 3. xor targetReg, keyReg
+                unsigned XorOpcode = getMovSizeXorReplacement(Instruction);
+
+                BuildMI(MachineBasicBlock, InsertPoint, DebugLocation, TII->get(XorOpcode), TargetReg)
+                    .addReg(TargetReg)
+                    .addReg(KeyReg);
+
+                // Erase the original instruction *after* inserting the new ones
+                // MachineInstruction = MachineBasicBlock.erase(std::prev(InsertPoint));
+                Instruction.eraseFromParent();
+
+                Modified = true;
+                errs() << "          ↳ Modified immediate value using technique: XOR.\n";
+            }
+        }
         
         return Modified;
     }
