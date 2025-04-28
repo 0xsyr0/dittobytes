@@ -44,7 +44,7 @@
 /**
  * Regular includes
  */
-#include "../../helpers/RandomHelper.cpp"
+#include "../../../helpers/RandomHelper.cpp"
 
 /**
  * Namespace(s) to use
@@ -54,12 +54,19 @@ using namespace llvm;
 /**
  * A class to obfuscate `mov` immediate values.
  */
-class ARM64_ModifyImmediateModule {
+class ModifyMovImmediateOptionARM64_XOR {
+
+private:
+
+    /**
+     * Whether this class modified the machine function.
+     */
+    bool modified = false;
 
 public:
 
     /**
-     * Main execution method for the ARM64_ModifyImmediateModule class.
+     * Main execution method for the ModifyMovImmediateOptionARM64_XOR class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @return bool Indicates if the machine function was modified.
@@ -67,9 +74,8 @@ public:
     bool runOnMachineFunction(MachineFunction &MF) {
         const TargetInstrInfo *TII = MF.getSubtarget().getInstrInfo();
         MachineRegisterInfo &MRI = MF.getRegInfo();
-        bool Modified = false;
 
-        errs() << "        ↳ Running ARM64 architecture specific implementation.\n";
+        dbgs() << "        ↳ Running ARM64 architecture specific implementation.\n";
 
         for (auto &MachineBasicBlock : MF) {
             for (auto MachineInstruction = MachineBasicBlock.begin(); MachineInstruction != MachineBasicBlock.end(); ) {
@@ -81,12 +87,12 @@ public:
                 }
 
                 // Print debug information
-                errs() << "          ↳ Found ARM64 `mov` instruction: ";
-                Instruction.print(errs());
+                dbgs() << "          ↳ Found ARM64 `mov` instruction: ";
+                Instruction.print(dbgs());
             }
         }
 
-        return Modified;
+        return modified;
     }
 
 private:

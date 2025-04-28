@@ -15,7 +15,7 @@
 ##########################################
 
 BUILD_DIR              := build
-IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+IS_COMPILER_CONTAINER  := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default run                          ##
@@ -31,7 +31,7 @@ all: check_environment $(BUILD_DIR)
 ##########################################
 
 check_environment:
-ifeq ($(IS_CONTAINER), false)
+ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Transpilers Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
 	@echo "    $ docker buildx build -t dittobytes-transpilers -f ./transpilers/Dockerfile ."
@@ -41,7 +41,7 @@ ifeq ($(IS_CONTAINER), false)
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
 		*) echo "[!] Aborting." && exit 1 ;; \
 	esac
-	$(eval IS_CONTAINER := true)
+	$(eval IS_COMPILER_CONTAINER := true)
 endif
 
 ##########################################

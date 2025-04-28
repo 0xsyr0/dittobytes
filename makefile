@@ -30,7 +30,7 @@ LIN_ARM64_BEACON_NAME  := beacon-lin-arm64
 MAC_AMD64_BEACON_NAME  := beacon-mac-amd64
 MAC_ARM64_BEACON_NAME  := beacon-mac-arm64
 
-IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-beacons ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+IS_COMPILER_CONTAINER  := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-beacons ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Platform & architecture              ##
@@ -81,13 +81,13 @@ beacons: check_environment   \
 
 loaders: check_environment 
 	@echo "[+] Calling \`all\` in loaders makefile."
-	@$(MAKE) IS_CONTAINER=$(IS_CONTAINER) --no-print-directory -C ./loaders/
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./loaders/
 
 transpilers: check_environment
 	@echo "[+] Calling \`all\` in intermediate transpiler makefile."
-	@$(MAKE) IS_CONTAINER=$(IS_CONTAINER) --no-print-directory -C ./transpilers/intermediate/
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/intermediate/
 	@echo "[+] Calling \`all\` in machine transpiler makefile."
-	@$(MAKE) IS_CONTAINER=$(IS_CONTAINER) --no-print-directory -C ./transpilers/machine/
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/machine/
 
 extensive: check_environment transpilers loaders beacons
 
@@ -99,7 +99,7 @@ test-suite-build: check_environment
 	@set -e; \
 	for TEST_FILE in $(TEST_FILES); do \
 		echo "[+] TestSuite building \`$$TEST_FILE\`."; \
-		$(MAKE) IS_CONTAINER=$(IS_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" BEACON_NAME="$$TEST_FILE" --no-print-directory beacons; \
+		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" BEACON_NAME="$$TEST_FILE" --no-print-directory beacons; \
 	done
 
 test-suite-test: check_environment
@@ -116,7 +116,7 @@ test: test-suite-build test-suite-test
 
 check_environment:
 	@echo "[+] Running on platform \`$(CURRENT_PLATFORM)\` and architecture \`$(CURRENT_ARCHITECTURE)\`."
-ifeq ($(IS_CONTAINER), false)
+ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Beacon Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
 	@echo "    $ docker buildx build -t dittobytes ."
@@ -126,7 +126,7 @@ ifeq ($(IS_CONTAINER), false)
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
 		*) echo "[!] Aborting." && exit 1 ;; \
 	esac
-	$(eval IS_CONTAINER := true)
+	$(eval IS_COMPILER_CONTAINER := true)
 endif
 
 ##########################################
@@ -408,13 +408,13 @@ clean-beacons: clean
 
 clean-loaders:
 	@echo "[+] Calling \`clean\` in loaders makefile."
-	@$(MAKE) IS_CONTAINER=$(IS_CONTAINER) --no-print-directory -C ./loaders/ clean
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./loaders/ clean
 
 clean-transpilers:
 	@echo "[+] Calling \`clean\` in intermediate transpiler makefile."
-	@$(MAKE) IS_CONTAINER=$(IS_CONTAINER) --no-print-directory -C ./transpilers/intermediate/ clean
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/intermediate/ clean
 	@echo "[+] Calling \`clean\` in machine transpiler makefile."
-	@$(MAKE) IS_CONTAINER=$(IS_CONTAINER) --no-print-directory -C ./transpilers/machine/ clean
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/machine/ clean
 
 clean-extensive: clean-transpilers clean-loaders clean-beacons
 

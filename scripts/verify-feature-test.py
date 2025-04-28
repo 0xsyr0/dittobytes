@@ -141,14 +141,6 @@ def main():
         print('    - VerifyFeatureTest: Cannot run shellcode for this system and architecture.')
         sys.exit(0x0000001)
 
-    print('    - VerifyFeatureTest: Checking if return value is still correct for `{}`.'.format(shellcode_path))
-    result = verify_result(source_path, shellcode_path)
-    if result[0]:
-        print('    - VerifyFeatureTest: Return value is still correct. {}'.format(result[1]))
-    else:
-        print('    - VerifyFeatureTest: Return value is invalid. {}'.format(result[1]))
-        sys.exit(0x00000003)
-
     print('    - VerifyFeatureTest: Checking if transpiler succeeded for `{}`.'.format(shellcode_path))
     result = verify_transpilation(source_path, shellcode_path)
     if result[0]:
@@ -157,6 +149,13 @@ def main():
         print('    - VerifyFeatureTest: Transpilation failed. {}'.format(result[1]))
         sys.exit(0x00000002)
 
+    print('    - VerifyFeatureTest: Checking if return value is still correct for `{}`.'.format(shellcode_path))
+    result = verify_result(source_path, shellcode_path)
+    if result[0]:
+        print('    - VerifyFeatureTest: Return value is still correct. {}'.format(result[1]))
+    else:
+        print('    - VerifyFeatureTest: Return value is invalid. {}'.format(result[1]))
+        sys.exit(0x00000003)
 
     print('    - VerifyFeatureTest: Finished successfully!')
     sys.exit(0x00000000)

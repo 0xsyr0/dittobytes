@@ -151,6 +151,7 @@ jobs:
 
     # Target OS's are an intersection of Dittobytes/GitHub supported platforms & architectures
     strategy:
+      fail-fast: false
       matrix:
         os: [
           windows-2022,      # Windows AMD64
@@ -188,4 +189,4 @@ jobs:
 
       # Run all available tests
       - name: Run tests
-        run:  make IS_CONTAINER=true test-suite-test
+        run:  make IS_COMPILER_CONTAINER=true test-suite-test

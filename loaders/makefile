@@ -27,7 +27,7 @@ LIN_ARM64_LOADER_NAME  := loader-lin-arm64
 MAC_AMD64_LOADER_NAME  := loader-mac-amd64
 MAC_ARM64_LOADER_NAME  := loader-mac-arm64
 
-IS_CONTAINER           := $(shell if [ "$(IS_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-loaders ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+IS_COMPILER_CONTAINER  := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-loaders ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
 ##########################################
 ## Default runs                         ##
@@ -46,7 +46,7 @@ all: check_environment \
 ##########################################
 
 check_environment:
-ifeq ($(IS_CONTAINER), false)
+ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Loaders Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
 	@echo "    $ docker buildx build -t dittobytes-loaders -f ./loaders/Dockerfile ."
@@ -56,7 +56,7 @@ ifeq ($(IS_CONTAINER), false)
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
 		*) echo "[!] Aborting." && exit 1 ;; \
 	esac
-	$(eval IS_CONTAINER := true)
+	$(eval IS_COMPILER_CONTAINER := true)
 endif
 
 ##########################################
