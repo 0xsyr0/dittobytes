@@ -132,9 +132,9 @@ jobs:
 
       # Upload the test artifacts for use in other jobs
       - name: Upload artifacts
-        uses: actions/upload-artifact-${{ github.run_id }}-${{ github.ref }}@v4
+        uses: actions/upload-artifact@v4
         with:
-          name: dittobytes-tests
+          name: dittobytes-tests-${{ github.run_id }}-${{ github.ref }}
           path: ./builds/
 
   # The second job runs all available Dittobytes tests
@@ -174,7 +174,7 @@ jobs:
 
       # Always delete the artifacts in the end
       - name: Delete artifacts
-        uses: actions/delete-artifact@v1
+        uses: actions/delete-artifact@v4
         with:
           name: dittobytes-tests-${{ github.run_id }}-${{ github.ref }}
         if: ${{ always() }}
