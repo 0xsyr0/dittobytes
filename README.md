@@ -1,12 +1,10 @@
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/a1386dc7a0a4186a6946ed955946c90474a6607b/dittobytes.svg?raw=true&cache=1" alt="Dittobytes Logo" />
+    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/5443341235c2d82b244081499fbb17177d60604d/dittobytes.svg" alt="Dittobytes Logo" />
 </p>
 <p align="center">
     <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ec0545?style=for-the-badge&labelColor=c7003b" alt="License badge" /></a>
     &nbsp;
-    <img src="https://img.shields.io/badge/Platforms-Windows,%20Linux%20%26%20MacOS-ec0545?style=for-the-badge&labelColor=c7003b" alt="Platforms badge" />
-    &nbsp;
-    <img src="https://img.shields.io/badge/Architectures-AMD64%20%26%20ARM64-ec0545?style=for-the-badge&labelColor=c7003b" alt="Architectures badge" />
+    <img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Build status" />
 </p>
 <p align="center">
     <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_macos.svg" alt="MacOS logo" height="45" />
@@ -14,11 +12,13 @@
     <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_windows.svg" alt="Windows logo" height="45" />
     &nbsp;&nbsp;
     <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_linux.svg" alt="Linux logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/f7b8fbe8a16ab6897122829544721f7ad5d006b4/arch_amd64.svg" alt="AMD64 logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/a5e815ace37e12dc8e36060cc31cee4d/raw/397c225c23f4e20a26b88508d21262423465fb04/arch_arm64.svg" alt="ARCH64 logo" height="45" />
 </p>
 <p align="center">
     <b>Metamorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
     <br/>
-    <sup>RIP In-Memory Signatures. Built with ♥ by <a href="https://x.com/tijme">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
+    <sup>Built with ♥ by <a href="https://x.com/tijme">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
     <br/>
 </p>
 <p align="center">
@@ -48,8 +48,6 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
         <ul>
             <li>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).</li>
             <li>Instruction substitution (e.g., <code>mov [mem], imm</code> → <code>push imm; pop [mem]</code>).</li>
-            <li>Register reallocation.</li>
-            <li>Fake code insertion.</li>
         </ul>
     </p>
     <hr>
