@@ -28,6 +28,8 @@
     •
     <a href="#getting-started">Getting started</a>
     •
+    <a href="#roadmap">Roadmap</a>
+    •     
     <a href="#issues--requests">Issues & requests</a>
     •
     <a href="#license--copyright">License & copyright</a>
@@ -42,12 +44,12 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
     <summary>Technical details (click here)</summary>
     <hr>
     <p>
-        Dittobytes uses a custom LLVM build with two custom <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">pass plugins</a>. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first pass plugin (on intermediate level) ensures that certain constants (in e.g. data segments) are inlined, to aid in the development of Position Independent Code (PIC). The second pass plugin (on machine level) ensures that metamorphic transformations (e.g. instruction substitions) are done, introducing randomness in the assembly code during compilation. This includes, but is not limited to:
+        Dittobytes uses a custom LLVM build with two custom <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">pass plugins</a>. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first pass plugin (on intermediate level) ensures that certain constants (in e.g. data segments) are inlined, to aid in the development of Position Independent Code (PIC). The second pass plugin (on machine level) ensures that metamorphic transformations (e.g. instruction substitutions) are done, introducing randomness in the assembly code during compilation. This includes, but is not limited to:
         <ul>
-            <li>✅ Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).</li>
-            <li>ToDo: Instruction substitution (e.g., <code>mov [mem], imm</code> → <code>push imm; pop [mem]</code>).</li>
-            <li>ToDo: Register reallocation.</li>
-            <li>ToDo: Fake code insertion.</li>
+            <li>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).</li>
+            <li>Instruction substitution (e.g., <code>mov [mem], imm</code> → <code>push imm; pop [mem]</code>).</li>
+            <li>Register reallocation.</li>
+            <li>Fake code insertion.</li>
         </ul>
     </p>
     <hr>
@@ -113,7 +115,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     <hr>
 
     dittobytes/
-    ├── beacon/                         # You C-code that will compile to shellcode.
+    ├── beacon/                         # Your C-code that will compile to shellcode.
     │   ├── main.c                       
     ├── loaders/                        # Simple shellcode loaders for testing purposes.
     │   └── [platform]/
@@ -238,7 +240,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
 ### 6. Advanced
 
 <details>
-    <summary>Mofification & compilation of the pre-shipped loaders</summary>
+    <summary>Modification & compilation of the pre-shipped loaders</summary>
     <hr>
     <p>
         You can modify the pre-shipped loaders by editing the code in <code>./loaders/[platform]/src/main.c</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
@@ -269,6 +271,16 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     </p>
     <hr>
 </details>
+
+# Roadmap
+
+There is no specific planning, so this might be more of a to-do or ideas list. The following unordered items would at least be nice to implement in Dittobytes.
+
+* ✅ Done: Immediate substitution (e.g., `mov [reg], imm` → `mov [reg], encoded; xor [reg], key`).
+* ⏳ ToDo: More substitution options for the existing immediate substitution module
+* ⏳ ToDo: Instruction substitution (e.g., `mov [mem], imm` → `push imm; pop [mem]`).
+* ⏳ ToDo: Register reallocation (randomize the registers to be used).
+* ⏳ ToDo: Fake code insertion.
 
 # Issues & requests
 
