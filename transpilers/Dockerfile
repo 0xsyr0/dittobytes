@@ -28,7 +28,8 @@ RUN apt install -qqy --no-install-recommends \
     libncurses5-dev libxml2-dev libedit-dev \
     swig doxygen graphviz xz-utils gdb git \
     ninja-build python3-distutils curl zlib1g-dev libffi-dev \
-    gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
+    gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
+    qemu-user qemu-user-static 
 
 # Install Python dependencies
 RUN pip3 install lief==0.16.4 --break-system-packages

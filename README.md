@@ -16,7 +16,7 @@
     <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_linux.svg" alt="Linux logo" height="45" />
 </p>
 <p align="center">
-    <b>Polymorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
+    <b>Metamorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
     <br/>
     <sup>RIP In-Memory Signatures. Built with ♥ by <a href="https://x.com/tijme">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
     <br/>
@@ -36,7 +36,7 @@
 
 # Abstract
 
-Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a polymorphic engine that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
+Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a metamorphic engine that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
 
 <details>
     <summary>Technical details (click here)</summary>

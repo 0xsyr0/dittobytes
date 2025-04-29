@@ -109,10 +109,21 @@ public:
                 int64_t immediateMask = (immediateSize == 64) ? -1 : ((1ULL << immediateSize) - 1);
                 immediateValueEncoded = immediateValueEncoded & immediateMask;
 
+                // Register to use in the substition
+                Register virtualXorKeyRegister;
+
+                // Allocate a virtual register for the `xor` key
+                switch (immediateSize) {
+                    case 64: virtualXorKeyRegister = MRI.createVirtualRegister(&AArch64::GPR64RegClass); break;
+                    default: virtualXorKeyRegister = MRI.createVirtualRegister(&AArch64::GPR32RegClass); break;
+                }
+
                 // 1. mov [original register], [encoded immediate value]
-                // 2. xor [original register], [xor key register]
+                // 2. mov [xor key register], [xor key]
+                // 3. xor [original register], [original register], [xor key register]
                 BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), destinationRegister).addImm(immediateValueEncoded);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode), destinationRegister).addReg(destinationRegister).addImm(xorKey);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), virtualXorKeyRegister).addImm(xorKey);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode), destinationRegister).addReg(destinationRegister).addReg(virtualXorKeyRegister);
 
                 // Erase the original instruction after inserting the new ones
                 Instruction.eraseFromParent();
@@ -172,8 +183,8 @@ private:
         unsigned opcode = instruction.getOpcode();
 
         switch (opcode) {
-            case AArch64::MOVi32imm: return AArch64::EORWri;
-            case AArch64::MOVi64imm: return AArch64::EORXri;
+            case AArch64::MOVi32imm: return AArch64::EORWrr;
+            case AArch64::MOVi64imm: return AArch64::EORXrr;
             default:
                 report_fatal_error(formatv("ModifyMovImmediateOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;

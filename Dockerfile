@@ -17,7 +17,8 @@ RUN apt update -qqy
 RUN apt install -qqy --no-install-recommends \
         git gnupg2 wget ca-certificates apt-transport-https \
         autoconf automake cmake dpkg-dev file make patch libc6-dev mingw-w64 nano python3 python3-pip xxd \
-        gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
+        gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
+        qemu-user qemu-user-static 
 
 # Install Python dependencies
 RUN pip3 install lief==0.16.4 --break-system-packages
