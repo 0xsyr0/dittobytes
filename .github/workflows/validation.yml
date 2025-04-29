@@ -36,7 +36,7 @@ jobs:
         id: cache-llvm-build
         with:
           path: /opt/llvm
-          key: cache-llvm-build-${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt') }}
+          key: cache-llvm-build-${{ runner.os }}-llvmorg-18.1.8
           restore-keys: |
             cache-llvm-build-${{ runner.os }}
 

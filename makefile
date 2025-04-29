@@ -149,11 +149,11 @@ $(WIN_AMD64_BEACON_PATH).mir: $(WIN_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
 
-$(WIN_AMD64_BEACON_PATH).poly.mir: $(WIN_AMD64_BEACON_PATH).mir
+$(WIN_AMD64_BEACON_PATH).meta.mir: $(WIN_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).poly.mir
+$(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
 
@@ -192,11 +192,11 @@ $(WIN_ARM64_BEACON_PATH).mir: $(WIN_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
 
-$(WIN_ARM64_BEACON_PATH).poly.mir: $(WIN_ARM64_BEACON_PATH).mir
+$(WIN_ARM64_BEACON_PATH).meta.mir: $(WIN_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).poly.mir
+$(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
 
@@ -235,11 +235,11 @@ $(LIN_AMD64_BEACON_PATH).mir: $(LIN_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
 
-$(LIN_AMD64_BEACON_PATH).poly.mir: $(LIN_AMD64_BEACON_PATH).mir
+$(LIN_AMD64_BEACON_PATH).meta.mir: $(LIN_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).poly.mir
+$(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
 
@@ -278,11 +278,11 @@ $(LIN_ARM64_BEACON_PATH).mir: $(LIN_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
 
-$(LIN_ARM64_BEACON_PATH).poly.mir: $(LIN_ARM64_BEACON_PATH).mir
+$(LIN_ARM64_BEACON_PATH).meta.mir: $(LIN_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).poly.mir
+$(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
 
@@ -321,11 +321,11 @@ $(MAC_AMD64_BEACON_PATH).mir: $(MAC_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
 
-$(MAC_AMD64_BEACON_PATH).poly.mir: $(MAC_AMD64_BEACON_PATH).mir
+$(MAC_AMD64_BEACON_PATH).meta.mir: $(MAC_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).poly.mir
+$(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
 
@@ -364,11 +364,11 @@ $(MAC_ARM64_BEACON_PATH).mir: $(MAC_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
 
-$(MAC_ARM64_BEACON_PATH).poly.mir: $(MAC_ARM64_BEACON_PATH).mir
+$(MAC_ARM64_BEACON_PATH).meta.mir: $(MAC_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).poly.mir
+$(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
 
@@ -433,9 +433,9 @@ list:
 	@echo "    - $(MAC_ARM64_BEACON_NAME)             // (Re)compile the MacOS beacon for ARM64"
 
 .PHONY: all dependencies clean \
-	$(WIN_AMD64_BEACON_NAME) $(WIN_AMD64_BEACON_PATH) $(WIN_AMD64_BEACON_PATH).exe $(WIN_AMD64_BEACON_PATH).obj $(WIN_AMD64_BEACON_PATH).bin $(WIN_AMD64_BEACON_PATH).lkd $(WIN_AMD64_BEACON_PATH).ll $(WIN_AMD64_BEACON_PATH).poly.mir $(WIN_AMD64_BEACON_PATH).mir \
-	$(WIN_ARM64_BEACON_NAME) $(WIN_ARM64_BEACON_PATH) $(WIN_ARM64_BEACON_PATH).exe $(WIN_ARM64_BEACON_PATH).obj $(WIN_ARM64_BEACON_PATH).bin $(WIN_ARM64_BEACON_PATH).lkd $(WIN_ARM64_BEACON_PATH).ll $(WIN_ARM64_BEACON_PATH).poly.mir $(WIN_ARM64_BEACON_PATH).mir \
-	$(LIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_PATH) $(LIN_AMD64_BEACON_PATH).exe $(LIN_AMD64_BEACON_PATH).obj $(LIN_AMD64_BEACON_PATH).bin $(LIN_AMD64_BEACON_PATH).lkd $(LIN_AMD64_BEACON_PATH).ll $(LIN_AMD64_BEACON_PATH).poly.mir $(LIN_AMD64_BEACON_PATH).mir \
-	$(LIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_PATH) $(LIN_ARM64_BEACON_PATH).exe $(LIN_ARM64_BEACON_PATH).obj $(LIN_ARM64_BEACON_PATH).bin $(LIN_ARM64_BEACON_PATH).lkd $(LIN_ARM64_BEACON_PATH).ll $(LIN_ARM64_BEACON_PATH).poly.mir $(LIN_ARM64_BEACON_PATH).mir \
-	$(MAC_AMD64_BEACON_NAME) $(MAC_AMD64_BEACON_PATH) $(MAC_AMD64_BEACON_PATH).exe $(MAC_AMD64_BEACON_PATH).obj $(MAC_AMD64_BEACON_PATH).bin $(MAC_AMD64_BEACON_PATH).lkd $(MAC_AMD64_BEACON_PATH).ll $(MAC_AMD64_BEACON_PATH).poly.mir $(MAC_AMD64_BEACON_PATH).mir \
-	$(MAC_ARM64_BEACON_NAME) $(MAC_ARM64_BEACON_PATH) $(MAC_ARM64_BEACON_PATH).exe $(MAC_ARM64_BEACON_PATH).obj $(MAC_ARM64_BEACON_PATH).bin $(MAC_ARM64_BEACON_PATH).lkd $(MAC_ARM64_BEACON_PATH).ll $(MAC_ARM64_BEACON_PATH).poly.mir $(MAC_ARM64_BEACON_PATH).mir
+	$(WIN_AMD64_BEACON_NAME) $(WIN_AMD64_BEACON_PATH) $(WIN_AMD64_BEACON_PATH).exe $(WIN_AMD64_BEACON_PATH).obj $(WIN_AMD64_BEACON_PATH).bin $(WIN_AMD64_BEACON_PATH).lkd $(WIN_AMD64_BEACON_PATH).ll $(WIN_AMD64_BEACON_PATH).meta.mir $(WIN_AMD64_BEACON_PATH).mir \
+	$(WIN_ARM64_BEACON_NAME) $(WIN_ARM64_BEACON_PATH) $(WIN_ARM64_BEACON_PATH).exe $(WIN_ARM64_BEACON_PATH).obj $(WIN_ARM64_BEACON_PATH).bin $(WIN_ARM64_BEACON_PATH).lkd $(WIN_ARM64_BEACON_PATH).ll $(WIN_ARM64_BEACON_PATH).meta.mir $(WIN_ARM64_BEACON_PATH).mir \
+	$(LIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_PATH) $(LIN_AMD64_BEACON_PATH).exe $(LIN_AMD64_BEACON_PATH).obj $(LIN_AMD64_BEACON_PATH).bin $(LIN_AMD64_BEACON_PATH).lkd $(LIN_AMD64_BEACON_PATH).ll $(LIN_AMD64_BEACON_PATH).meta.mir $(LIN_AMD64_BEACON_PATH).mir \
+	$(LIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_PATH) $(LIN_ARM64_BEACON_PATH).exe $(LIN_ARM64_BEACON_PATH).obj $(LIN_ARM64_BEACON_PATH).bin $(LIN_ARM64_BEACON_PATH).lkd $(LIN_ARM64_BEACON_PATH).ll $(LIN_ARM64_BEACON_PATH).meta.mir $(LIN_ARM64_BEACON_PATH).mir \
+	$(MAC_AMD64_BEACON_NAME) $(MAC_AMD64_BEACON_PATH) $(MAC_AMD64_BEACON_PATH).exe $(MAC_AMD64_BEACON_PATH).obj $(MAC_AMD64_BEACON_PATH).bin $(MAC_AMD64_BEACON_PATH).lkd $(MAC_AMD64_BEACON_PATH).ll $(MAC_AMD64_BEACON_PATH).meta.mir $(MAC_AMD64_BEACON_PATH).mir \
+	$(MAC_ARM64_BEACON_NAME) $(MAC_ARM64_BEACON_PATH) $(MAC_ARM64_BEACON_PATH).exe $(MAC_ARM64_BEACON_PATH).obj $(MAC_ARM64_BEACON_PATH).bin $(MAC_ARM64_BEACON_PATH).lkd $(MAC_ARM64_BEACON_PATH).ll $(MAC_ARM64_BEACON_PATH).meta.mir $(MAC_ARM64_BEACON_PATH).mir

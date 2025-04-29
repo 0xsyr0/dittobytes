@@ -36,13 +36,19 @@
 
 # Abstract
 
-Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a metamorphic engine that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
+Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a [metamorphic engine](https://en.wikipedia.org/wiki/Metamorphic_code) that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. metamorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
 
 <details>
     <summary>Technical details (click here)</summary>
     <hr>
     <p>
-        TODO
+        Dittobytes uses a custom LLVM build with two custom <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">pass plugins</a>. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first pass plugin (on intermediate level) ensures that certain constants (in e.g. data segments) are inlined, to aid in the development of Position Independent Code (PIC). The second pass plugin (on machine level) ensures that metamorphic transformations (e.g. instruction substitions) are done, introducing randomness in the assembly code during compilation. This includes, but is not limited to:
+        <ul>
+            <li>✅ Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).</li>
+            <li>ToDo: Instruction substitution (e.g., <code>mov [mem], imm</code> → <code>push imm; pop [mem]</code>).</li>
+            <li>ToDo: Register reallocation.</li>
+            <li>ToDo: Fake code insertion.</li>
+        </ul>
     </p>
     <hr>
 </details>
@@ -125,7 +131,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     ├── tests/                          # C-code files used for feature testing.
     │   ├── [feature-test].c
     │   └── ...
-    └── transpilers/                    # The LLVM plugins that act as polymorphic engine.
+    └── transpilers/                    # The LLVM plugins that act as metamorphic engine.
         ├── intermediate/
         │   └── src/
         │       ├── IntermediateTranspiler.cpp
@@ -259,7 +265,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
             <li>Move to the right directory:<br><code>cd ./transpilers/[type]/</code></li>
             <li>Compile the transpiler:<br><code>make</code></li>
         </ul>
-        Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the polymorphism.
+        Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphism.
     </p>
     <hr>
 </details>
