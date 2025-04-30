@@ -46,7 +46,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
     <summary>Technical details (click here)</summary>
     <hr>
     <p>
-        Dittobytes uses a custom LLVM build with two custom <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">pass plugins</a>. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first pass plugin (on intermediate level) ensures that certain constants (in e.g. data segments) are inlined, to aid in the development of Position Independent Code (PIC). The second pass plugin (on machine level) ensures that metamorphic transformations (e.g. instruction substitutions) are done, introducing randomness in the assembly code during compilation. This includes, but is not limited to:
+        Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. This includes, but is not limited to:
         <ul>
             <li>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).</li>
             <li>Instruction substitution (e.g., <code>mov [mem], imm</code> → <code>push imm; pop [mem]</code>).</li>
@@ -117,7 +117,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     dittobytes/
     ├── beacon/                         # Your C-code that will compile to shellcode.
     │   ├── main.c                       
-    ├── loaders/                        # Simple shellcode loaders for testing purposes.
+    ├── loaders/                        # Simple shellcode loaders for testing purposes (pre-built).
     │   └── [platform]/
     │       ├── src/
     │       │   └── main.c
@@ -227,11 +227,9 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
         Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
         <br>
         <ul>
-            <li>
-                <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-                <li>Build the tests:<br><code>make test-suite-build</code></li>
-                <li>Run the tests:<br><code>make test-suite-test</code></li>
-            </li>
+            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+            <li>Build the tests:<br><code>make test-suite-build</code></li>
+            <li>Run the tests:<br><code>make test-suite-test</code></li>
         </ul>
     </p>
     <hr>
@@ -274,7 +272,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
 
 # Roadmap
 
-There is no specific planning, so this might be more of a to-do or ideas list. The following unordered items would at least be nice to implement in Dittobytes.
+There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
 * ✅ Done: Immediate substitution (e.g., `mov [reg], imm` → `mov [reg], encoded; xor [reg], key`).
 * ⏳ ToDo: More substitution options for the existing immediate substitution module
