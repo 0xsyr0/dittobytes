@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/5443341235c2d82b244081499fbb17177d60604d/dittobytes.svg" alt="Dittobytes Logo" />
+    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/a1386dc7a0a4186a6946ed955946c90474a6607b/dittobytes.svg" alt="Dittobytes Logo" />
 </p>
 <p align="center">
     <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ec0545?style=for-the-badge&labelColor=c7003b" alt="License badge" /></a>
