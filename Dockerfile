@@ -8,24 +8,35 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
+# Use minimal Debian base image
 FROM debian:bookworm-slim AS intermediate
 
-# Update & upgrade
+# Set LLVM version and environment
+ARG LLVM_VERSION=18.1.8
+ARG LLVM_PROJECT=llvmorg-${LLVM_VERSION}
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package lists
 RUN apt update -qqy
 
 # Install APT dependencies
 RUN apt install -qqy --no-install-recommends \
-        git gnupg2 wget ca-certificates apt-transport-https \
-        autoconf automake cmake dpkg-dev file make patch libc6-dev mingw-w64 nano python3 python3-pip xxd \
-        gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
-        qemu-user qemu-user-static 
+    gnupg2 wget ca-certificates apt-transport-https \
+    autoconf automake cmake dpkg-dev file make patch \
+    libc6-dev mingw-w64 nano python3 python3-pip xxd \
+    build-essential subversion python3-dev \
+    libncurses5-dev libxml2-dev libedit-dev \
+    swig doxygen graphviz xz-utils gdb git \
+    ninja-build python3-distutils curl zlib1g-dev libffi-dev \
+    gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
+    qemu-user qemu-user-static 
 
 # Install Python dependencies
 RUN pip3 install lief==0.16.4 --break-system-packages
 
 # Install MacOS SDK
-RUN cd /opt && \
-        git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git macos-sdk
+WORKDIR /opt
+RUN git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git macos-sdk
 
 # Install LLVM (For Windows & Linux X86/ARM64)
 RUN cd /opt && \
@@ -34,25 +45,42 @@ RUN cd /opt && \
         mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin && \
         rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
 
-# Install LLVM (For MacOS X86/ARM64)
-RUN echo "deb https://apt.llvm.org/bookworm llvm-toolchain-bookworm-18 main" \
-        > /etc/apt/sources.list.d/llvm.list && \
-    wget -qO /etc/apt/trusted.gpg.d/llvm.asc \
-        https://apt.llvm.org/llvm-snapshot.gpg.key && \
-    apt update -qqy && \
-    apt install -qqy -t llvm-toolchain-bookworm-18 llvm-18-dev clang-18 clang-tidy-18 clang-format-18 lld-18 libc++-18-dev libc++abi-18-dev && \
-    for f in /usr/lib/llvm-*/bin/*; do ln -sf "$f" /usr/bin; done && \
-    ln -sf clang /usr/bin/cc && \
-    ln -sf clang /usr/bin/c89 && \
-    ln -sf clang /usr/bin/c99 && \
-    ln -sf clang++ /usr/bin/c++ && \
-    ln -sf clang++ /usr/bin/g++ && \
-    rm -rf /var/lib/apt/lists/*
+# Clone LLVM project repo at the specified version (shallow clone)
+WORKDIR /src
+RUN git clone --depth 1 --branch ${LLVM_PROJECT} https://github.com/tijme/forked-dittobytes-llvm-project.git llvm-project
 
-# Define identification for the containers
-RUN touch /tmp/.dittobytes-env-beacons
+# Fix unsupported use of `regalloc` option
+RUN sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /src/llvm-project/llvm/lib/CodeGen/LiveVariables.cpp
 
-# Create output directory (expected to be a shared volume)
+# Configure LLVM build with Clang and LLD for all required targets
+WORKDIR /src/llvm-project/build
+RUN cmake -G Ninja ../llvm \
+    -DLLVM_ENABLE_PROJECTS="clang;lld" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
+    -DCMAKE_INSTALL_PREFIX=/opt/llvm \
+    -DBUILD_SHARED_LIBS=On
+
+# Build and install LLVM
+# If the following installation commands fail on Windows with a gRPC connection error,
+# run these Dockerfile commands in a WSL container: `wsl --install --distribution Debian`.
+RUN ninja && ninja install
+
+# Copy X86 & AArch64 header files manually
+# TODO: Find out why this is required.
+RUN cp -r /src/llvm-project/build/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+RUN cp -r /src/llvm-project/llvm/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+RUN cp -r /src/llvm-project/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+RUN cp -r /src/llvm-project/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+
+# Add LLVM binaries to system PATH
+ENV PATH="/opt/llvm/bin:$PATH"
+
+# Add custom marker for environment identification
+RUN touch /tmp/.dittobytes-env-all-encompassing
+
+# Create shared work directory (used as a volume)
 RUN mkdir -p /tmp/workdir
 
+# Set working directory to shared volume
 WORKDIR /tmp/workdir

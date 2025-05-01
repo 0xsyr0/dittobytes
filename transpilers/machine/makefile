@@ -34,7 +34,7 @@ check_environment:
 ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Transpilers Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
-	@echo "    $ docker buildx build -t dittobytes-transpilers -f ./transpilers/Dockerfile ."
+	@echo "    $ docker buildx build -t dittobytes ."
 	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes-transpilers"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \

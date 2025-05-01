@@ -108,6 +108,29 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     <hr>
 </details>
 
+<details>
+    <summary>Building the build tools in a Docker container (easy)</summary>
+    <hr>
+    <p>
+        The most easy way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>. This can be done using the following command
+        <br>
+        <ul>
+            <li>Build the image:<br><code>docker buildx build -t dittobytes .</code></li>
+            <li>Building the image will take around 2.5 hours as LLVM needs to be build from source.</li>
+        </ul>
+    </p>
+    <hr>
+</details>
+
+<details>
+    <summary>Installing the build tools on your host instead (advanced)</summary>
+    <hr>
+    <p>
+        Clang and LLVM are used to cross-compile the beacon, loaders and transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+    </p>
+    <hr>
+</details>
+
 ### 2. Overview
 
 <details>
@@ -186,22 +209,12 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
 ### 4. Compiling
 
 <details>
-    <summary>Compile your code using Docker (easy)</summary>
+    <summary>Compile your code</summary>
     <hr>
     <ul>
-        <li>Build the Docker container:<br><code>docker build -t dittobytes .</code></li>
-        <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
         <li>Compile your code:<br><code>make</code></li>
     </ul>
-    <hr>
-</details>
-
-<details>
-    <summary>Compile your code on your host (advanced)</summary>
-    <hr>
-    <p>
-        Clang and LLVM are used to cross-compile the loader and beacon. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
-    </p>
     <hr>
 </details>
 
@@ -227,7 +240,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
         Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
         <br>
         <ul>
-            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
             <li>Build the tests:<br><code>make test-suite-build</code></li>
             <li>Run the tests:<br><code>make test-suite-test</code></li>
         </ul>
@@ -244,10 +257,8 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
         You can modify the pre-shipped loaders by editing the code in <code>./loaders/[platform]/src/main.c</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
         <br>
         <ul>
-            <li>Build the Docker container:<br><code>docker build -t dittobytes-loaders -f ./loaders/Dockerfile .</code></li>
-            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes-loaders</code></li>
-            <li>Move to the right directory:<br><code>cd ./loaders/</code></li>
-            <li>Compile the loaders:<br><code>make</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+            <li>Compile the loaders:<br><code>make loaders</code></li>
         </ul>
     </p>
     <hr>
@@ -260,10 +271,8 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
         You can modify the pre-shipped transpiler(s) by editing the code in <code>./transpilers/[type]/src/[type].cpp</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
         <br>
         <ul>
-            <li>Build the Docker container:<br><code>docker build -t dittobytes-transpilers -f ./transpilers/Dockerfile .</code></li>
-            <li>Run the Docker container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes-transpilers</code></li>
-            <li>Move to the right directory:<br><code>cd ./transpilers/[type]/</code></li>
-            <li>Compile the transpiler:<br><code>make</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+            <li>Compile the transpilers:<br><code>make transpilers</code></li>
         </ul>
         Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphism.
     </p>
