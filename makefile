@@ -117,7 +117,7 @@ test: test-suite-build test-suite-test
 check_environment:
 	@echo "[+] Running on platform \`$(CURRENT_PLATFORM)\` and architecture \`$(CURRENT_ARCHITECTURE)\`."
 ifeq ($(IS_COMPILER_CONTAINER), false)
-	@echo "[+] It appears you are not running this command inside the \`Dittobytes Beacon Compiler Container\`."
+	@echo "[+] It appears you are not running this command inside the \`Dittobytes Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
 	@echo "    $ docker buildx build -t dittobytes ."
 	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes"

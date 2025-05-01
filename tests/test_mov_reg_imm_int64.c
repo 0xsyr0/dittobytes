@@ -15,8 +15,8 @@
 /**
  * The main function of the code to test.
  * 
- * @verify ANY hex_not_present 0080 (-9223372036854775808 is 0x8000000000000000 in HEX for Little Endian).
- * @verify ANY hex_not_present 8000 (-9223372036854775808 is 0x8000000000000000 in HEX for Big Endian).
+ * @verify AMD64 hex_not_present 48B80000000000000080 (`movabs rax, 0x8000000000000000` in HEX).
+ * @verify ARM64 hex_not_present 0000F0D2 (`mov x0, #-0x8000000000000000` in HEX).
  * 
  * @return int64_t The return value to verify: `-9223372036854775808` (which must still be the case after transpilation).
  */

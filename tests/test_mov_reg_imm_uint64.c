@@ -15,7 +15,8 @@
 /**
  * The main function of the code to test.
  * 
- * @verify ANY hex_not_present FFFF (18446744073709551615 is 0xFFFFFFFFFFFFFFFF in HEX).
+ * @verify AMD64 hex_not_present 48C7C0FFFFFFFF (`mov rax, 0xffffffffffffffff` in HEX).
+ * @verify ARM64 hex_not_present 00008092 (`mov x0, #-1` in HEX).
  * 
  * @return uint64_t The return value to verify: `18446744073709551615` (which must still be the case after transpilation).
  */

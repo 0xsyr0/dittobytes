@@ -15,9 +15,11 @@
 /**
  * The main function of the code to test.
  * 
- * @verify ANY hex_not_present 0080 (-32768 is 0x8000 in HEX for Little Endian).
- * @verify ANY hex_not_present 8000 (-32768 is 0x8000 in HEX for Big Endian).
- *
+ * @verify AMD64 hex_not_present B80080FFFF (`mov eax, 0xffff8000` in HEX).
+ * @verify AMD64 hex_not_present 66B80080 (`mov ax, 0x8000` in HEX).
+ * @verify ARM64 hex_not_present E0FF8F12 (`mov w0, #-0x8000` in HEX).
+ * @verify ARM64 hex_not_present 00009052 (`mov w0, #0x8000` in HEX).
+ * 
  * @return int16_t The return value to verify: `-32768` (which must still be the case after transpilation).
  */
 int16_t EntryFunction() {

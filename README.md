@@ -65,7 +65,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     <summary>Requirements to compile with Docker (easy)</summary>
     <hr>
     <p>
-        Compiling the shellcode <a href="#compiling">can be easily done</a> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, which requires quite some memory and disk space in your container. I got it to work with the following Docker resource settings (which seem to be a minimum for now):
+        Compiling the shellcode <a href="#4-compiling">can be easily done</a> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, which requires quite some memory and disk space in your container. I got it to work with the following Docker resource settings (which seem to be a minimum for now):
         <br>
         <ul>
             <li>CPU limit: 8</li>
@@ -73,7 +73,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
             <li>Swap: 2 GB</li>
             <li>Disk usage limit: 1 TB (but this can likely be much lower)</li>
         </ul>
-        If the container has insufficient resources, the build might fail with the following error: <code>ERROR: failed to solve: ResourceExhausted: process "/bin/sh -c ninja && ninja install" did not complete successfully: cannot allocate memory`</code>.
+        If the container has insufficient resources, the build might fail with the following error: <code>ResourceExhausted: process "/bin/sh -c ninja && ninja install" did not complete successfully: cannot allocate memory`</code>.
     </p>
     <hr>
 </details>
@@ -82,7 +82,7 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
     <summary>Requirements to compile on your host (advanced)</summary>
     <hr>
     <p>
-        Compiling the shellcode <a href="#compiling">can be done</a> on your host as well. However, as you would need to build <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, quite some memory and disk space is required. I got it to work with the following resources:
+        Compiling the shellcode <a href="#4-compiling">can be done</a> on your host as well. However, as you would need to build <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, quite some memory and disk space is required. I got it to work with the following resources:
         <br>
         <ul>
             <li>CPU cores: 8</li>
