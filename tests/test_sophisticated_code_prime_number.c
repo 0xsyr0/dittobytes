@@ -28,9 +28,6 @@ bool is_prime(int num);
  * This test focusses on ensuring that complex code still functions. It's goal is not so much to check whether
  * certain specific transpilations work correclty.
  * 
- * @verify ANY hex_not_present 199901 (104729 is 0x199901 in HEX for Little Endian).
- * @verify ANY hex_not_present 019919 (104729 is 0x019919 in HEX for Big Endian).
- * 
  * @return uint32_t The return value to verify: `104729` (which must still be the case after transpilation).
  */
 uint32_t EntryFunction() {

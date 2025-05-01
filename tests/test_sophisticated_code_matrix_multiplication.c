@@ -34,9 +34,6 @@ void multiply_matrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SI
  * This test focusses on ensuring that complex code still functions. It's goal is not so much to check whether
  * certain specific transpilations work correclty.
  * 
- * @verify ANY hex_not_present 0D8901 (100621 is 0x0D8901 in HEX for Little Endian).
- * @verify ANY hex_not_present 01890D (100621 is 0x01890D in HEX for Big Endian).
- * 
  * @return uint32_t The return value to verify: `100621` (which must still be the case after transpilation).
  */
 uint32_t EntryFunction() {

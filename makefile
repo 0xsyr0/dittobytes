@@ -15,6 +15,7 @@
 ##########################################
 
 DEBUG                  := false
+SKIP_TRANSPILER        := false
 BUILD_DIR              := ./builds
 TEST_FILES             := $(basename $(notdir $(wildcard ./tests/*)))
 SOURCE_PATH            ?= ./beacon/main.c
@@ -100,12 +101,13 @@ test-suite-build: check_environment
 	for TEST_FILE in $(TEST_FILES); do \
 		echo "[+] TestSuite building \`$$TEST_FILE\`."; \
 		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" BEACON_NAME="$$TEST_FILE" --no-print-directory beacons; \
+		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" BEACON_NAME="$$TEST_FILE-original" SKIP_TRANSPILER=true --no-print-directory beacons; \
 	done
 
 test-suite-test: check_environment
 	@set -e; \
 	for TEST_FILE in $(TEST_FILES); do \
-		$(PYTHON_PATH) ./scripts/verify-feature-test.py "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE.bin; \
+		$(PYTHON_PATH) ./scripts/verify-feature-test.py "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE.bin $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-original.bin; \
 	done
 
 test: test-suite-build test-suite-test
@@ -151,7 +153,11 @@ $(WIN_AMD64_BEACON_PATH).mir: $(WIN_AMD64_BEACON_PATH).ll
 
 $(WIN_AMD64_BEACON_PATH).meta.mir: $(WIN_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
+ifeq ($(SKIP_TRANSPILER), false)
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+else
+	@cp $< $@
+endif
 
 $(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
@@ -194,7 +200,11 @@ $(WIN_ARM64_BEACON_PATH).mir: $(WIN_ARM64_BEACON_PATH).ll
 
 $(WIN_ARM64_BEACON_PATH).meta.mir: $(WIN_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
+ifeq ($(SKIP_TRANSPILER), false)
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+else
+	@cp $< $@
+endif
 
 $(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
@@ -237,7 +247,11 @@ $(LIN_AMD64_BEACON_PATH).mir: $(LIN_AMD64_BEACON_PATH).ll
 
 $(LIN_AMD64_BEACON_PATH).meta.mir: $(LIN_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
+ifeq ($(SKIP_TRANSPILER), false)
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+else
+	@cp $< $@
+endif
 
 $(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
@@ -280,7 +294,11 @@ $(LIN_ARM64_BEACON_PATH).mir: $(LIN_ARM64_BEACON_PATH).ll
 
 $(LIN_ARM64_BEACON_PATH).meta.mir: $(LIN_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
+ifeq ($(SKIP_TRANSPILER), false)
 	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+else
+	@cp $< $@
+endif
 
 $(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
@@ -323,7 +341,11 @@ $(MAC_AMD64_BEACON_PATH).mir: $(MAC_AMD64_BEACON_PATH).ll
 
 $(MAC_AMD64_BEACON_PATH).meta.mir: $(MAC_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
+ifeq ($(SKIP_TRANSPILER), false)
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+else
+	@cp $< $@
+endif
 
 $(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
@@ -366,7 +388,11 @@ $(MAC_ARM64_BEACON_PATH).mir: $(MAC_ARM64_BEACON_PATH).ll
 
 $(MAC_ARM64_BEACON_PATH).meta.mir: $(MAC_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
+ifeq ($(SKIP_TRANSPILER), false)
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+else
+	@cp $< $@
+endif
 
 $(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."

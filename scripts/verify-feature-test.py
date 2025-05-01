@@ -101,6 +101,30 @@ def verify_transpilation(source_path, shellcode_path):
 
     return (True, '{} validator(s) executed successfully.'.format(len(verify_matches)))
 
+def verify_original(source_path, shellcode_path):
+    verify_pattern = r'@verify (\w+) (\w+) (\w+) \('
+    verify_matches = re.findall(verify_pattern, __read_file(source_path))
+
+    available_verifications = {
+        'hex_not_present': verify_hex_not_present
+    }
+
+    for verification in verify_matches:
+        if verification[0].lower() not in ['any', __get_architecture()]:
+            continue
+
+        if verification[1] not in available_verifications:
+            return (False, 'Invalid verification method {}.'.format(verification[1]))
+
+        if not available_verifications[verification[1]](verification[2], shellcode_path):
+            return (True, 'Verification method {}({}) executed successfully.'.format(verification[1], verification[2]))
+
+    if len(verify_matches):
+        return (False, '{} validator(s) failed.'.format(len(verify_matches)))
+    else:
+        return (True, '{} validator(s) available.'.format(len(verify_matches)))
+
+
 def verify_result(source_path, shellcode_path):
     try:
         return_value_pattern = r'@return (\w+) The return value to verify: `(.+?)`'
@@ -128,14 +152,15 @@ def main():
     initiates the verification of the executable based on the code file.
     """
 
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         print('[!] Invalid arguments: {}.'.format(str(sys.argv)))
-        print('[!] Usage: python verify-feature-test.py <source_path> <test_name> <shellcode_path>')
+        print('[!] Usage: python verify-feature-test.py <source_path> <test_name> <shellcode_path> <shellcode_original_path>')
         sys.exit(1)
 
     source_path = sys.argv[1]
     test_name = sys.argv[2]
     shellcode_path = sys.argv[3]
+    shellcode_original_path = sys.argv[4]
 
     print('    - VerifyFeatureTest: {}'.format(test_name))
 
@@ -147,10 +172,18 @@ def main():
     print('    - VerifyFeatureTest: Checking if transpiler succeeded for `{}`.'.format(shellcode_path))
     result = verify_transpilation(source_path, shellcode_path)
     if result[0]:
-        print('    - VerifyFeatureTest: Transpilation succesful. {}'.format(result[1]))
+        print('    - VerifyFeatureTest: Transpilation 1 succesful. {}'.format(result[1]))
     else:
-        print('    - VerifyFeatureTest: Transpilation failed. {}'.format(result[1]))
+        print('    - VerifyFeatureTest: Transpilation 1 failed. {}'.format(result[1]))
         sys.exit(0x00000002)
+
+    print('    - VerifyFeatureTest: Checking if signature is present in original binary `{}`.'.format(shellcode_original_path))
+    result = verify_original(source_path, shellcode_original_path)
+    if result[0]:
+        print('    - VerifyFeatureTest: Transpilation 2 succesful. {}'.format(result[1]))
+    else:
+        print('    - VerifyFeatureTest: Transpilation 2 failed. {}'.format(result[1]))
+        sys.exit(0x00000003)
 
     print('    - VerifyFeatureTest: Checking if return value is still correct for `{}`.'.format(shellcode_path))
     result = verify_result(source_path, shellcode_path)
@@ -158,7 +191,7 @@ def main():
         print('    - VerifyFeatureTest: Return value is still correct. {}'.format(result[1]))
     else:
         print('    - VerifyFeatureTest: Return value is invalid. {}'.format(result[1]))
-        sys.exit(0x00000003)
+        sys.exit(0x00000004)
 
     print('    - VerifyFeatureTest: Finished successfully!')
     sys.exit(0x00000000)
