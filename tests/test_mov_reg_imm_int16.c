@@ -15,10 +15,10 @@
 /**
  * The main function of the code to test.
  * 
- * @verify AMD64 hex_not_present B80080FFFF (`mov eax, 0xffff8000` in HEX).
- * @verify AMD64 hex_not_present 66B80080 (`mov ax, 0x8000` in HEX).
- * @verify ARM64 hex_not_present E0FF8F12 (`mov w0, #-0x8000` in HEX).
- * @verify ARM64 hex_not_present 00009052 (`mov w0, #0x8000` in HEX).
+ * @verify AMD64 modify_mov_immediate hex_not_present B80080FFFF (`mov eax, 0xffff8000` in HEX).
+ * @verify AMD64 modify_mov_immediate hex_not_present 66B80080 (`mov ax, 0x8000` in HEX).
+ * @verify ARM64 modify_mov_immediate hex_not_present E0FF8F12 (`mov w0, #-0x8000` in HEX).
+ * @verify ARM64 modify_mov_immediate hex_not_present 00009052 (`mov w0, #0x8000` in HEX).
  * 
  * @return int16_t The return value to verify: `-32768` (which must still be the case after transpilation).
  */

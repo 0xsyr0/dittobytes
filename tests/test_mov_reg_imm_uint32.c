@@ -15,8 +15,8 @@
 /**
  * The main function of the code to test.
  * 
- * @verify AMD64 hex_not_present B8FFFFFFFF (`mov eax, 0xffffffff` in HEX).
- * @verify ARM64 hex_not_present 00008012 (`mov w0, #-1` in HEX).
+ * @verify AMD64 modify_mov_immediate hex_not_present B8FFFFFFFF (`mov eax, 0xffffffff` in HEX).
+ * @verify ARM64 modify_mov_immediate hex_not_present 00008012 (`mov w0, #-1` in HEX).
  * 
  * @return uint32_t The return value to verify: `4294967295` (which must still be the case after transpilation).
  */

@@ -29,16 +29,26 @@ jobs:
       # Clone the Dittobytes repository into the runner.
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
+      # Clone custom LLVM source
+      - name: Clone custom LLVM source
+        run: |
+          git clone --depth 1 --branch release/18.x https://github.com/tijme/forked-dittobytes-llvm-project.git /opt/llvm-source
+
+      # Get hash of custom LLVM source
+      - name: Get hash of custom LLVM source
+        id: llvm_hash
+        run: echo "llvm_hash=${{ hashFiles('/opt/llvm-source/llvm/**') }}" >> "$GITHUB_OUTPUT"
+
       # Cache the LLVM build artifacts to speed up future builds.
       - name: Cache LLVM build
         uses: actions/cache@v4
         id: cache-llvm-build
         with:
           path: /opt/llvm
-          key: cache-llvm-build-${{ runner.os }}-llvmorg-18.1.8
+          key: cache-llvm-build-${{ runner.os }}-llvmorg-18.1.8-${{ steps.llvm_hash.outputs.llvm_hash }}
           restore-keys: |
-            cache-llvm-build-${{ runner.os }}
+            cache-llvm-build-${{ runner.os }}-
 
       # Cache the LLVM MinGW project to speed up future builds.
       - name: Cache LLVM-MinGW Project
@@ -78,7 +88,7 @@ jobs:
       # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
         run: |
-          pip3 install lief==0.16.4 --break-system-packages
+          pip3 install -r scripts/requirements.txt --break-system-packages
 
       # If not cached, install the MacOS SDK project.
       - name: Setup MacOS SDK project if missing
@@ -100,8 +110,6 @@ jobs:
       - name: Build and install LLVM if missing
         if: steps.cache-llvm-build.outputs.cache-hit != 'true'
         run: |
-          git clone --depth 1 --branch llvmorg-18.1.8 https://github.com/tijme/forked-dittobytes-llvm-project.git /opt/llvm-source
-          sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /opt/llvm-source/llvm/lib/CodeGen/LiveVariables.cpp
           mkdir -p /opt/llvm-source/build
           cd /opt/llvm-source/build
           cmake -G Ninja ../llvm \

@@ -99,7 +99,7 @@ public:
 
         // Module 1: Modify `mov` immediate's
         modified = ModifyMovImmediateModule().runOnMachineFunction(MF) || modified;
-        
+
         return modified;
     }
 

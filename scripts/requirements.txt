@@ -9,3 +9,4 @@
 # include this same license and copyright notice.
 
 lief==0.16.4
+Levenshtein==0.27.1

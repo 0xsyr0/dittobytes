@@ -16,6 +16,7 @@
  * Regular includes
  */
 #include <stdint.h>
+#include <random>
 
 /**
  * Namespace(s) to use
@@ -56,6 +57,21 @@ public:
         } while (result == 0 || zeroAllowed);
 
         return result;
+    }
+
+    /**
+     * Retrieves a reference to a static Mersenne Twister random number generator.
+     * 
+     * This function returns a reference to a globally accessible, lazily-initialized
+     * instance of `std::mt19937`. It is seeded using a non-deterministic random device
+     * and is intended for consistent random number generation throughout the program.
+     * 
+     * @return std::mt19937& A reference to the initialized random number generator.
+     */
+    static std::mt19937& getRandomGenerator() {
+        static std::random_device rd;
+        static std::mt19937 rng(rd());
+        return rng;
     }
 
 private:

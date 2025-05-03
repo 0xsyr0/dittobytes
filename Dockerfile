@@ -11,9 +11,7 @@
 # Use minimal Debian base image
 FROM debian:bookworm-slim AS intermediate
 
-# Set LLVM version and environment
-ARG LLVM_VERSION=18.1.8
-ARG LLVM_PROJECT=llvmorg-${LLVM_VERSION}
+# Set environment
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update package lists
@@ -32,28 +30,25 @@ RUN apt install -qqy --no-install-recommends \
     qemu-user qemu-user-static 
 
 # Install Python dependencies
-RUN pip3 install lief==0.16.4 --break-system-packages
+RUN pip3 install -r scripts/requirements.txt --break-system-packages
 
 # Install MacOS SDK
 WORKDIR /opt
 RUN git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git macos-sdk
 
 # Install LLVM (For Windows & Linux X86/ARM64)
-RUN cd /opt && \
-        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
-        tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz && \
-        mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin && \
-        rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+WORKDIR /opt
+RUN wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+RUN tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+RUN mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin
+RUN rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
 
 # Clone LLVM project repo at the specified version (shallow clone)
-WORKDIR /src
-RUN git clone --depth 1 --branch ${LLVM_PROJECT} https://github.com/tijme/forked-dittobytes-llvm-project.git llvm-project
-
-# Fix unsupported use of `regalloc` option
-RUN sed -i 's/report_fatal_error("regalloc=... not currently supported with -O0");/printf("    - Option `regalloc` is not currently supported with -O0\\n");/' /src/llvm-project/llvm/lib/CodeGen/LiveVariables.cpp
+WORKDIR /opt
+RUN git clone --depth 1 --branch release/18.x https://github.com/tijme/forked-dittobytes-llvm-project.git llvm-source
 
 # Configure LLVM build with Clang and LLD for all required targets
-WORKDIR /src/llvm-project/build
+WORKDIR /opt/llvm-source/build
 RUN cmake -G Ninja ../llvm \
     -DLLVM_ENABLE_PROJECTS="clang;lld" \
     -DCMAKE_BUILD_TYPE=Release \
@@ -64,7 +59,8 @@ RUN cmake -G Ninja ../llvm \
 # Build and install LLVM
 # If the following installation commands fail on Windows with a gRPC connection error,
 # run these Dockerfile commands in a WSL container: `wsl --install --distribution Debian`.
-RUN ninja && ninja install
+RUN ninja
+RUN ninja install
 
 # Copy X86 & AArch64 header files manually
 # TODO: Find out why this is required.

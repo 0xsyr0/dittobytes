@@ -283,11 +283,53 @@ Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-c
 
 There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
-* ✅ Done: Immediate substitution (e.g., `mov [reg], imm` → `mov [reg], encoded; xor [reg], key`).
-* ⏳ ToDo: More substitution options for the existing immediate substitution module
-* ⏳ ToDo: Instruction substitution (e.g., `mov [mem], imm` → `push imm; pop [mem]`).
-* ⏳ ToDo: Register reallocation (randomize the registers to be used).
-* ⏳ ToDo: Fake code insertion.
+<details>
+    <summary>Metamorphication</summary>
+    <hr>
+    <table>
+        <tr>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Source</th>
+        </tr>
+        <tr>
+            <td>✅ Done</td>
+            <td>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>)</td>
+            <td><a href="https://github.com/tijme/dittobytes/blob/master/transpilers/machine/src/modules/modify_mov_immediate/ModifyMovImmediateModule.cpp">MachineTranspiler</a></td>
+        </tr>
+        <tr>
+            <td>⏳ ToDo</td>
+            <td>More substitution options for the existing immediate substitution module.</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>⏳ ToDo</td>
+            <td>ToDo: Instruction substitution (e.g., <code>`mov [mem], imm`</code> → <code>`push imm; pop [mem]`</code>).</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>✅ Done</td>
+            <td>Register reallocation (randomize the registers to be used).</td>
+            <td><a href="https://github.com/tijme/forked-dittobytes-llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp">LLVM source</a></td>
+        </tr>
+        <tr>
+            <td>⏳ ToDo</td>
+            <td>Insertion of fake basic blocks based on assembly from trusted software.</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    <hr>
+</details>
+
+<details>
+    <summary>Other To-Dos</summary>
+    <hr>
+    <ul>
+        <li>Test & report Levenshtein distance of different shellcode compilations.</li>
+        <li>Implement a more complex and larger feature test to verify correctness of compiled shellcode.</li>
+    </ul>
+    <hr>
+</details>
 
 # Issues & requests
 
