@@ -60,15 +60,14 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Requirements to compile with Docker (easy)</summary>
     <hr>
     <p>
-        Compiling the shellcode <a href="#4-compiling">can be easily done</a> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, which requires quite some memory and disk space in your container. I got it to work with the following Docker resource settings (which seem to be a minimum for now):
-        <br>
+        You can <a href="#4-compiling">easily compile</a> <code>./beacon/main.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
+        <blockquote>⚠️ If Docker cannot allocate enough resources, the build might fail with an error like <code>ResourceExhausted: cannot allocate memory</code>.</blockquote>
         <ul>
-            <li>CPU limit: 8</li>
-            <li>Memory limit: 10 GB</li>
-            <li>Swap: 2 GB</li>
-            <li>Disk usage limit: 1 TB (though this can likely be much lower)</li>
+            <li>Set CPU limit to: <code>8</code>.</li>
+            <li>Set memory limit to: <code>10 GB</code>.</li>
+            <li>Set swap to: <code>2 GB</code>.</li>
+            <li>Set disk usage limit: <code>1 TB</code> (though this can likely be much lower).</li>
         </ul>
-        If the container has insufficient resources, the build might fail with the following error: <code>ResourceExhausted: process "/bin/sh -c ninja && ninja install" did not complete successfully: cannot allocate memory`</code>.
     </p>
     <hr>
 </details>
@@ -77,12 +76,11 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Requirements to compile on your host (advanced)</summary>
     <hr>
     <p>
-        Compiling the shellcode <a href="#4-compiling">can be done</a> on your host as well. However, as you would need to build <a href="https://github.com/llvm/llvm-project">LLVM</a> from source, quite some memory and disk space is required. I got it to work with the following resources:
-        <br>
+        You can <a href="#4-compiling">compile</a> <code>./beacon/main.c</code> on your host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
         <ul>
-            <li>CPU cores: 8</li>
-            <li>Memory: 16 GB</li>
-            <li>Disk space: 1 TB (but this can likely be much lower)</li>
+            <li>CPU cores: <code>8</code>.</li>
+            <li>Memory: <code>10 GB</code>.</li>
+            <li>Disk space: <code>1 TB</code> (though this can likely be much lower).</li>
         </ul>
     </p>
     <hr>
