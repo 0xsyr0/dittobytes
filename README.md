@@ -45,14 +45,14 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 <p align="center">
     <img src="https://gist.githubusercontent.com/tijme/8a1e77e82316df8b41d62e8cdaca2ddb/raw/8fc6ef90df9bbff70c6fedf73c63ff6b07d449a1/dittobytes-example-diff.png" alt="Metamorphication example with Dittobytes" />
     <br>
-    <sup>Figure: Metamorphication example by Dittobytes</sup>
+    <sup>Figure A: Metamorphication example by Dittobytes</sup>
 </p>
 
 <p>
-    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented transformations.
+    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) transformations.
 </p>
 
-There is a pre-shippped minimal C-code file (`./beacon/main.c`) that can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used to load and test your compiled shellcode.
+The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
 # Requirements
 
@@ -66,7 +66,7 @@ There is a pre-shippped minimal C-code file (`./beacon/main.c`) that can cross-c
             <li>CPU limit: 8</li>
             <li>Memory limit: 10 GB</li>
             <li>Swap: 2 GB</li>
-            <li>Disk usage limit: 1 TB (but this can likely be much lower)</li>
+            <li>Disk usage limit: 1 TB (though this can likely be much lower)</li>
         </ul>
         If the container has insufficient resources, the build might fail with the following error: <code>ResourceExhausted: process "/bin/sh -c ninja && ninja install" did not complete successfully: cannot allocate memory`</code>.
     </p>
@@ -107,11 +107,11 @@ There is a pre-shippped minimal C-code file (`./beacon/main.c`) that can cross-c
     <summary>Building the build tools in a Docker container (easy)</summary>
     <hr>
     <p>
-        The most easy way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>. This can be done using the following command
+        The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>. This can be done using the following command
         <br>
         <ul>
             <li>Build the image:<br><code>docker buildx build -t dittobytes .</code></li>
-            <li>Building the image will take around 2.5 hours as LLVM needs to be build from source.</li>
+            <li>Building the image will take around 2.5 hours as LLVM needs to be built from source.</li>
         </ul>
     </p>
     <hr>
@@ -181,7 +181,7 @@ There is a pre-shippped minimal C-code file (`./beacon/main.c`) that can cross-c
         </ul>
     </p>
     <p>
-        The following example may give you some guidance. It fakes global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a char[] array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
+        The following example may give you some guidance. It simulates global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a char[] array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
     </p>
     <p>
         <a href="https://gist.github.com/tijme/01331c822a7e6e05fd192d4d3d118647">Example 'The Basics'</a>
@@ -332,4 +332,4 @@ Issues or new feature requests can be reported via the [issue tracker](https://g
 
 # License & copyright
 
-Copyright (c) 2025 Tijme Gommers. Dittobytes is released under the Mozilla Public License Version 2.0. View [LICENSE.md](https://github.com/tijme/dittobytes/blob/master/LICENSE.md) for the full license.
+Copyright &copy; 2025 Tijme Gommers. Dittobytes is released under the Mozilla Public License Version 2.0. View [LICENSE.md](https://github.com/tijme/dittobytes/blob/master/LICENSE.md) for the full license. Dittobytes depends on various open-source components which all have their own license and copyright.
