@@ -57,7 +57,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 # Requirements
 
 <details>
-    <summary>Requirements to compile with Docker (easy)</summary>
+    <summary>Requirements to compile with Docker (<strong>easy</strong>)</summary>
     <hr>
     <p>
         You can <a href="#4-compiling">easily compile</a> <code>./beacon/main.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
@@ -73,7 +73,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Requirements to compile on your host (advanced)</summary>
+    <summary>Requirements to compile on your host (<strong>advanced</strong>)</summary>
     <hr>
     <p>
         You can <a href="#4-compiling">compile</a> <code>./beacon/main.c</code> on your host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
@@ -94,21 +94,21 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Cloning the repository</summary>
     <hr>
     <ul>
-        <li>Use Git to clone this repo:<br><code>git clone https://github.com/tijme/dittobytes.git</code></li>
-        <li><a href="https://github.com/tijme/dittobytes/blob/master/.github/laughing.gif">Review</a> the code so you know what you're compiling and running.</li>
-        <li>Finally, cd into the project and start developing:<br><code>cd ./dittobytes/</code></li>
+        <li>Clone this repository using Git:<br><pre><code>git clone https://github.com/tijme/dittobytes.git</code></pre></li>
+        <li>Manually <a href="https://github.com/tijme/dittobytes/blob/master/.github/laughing.gif">review</a> the code so you know what you're compiling and running.</li>
+        <li>Finally, move into the project directory and start developing:<br><pre><code>cd ./dittobytes/</code></pre></li>
     </ul>
     <hr>
 </details>
 
 <details>
-    <summary>Building the build tools in a Docker container (easy)</summary>
+    <summary>Building the build tools in a Docker container (<strong>easy</strong>)</summary>
     <hr>
     <p>
-        The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>. This can be done using the following command
+        The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>.
         <br>
         <ul>
-            <li>Build the image:<br><code>docker buildx build -t dittobytes .</code></li>
+            <li>Build the Docker image:<br><pre><code>docker buildx build -t dittobytes .</code></pre></li>
             <li>Building the image will take around 2.5 hours as LLVM needs to be built from source.</li>
         </ul>
     </p>
@@ -116,10 +116,10 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Installing the build tools on your host instead (advanced)</summary>
+    <summary>Installing the build tools on your host instead (<strong>advanced</strong>)</summary>
     <hr>
     <p>
-        Clang and LLVM are used to cross-compile the beacon, loaders and transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+        Clang and LLVM are used to cross-compile the beacon, loaders and transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
     </p>
     <hr>
 </details>
