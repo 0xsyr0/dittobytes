@@ -131,7 +131,7 @@ jobs:
 
       # Let the Dittobytes `makefile`'s know that this is a Dittobytes environment
       - name: Indicate that this is a Dittobytes environment
-        run: touch /tmp/.dittobytes-env-beacons
+        run: touch /tmp/.dittobytes-env-all-encompassing
 
       # Build all tests artifacts
       - name: Build Dittobytes transpilers
