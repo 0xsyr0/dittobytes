@@ -1,0 +1,120 @@
+/**
+ * GNU General Public License, version 2.0.
+ *
+ * Copyright (c) 2025 Tijme Gommers (@tijme).
+ *
+ * This source code file is part of Dittobytes. Dittobytes is 
+ * licensed under GNU General Public License, version 2.0, and 
+ * you are free to use, modify, and distribute this file under 
+ * its terms. However, any modified versions of this file must 
+ * include this same license and copyright notice.
+ */
+
+#include <stdio.h>
+#include <stdint.h>
+
+/**
+ * Get the ASCII value of 'H'.
+ * 
+ * @return uint8_t The value of character 'H' (72).
+ */
+uint8_t get_1_h();
+
+/**
+ * Get the 11th character from a string literal.
+ * 
+ * @return uint8_t The value of character at index 10 in "Hello Universe!".
+ */
+uint8_t get_2_e();
+
+/**
+ * Get the 360th character from a long string literal.
+ * 
+ * @return uint8_t The value of the character at index 359.
+ */
+uint8_t get_3_l();
+
+/**
+ * Get the 14th character from "Greetings World!".
+ * 
+ * @return uint8_t The value of character 'l'.
+ */
+uint8_t get_4_l();
+
+/**
+ * Get the character at a dynamic index from "Goodbye Globe!".
+ * 
+ * @param int index The index to retrieve.
+ * @return uint8_t The value at the given index.
+ */
+uint8_t get_5_o(int index);
+
+/**
+ * The main function of the code to test.
+ * 
+ * This test focusses on string storage and usage, to verify whether strings are stored correctly (inline).
+ * 
+ * @return uint16_t The return value to verify: `500` (ASCII values: 72+101+108+108+111).
+ */
+uint16_t EntryFunction() {
+    uint8_t h = get_1_h();
+    uint8_t e = get_2_e();
+    uint8_t l_1 = get_3_l();
+    uint8_t l_2 = get_4_l();
+    uint8_t o = get_5_o(10);
+
+    return h+e+l_1+l_2+o;
+}
+
+/**
+ * Get the ASCII value of 'H'.
+ * 
+ * @return uint8_t The value of character 'H' (72).
+ */
+uint8_t get_1_h() {
+	char* test = "Hello World!";
+	return test[0];
+}
+
+/**
+ * Get the 11th character from a string literal.
+ * 
+ * @return uint8_t The value of character at index 10 in "Hello Universe!".
+ */
+uint8_t get_2_e() {
+	char test[] = "Hello Universe!";
+	int index = 10;
+	return test[index];
+}
+
+/**
+ * Get the 360th character from a long string literal.
+ * 
+ * @return uint8_t The value of the character at index 359.
+ */
+uint8_t get_3_l() {
+	char* test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu tincidunt nisl, nec iaculis mi. Proin at dignissim risus. Suspendisse et nulla orci. Pellentesque tempor laoreet blandit. Curabitur ac tortor sed mauris sagittis pulvinar. Phasellus libero magna, suscipit ac blandit at, malesuada non tellus. Etiam sodales euismod dolor, ut accumsan magna aliquet et.";
+	return test[359];
+}
+
+/**
+ * Get the 14th character from "Greetings World!".
+ * 
+ * @return uint8_t The value of character 'l'.
+ */
+uint8_t get_4_l() {
+	char* test = "Greetings World!";
+	char l = test[13];
+	return l;
+}
+
+/**
+ * Get the character at a dynamic index from "Goodbye Globe!".
+ * 
+ * @param int index The index to retrieve.
+ * @return uint8_t The value at the given index.
+ */
+uint8_t get_5_o(int index) {
+	char test[] = "Goodbye Globe!";
+	return test[index];
+}
