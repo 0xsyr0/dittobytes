@@ -90,7 +90,7 @@ jobs:
       # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
         run: |
-          pip3 install -r scripts/requirements.txt --break-system-packages
+          python3 -m pip install -r scripts/requirements.txt --break-system-packages
 
       # If not cached, install the MacOS SDK project.
       - name: Setup MacOS SDK project if missing
