@@ -20,7 +20,7 @@
 <p align="center">
     <b>Metamorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
     <br/>
-    <sup>Built with ♥ by <a href="https://x.com/tijme">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
+    <sup>Built with ♥ by <a href="https://www.linkedin.com/in/tijme/">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
     <br/>
 </p>
 <p align="center">
@@ -42,22 +42,17 @@
 
 Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a [metamorphic engine](https://en.wikipedia.org/wiki/Metamorphic_code) that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
 
-<details>
-    <summary>Technical details (click here)</summary>
-    <hr>
-    <p>
-        Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. This includes, but is not limited to:
-        <ul>
-            <li>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).</li>
-            <li>Instruction substitution (e.g., <code>mov [mem], imm</code> → <code>push imm; pop [mem]</code>).</li>
-        </ul>
-    </p>
-    <hr>
-</details>
+<p align="center">
+    <img src="https://gist.githubusercontent.com/tijme/8a1e77e82316df8b41d62e8cdaca2ddb/raw/8fc6ef90df9bbff70c6fedf73c63ff6b07d449a1/dittobytes-example-diff.png" alt="Metamorphication example with Dittobytes" />
+    <br>
+    <sup>Figure: Metamorphication example by Dittobytes</sup>
+</p>
 
-Dittobytes ships with a minimal C-code file (`./beacon/main.c`) that can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used to load and test your compiled shellcode.
+<p>
+    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented transformations.
+</p>
 
-![Dittobytes Overview](https://gist.githubusercontent.com/tijme/fe693d86e15cd015764bc6ea85225a66/raw/07037ee07c69d5425a2839150ccac15c8b96ce1f/overview.svg)
+There is a pre-shippped minimal C-code file (`./beacon/main.c`) that can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used to load and test your compiled shellcode.
 
 # Requirements
 
