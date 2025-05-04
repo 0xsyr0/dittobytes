@@ -108,6 +108,7 @@ test-suite-build: check_environment
 	for TEST_FILE in $(TEST_FILES); do \
 		echo "[+] TestSuite building \`$$TEST_FILE\`."; \
 		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=false BEACON_NAME="$$TEST_FILE-original" --no-print-directory beacons; \
+		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=true BEACON_NAME="$$TEST_FILE-transpiled" --no-print-directory beacons; \
 		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=false MM_MODIFY_MOV_IMMEDIATE=true BEACON_NAME="$$TEST_FILE-modify-mov-immediate" --no-print-directory beacons; \
 		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=false MM_RANDOM_REGISTER_ALLOCATION=true BEACON_NAME="$$TEST_FILE-random-register-allocation" --no-print-directory beacons; \
 	done
@@ -118,6 +119,7 @@ test-suite-test: check_environment
 		$(PYTHON_PATH) ./scripts/verify-feature-test.py original "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-original.bin; \
 		$(PYTHON_PATH) ./scripts/verify-feature-test.py modify-mov-immediate "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-modify-mov-immediate.bin; \
 		$(PYTHON_PATH) ./scripts/verify-feature-test.py random-register-allocation "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-random-register-allocation.bin; \
+		$(PYTHON_PATH) ./scripts/verify-levenshtein-distance.py $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-original.bin $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled.bin; \
 	done
 
 test: test-suite-build test-suite-test

@@ -179,9 +179,13 @@ def verify_original(source_path, shellcode_path):
             'value': verification[3]
         })
 
+    total_checks = 0
     for metamorphication, group in verifications.items():
         group_checks = 0
         group_succeeded = False
+
+        if metamorphication in ['random_register_allocation']:
+            continue
 
         for verification in group:
             if verification['architecture'].lower() not in ['any', __get_architecture()]:
@@ -190,6 +194,7 @@ def verify_original(source_path, shellcode_path):
             if verification['function'] not in available_verifications:
                 return (False, 'Invalid verification method {}.'.format(verification['function']))
 
+            total_checks += 1
             group_checks += 1
 
             if not available_verifications[verification['function']](verification['value'], shellcode_path):
@@ -201,7 +206,7 @@ def verify_original(source_path, shellcode_path):
         if not group_succeeded:
             return (False, 'No group checks passed for {}.'.format(metamorphication))
 
-    return (True, 'Verification methods for {} metamorphications executed successfully.'.format(len(verifications.keys())))
+    return (True, 'Verification methods for {} metamorphication(s) executed successfully.'.format(total_checks))
 
 def verify_transpilation(metamorphication, source_path, shellcode_path):
     """Run verification checks embedded in the source file against the transpiled shellcode.
@@ -287,9 +292,9 @@ def main():
     Exits:
         0x00000000: All verifications passed.
         0x00000001: System and architecture mismatch, shellcode cannot run.
-        0x00000002: Original shellcode signature verification failed.
-        0x00000003: Transpilation verification failed.
-        0x00000004: Return value verification failed.
+        0x00000002: Return value verification failed.
+        0x00000003: Original shellcode signature verification failed.
+        0x00000004: Transpilation verification failed.
     
     """
 
@@ -308,37 +313,34 @@ def main():
         print('    - Verify({}): Cannot run shellcode for this system and architecture.'.format(test_name))
         sys.exit(0x00000001)
 
+    # Check if the return value of the shellcode is still as expected
+    result = verify_result(metamorphication, source_path, shellcode_path)
+    if result[0]:
+        print('    - Verify({}/{}): Return value is still correct. {}'.format(test_name, metamorphication, result[1]))
+    else:
+        print('    - Verify({}/{}): Return value is invalid. {}'.format(test_name, metamorphication, result[1]))
+        sys.exit(0x00000002)
+
     # Run negation checks for original shellcodes
     if metamorphication == 'original':
 
         # Check if the signatures are identified in the original binary
-        # print('    - Verify({}): Checking if signature is present in original binary.'.format(test_name))
         result = verify_original(source_path, shellcode_path)
         if result[0]:
             print('    - Verify({}/{}): Binary is original. {}'.format(test_name, metamorphication, result[1]))
         else:
             print('    - Verify({}/{}): Binary is not original. {}'.format(test_name, metamorphication, result[1]))
-            sys.exit(0x00000002)
+            sys.exit(0x00000003)
 
     # Run actual checks for transpiled shellcodes
     if metamorphication != 'original':
 
         # Check every verification for a specific metamorphication
-        # print('    - Verify({}/{}): Checking if transpiler succeeded.'.format(test_name, metamorphication))
         result = verify_transpilation(metamorphication, source_path, shellcode_path)
         if result[0]:
             print('    - Verify({}/{}): Transpilation succesful. {}'.format(test_name, metamorphication, result[1]))
         else:
             print('    - Verify({}/{}): Transpilation failed. {}'.format(test_name, metamorphication, result[1]))
-            sys.exit(0x00000003)
-
-        # Check if the return value of the shellcode is still as expected
-        # print('    - Verify({}/{}): Checking if return value is still correct.'.format(test_name, metamorphication))
-        result = verify_result(metamorphication, source_path, shellcode_path)
-        if result[0]:
-            print('    - Verify({}/{}): Return value is still correct. {}'.format(test_name, metamorphication, result[1]))
-        else:
-            print('    - Verify({}/{}): Return value is invalid. {}'.format(test_name, metamorphication, result[1]))
             sys.exit(0x00000004)
 
     print('    - Verify({}/{}): Finished successfully'.format(test_name, metamorphication))

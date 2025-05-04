@@ -45,28 +45,52 @@ def main():
     Expects two command-line arguments pointing to binary shellcode files.
     Loads the files, computes their sizes, and prints the Levenshtein distance.
 
+    Exits:
+        0x00000000: There is enough change in the given shellcodes.
+        0x00000001: There is insufficient change in the given shellcodes.
+
     Raises:
         SystemExit: If incorrect arguments are provided or upon successful completion.
 
     """
     
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print('[!] Invalid arguments: {}.'.format(str(sys.argv)))
-        print('[!] Usage: python measure-levenshtein-distance.py <shellcode_left_path> <shellcode_right_path>')
+        print('[!] Usage: python measure-levenshtein-distance.py <test_name> <shellcode_left_path> <shellcode_right_path>')
         sys.exit(1)
 
-    shellcode_left_path = sys.argv[1]
-    shellcode_right_path = sys.argv[2]
+    test_name = sys.argv[1]
+    shellcode_left_path = sys.argv[2]
+    shellcode_right_path = sys.argv[3]
 
     shellcode_left = __read_file(shellcode_left_path, binary=True)
     shellcode_right = __read_file(shellcode_right_path, binary=True)
-    print('    - Measure Levenshtein Distance:  Left size is {}.'.format(len(shellcode_left)))
-    print('    - Measure Levenshtein Distance: Right size is {}.'.format(len(shellcode_right)))
+    shellcode_length = max(len(shellcode_left), len(shellcode_right))
 
-    result = Levenshtein.distance(shellcode_left, shellcode_right)
+    print('    - Verify({}/transpiled): Measuring Levenshtein distance of original (size {}) to transpiled (size {}) shellcode.'.format(test_name, len(shellcode_left), len(shellcode_right)))
 
-    print('    - Measure Levenshtein Distance:   Resulted in {}.'.format(result))
-    print('    - Measure Levenshtein Distance: Finished successfully!')
+    result_absolute = Levenshtein.distance(shellcode_left, shellcode_right)
+    result_percentage = round((result_absolute / shellcode_length) * 100);
+
+    print('    - Verify({}/transpiled): Result of Levenshtein distance measurement: {} ({}% change).'.format(test_name, result_absolute, result_percentage))
+
+    verification_brackets = {
+        0:   35,   # There must be a minimal change of 35%
+        25:  40,   # For shellcodes of 25 bytes or larger, the minimum change must be 40%
+        50:  45,   # For shellcodes of 50 bytes or larger, the minimum change must be 45%
+        100: 50    # For shellcodes of 100 bytes or larger, the minimum change must be 50%
+    }
+
+    for verification_bracket in verification_brackets.keys():
+        minimum_change = verification_brackets[verification_bracket]
+
+        if shellcode_length < verification_bracket:
+            continue
+
+        if result_percentage < minimum_change:
+            print('    - Verify({}/transpiled): Minimum change of {}% required for length {}, but got {}%.'.format(test_name, minimum_change, shellcode_length, result_percentage))
+            sys.exit(0x00000001)
+
     sys.exit(0x00000000)
 
 if __name__ == "__main__":
