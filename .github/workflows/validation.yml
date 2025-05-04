@@ -38,7 +38,9 @@ jobs:
       # Get hash of custom LLVM source
       - name: Get hash of custom LLVM source
         id: llvm_hash
-        run: echo "llvm_hash=${{ hashFiles('/opt/llvm-source/llvm/**') }}" >> "$GITHUB_OUTPUT"
+        run: |
+          cd /opt/llvm-source
+          echo "llvm_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       # Cache the LLVM build artifacts to speed up future builds.
       - name: Cache LLVM build
@@ -174,6 +176,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+
       # Clone the Dittobytes repository into the runner.
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -194,6 +197,11 @@ jobs:
       - name: List all the build files
         shell: bash
         run: ls -lah ./builds/
+
+      # Install Python dependencies required by Dittobytes scripts
+      - name: Install Python dependencies
+        run: |
+          pip3 install -r scripts/requirements.txt --break-system-packages
 
       # Run all available tests
       - name: Run tests
