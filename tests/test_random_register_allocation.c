@@ -24,12 +24,20 @@
  * @return uint64_t The return value to verify: `11375492178787558702` (which must still be the case after transpilation).
  */
 uint64_t EntryFunction() {
+    uint64_t r0 = 1;
+
     uint64_t r1 = 0x00000000000000F0;
     uint64_t r2 = 0x1111111111111111;
     uint64_t r3 = r1 + r2;
+    
+    r3 = r3 + r0;
+    r3 = r3 - r0;
 
     uint64_t r4 = 0x2222222222222222;
     uint64_t r5 = r4 ^ r3;
+    
+    r5 = r5 - r0;
+    r5 = r5 + r0;
 
     uint64_t r6 = 0x3333333333333333;
     uint64_t r7 = r6 & r5;
@@ -39,6 +47,9 @@ uint64_t EntryFunction() {
 
     uint64_t r10 = r9 >> 2;
     uint64_t r11 = ~r10;
+    
+    r11 = r11 + r0 - r0;
+    r11 = r11 - r0 + r0;
 
     uint64_t r12 = r11 + r1;
     uint64_t r13 = r12 ^ r2;

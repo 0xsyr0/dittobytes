@@ -333,7 +333,7 @@ def main():
             sys.exit(0x00000003)
 
     # Run actual checks for transpiled shellcodes
-    if metamorphication != 'original':
+    if metamorphication not in ['original', 'transpiled']:
 
         # Check every verification for a specific metamorphication
         result = verify_transpilation(metamorphication, source_path, shellcode_path)

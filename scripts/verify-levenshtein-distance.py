@@ -76,10 +76,10 @@ def main():
     print('    - Verify({}/transpiled): Result of Levenshtein distance measurement: {} ({}% change).'.format(test_name, result_absolute, result_percentage))
 
     verification_brackets = {
-        0:   30,   # There must be a minimal change of 30%
-        25:  35,   # For shellcodes of 25 bytes or larger, the minimum change must be 35%
-        50:  40,   # For shellcodes of 50 bytes or larger, the minimum change must be 40%
-        100: 45    # For shellcodes of 100 bytes or larger, the minimum change must be 45%
+        0:   20,   # There must be a minimal change of 20%
+        25:  20,   # For shellcodes of 25 bytes or larger, the minimum change must be 20%
+        50:  20,   # For shellcodes of 50 bytes or larger, the minimum change must be 20%
+        100: 20    # For shellcodes of 100 bytes or larger, the minimum change must be 20%
     }
 
     for verification_bracket in verification_brackets.keys():

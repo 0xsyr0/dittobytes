@@ -94,7 +94,11 @@ uint8_t get_2_e() {
  */
 uint8_t get_3_l() {
 	char* test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu tincidunt nisl, nec iaculis mi. Proin at dignissim risus. Suspendisse et nulla orci. Pellentesque tempor laoreet blandit. Curabitur ac tortor sed mauris sagittis pulvinar. Phasellus libero magna, suscipit ac blandit at, malesuada non tellus. Etiam sodales euismod dolor, ut accumsan magna aliquet et.";
-	return test[359];
+
+	int a = test[0] != 'L';
+	int b = test[368] != '.';	
+
+	return test[359] + a + b;
 }
 
 /**
