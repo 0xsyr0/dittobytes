@@ -1,42 +1,18 @@
 /**
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###################                                         ###################
- * ################### THIS IS AN EXTERNAL LIBRARY FROM GITHUB ###################
- * ###################                                         ###################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * ###############################################################################
- * 
- * The author and owner of this specific function pass is the SheLLVM organisation: 
- * https://github.com/SheLLVM/SheLLVM. Copyright may apply. Please refer to the 
- * original source.
- * 
- * Original source: https://github.com/SheLLVM/SheLLVM/tree/master
+ * GNU General Public License, version 2.0.
+ *
+ * Copyright (c) 2025 Tijme Gommers (@tijme).
+ *
+ * This source code file is part of Dittobytes. Dittobytes is 
+ * licensed under GNU General Public License, version 2.0, and 
+ * you are free to use, modify, and distribute this file under 
+ * its terms. However, any modified versions of this file must 
+ * include this same license and copyright notice.
  */
 
 /**
- * Copyright (c) 2018 SheLLVM Development Team. All rights reserved.
- * 
- * Developed by: SheLLVM Development Team
- * https://github.com/SheLLVM
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal with the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimers in the documentation and/or other materials provided with the distribution.
- * Neither the names of SheLLVM Development Team, SheLLVM, nor the names of its contributors may be used to endorse or promote products derived from this Software without specific prior written permission.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
+ * LLVM includes
  */
-
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Support/raw_ostream.h"
@@ -52,221 +28,70 @@
 #include "llvm/IR/Module.h"
 #include "llvm/Pass.h"
 #include "llvm/Transforms/IPO/GlobalOpt.h"
-#include "IntermediateTranspiler.h"
 
-using namespace std;
+/**
+ * Modules
+ */
+#include "modules/expand_memcpy_calls/ExpandMemcpyCallsModule.cpp"
+#include "modules/move_globals_to_stack/MoveGlobalsToStackModule.cpp"
+
+/**
+ * Namespace(s) to use
+ */
 using namespace llvm;
 
-static Function *getUsingFunction(Value &V) {
-  Function *F = nullptr;
+/**
+ * LLVM function pass that calls specific modules of each function it visits.
+ *
+ * IntermediateTranspiler is a custom LLVM pass derived from PassInfoMixin.
+ * It operates at the intermediate function level. This pass currently performs 
+ * no transformation on its own, but calls several modules that do so.
+ */
+struct IntermediateTranspiler : PassInfoMixin<IntermediateTranspiler> {
 
-  SmallVector<User *, 4> Worklist;
-  SmallSet<User *, 4> Visited;
+    /**
+     * Main execution method for the IntermediateTranspiler function pass.
+     *
+     * This function is called by LLVM when the pass is run on a function. It logs
+     * the function name and indicates if all analyses are preserved or not.
+     *
+     * @param Function& F The function to run the pass on.
+     * @param FunctionAnalysisManager& Unused, but required by the pass interface.
+     * @return PreservedAnalyses Indicates that the function was not modified.
+     */
+    PreservedAnalyses run(Function& F, FunctionAnalysisManager&) {
+        dbgs() << "      ↺ IntermediateTranspiler passed function " << F.getName() << ".\n";
 
-  for (auto *U : V.users())
-    Worklist.push_back(U);
-  while (!Worklist.empty()) {
-    auto *U = Worklist.pop_back_val();
+        bool modified = false;
 
-    if (Visited.count(U))
-      continue;
-    else
-      Visited.insert(U);
+        // Module 1: Expand `memcpy` calls
+        modified = ExpandMemcpyCallsModule().run(F) || modified;
 
-    if (isa<ConstantExpr>(U) || isa<ConstantAggregate>(U) ||
-        isa<GlobalVariable>(U)) {
-      if (isa<GlobalVariable>(U) &&
-          !cast<GlobalVariable>(U)->isDiscardableIfUnused())
-        return nullptr;
-      for (auto *UU : U->users()) {
-        Worklist.push_back(UU);
-      }
-      continue;
+        return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
     }
 
-    auto *I = dyn_cast<Instruction>(U);
-    if (!I)
-      return nullptr;
-    if (!F)
-      F = I->getParent()->getParent();
-    if (I->getParent()->getParent() != F)
-      return nullptr;
-  }
+    /**
+     * Main execution method for the IntermediateTranspiler module pass.
+     *
+     * This function is called by LLVM when the pass is run on a module. It logs
+     * the module name and indicates if all analyses are preserved or not.
+     *
+     * @param Function& F The function to run the pass on.
+     * @param FunctionAnalysisManager& Unused, but required by the pass interface.
+     * @return PreservedAnalyses Indicates that the function was not modified.
+     */
+    PreservedAnalyses run(Module& M, ModuleAnalysisManager& MAM) {
+        dbgs() << "      ↺ IntermediateTranspiler passed module " << M.getName() << ".\n";
 
-  return F;
-}
+        bool modified = false;
 
-// Copied from GlobalOpt.cpp
-static void makeAllConstantUsesInstructions(Constant *C) {
-  SmallVector<ConstantExpr *, 4> Users;
-  for (auto *U : C->users()) {
-    if (auto *CE = dyn_cast<ConstantExpr>(U))
-      Users.push_back(CE);
-    else
-      // We should never get here; allNonInstructionUsersCanBeMadeInstructions
-      // should not have returned true for C.
-      assert(
-          isa<Instruction>(U) &&
-          "Can't transform non-constantexpr non-instruction to instruction!");
-  }
+        // Module 1: Move global variables to the stack
+        modified = MoveGlobalsToStackModule().run(M, MAM) || modified;
 
-  SmallVector<Instruction *, 4> CEUsers;
-  for (auto *U : Users) {
-    // DFS DAG traversal of U to eliminate ConstantExprs recursively
-    ConstantExpr *CE = nullptr;
-
-    do {
-      CE = U; // Start by trying to destroy the root
-
-      CEUsers.clear();
-      auto it = CE->user_begin();
-      while (it != CE->user_end()) {
-        if (isa<ConstantExpr>(*it)) {
-          // Recursive ConstantExpr found; switch to it
-          CEUsers.clear();
-          CE = cast<ConstantExpr>(*it);
-          it = CE->user_begin();
-        } else {
-          // Function; add to UUsers
-          CEUsers.push_back(cast<Instruction>(*it));
-          it++;
-        }
-      }
-
-      // All users of CE are instructions; replace CE with an instruction for
-      // each
-      for (auto *CEU : CEUsers) {
-        Instruction *NewU = CE->getAsInstruction();
-        NewU->insertBefore(CEU);
-        CEU->replaceUsesOfWith(CE, NewU);
-      }
-
-      // We've replaced all the uses, so destroy the constant. (destroyConstant
-      // will update value handles and metadata.)
-      CE->destroyConstant();
-    } while (CE != U); // Continue until U is destroyed
-  }
-}
-
-bool IntermediateTranspiler::shouldInline(GlobalVariable &G) {
-  if (!G.isDiscardableIfUnused())
-    return false; // Goal is to discard these; ignore if that's not possible
-  if (!getUsingFunction(G))
-    return false; // This isn't safe. We can only be on one function's stack.
-
-  return true;
-}
-
-void IntermediateTranspiler::disaggregateVars(
-    Instruction *After, Value *Ptr, SmallVectorImpl<Value *> &Idx,
-    ConstantAggregate &C, SmallSetVector<GlobalVariable *, 4> &Vars) {
-  SmallSetVector<Value *, 4> ToUndefine;
-
-  Constant *C2;
-  for (unsigned i = 0; (C2 = C.getAggregateElement(i)); i++) {
-    Idx.push_back(ConstantInt::get(
-        Type::getInt32Ty(After->getParent()->getContext()), i));
-
-    if (isa<ConstantAggregate>(C2)) {
-      disaggregateVars(After, Ptr, Idx, cast<ConstantAggregate>(*C2), Vars);
-
-    } else if (isa<ConstantExpr>(C2) ||
-               (isa<GlobalVariable>(C2) &&
-                Vars.count(cast<GlobalVariable>(C2)))) {
-      GetElementPtrInst *GEP =
-          GetElementPtrInst::CreateInBounds(C.getType(), Ptr, Idx);
-      GEP->insertAfter(After);
-
-      ToUndefine.insert(C2);
-
-      new StoreInst(C2, GEP, GEP->getNextNode());
+        return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
     }
 
-    Idx.pop_back();
-  }
-
-  for (auto *V : ToUndefine)
-    C.handleOperandChange(V, UndefValue::get(V->getType()));
-}
-
-void IntermediateTranspiler::extractValuesFromStore(
-    StoreInst *inst, SmallSetVector<GlobalVariable *, 4> &Vars) {
-  Value *V = inst->getValueOperand();
-  if (!isa<ConstantAggregate>(V))
-    return;
-
-  SmallVector<Value *, 4> Idx;
-  Idx.push_back(
-      ConstantInt::get(Type::getInt32Ty(inst->getParent()->getContext()), 0));
-
-  disaggregateVars(inst, inst->getPointerOperand(), Idx,
-                   cast<ConstantAggregate>(*V), Vars);
-}
-
-void IntermediateTranspiler::inlineGlobals(Function *F,
-                                  SmallSetVector<GlobalVariable *, 4> &Vars) {
-  BasicBlock &BB = F->getEntryBlock();
-  Instruction *insertionPoint = &*BB.getFirstInsertionPt();
-
-  // Step one: Bring all vars into F
-  SmallMapVector<GlobalVariable *, Instruction *, 4> Replacements;
-  StoreInst *firstStore = nullptr;
-  for (auto *G : Vars) {
-    Instruction *inst =
-        new AllocaInst(G->getValueType(), G->getType()->getAddressSpace(),
-                       nullptr, G->getAlign().valueOrOne(), "",
-                       firstStore ? firstStore : insertionPoint);
-
-    inst->takeName(G);
-
-    Replacements[G] = inst;
-
-    if (G->hasInitializer()) {
-      Constant *initializer = G->getInitializer();
-      StoreInst *store = new StoreInst(initializer, inst, insertionPoint);
-      G->setInitializer(nullptr);
-
-      extractValuesFromStore(store, Vars);
-
-      if (!firstStore)
-        firstStore = store;
-    }
-  }
-
-  // Step two: Replace all uses
-  for (auto &KV : Replacements) {
-    // Some users of G might be ConstantExprs. These can't refer
-    // to Instructions, so we need to turn them into explicit Instructions.
-    makeAllConstantUsesInstructions(KV.first);
-
-    KV.first->replaceAllUsesWith(KV.second);
-    KV.first->eraseFromParent();
-  }
-}
-
-llvm::PreservedAnalyses IntermediateTranspiler::run(Module &M, ModuleAnalysisManager &AM) {
-
-  errs() << "      ↺ IntermediateTranspiler passed module " << M.getName() << ".\n";
-
-
-  SmallMapVector<Function *, SmallSetVector<GlobalVariable *, 4>, 4> Usage;
-
-  for (GlobalVariable &G : M.globals())
-    if (shouldInline(G))
-      Usage[getUsingFunction(G)].insert(&G);
-
-  for (auto &KV : Usage)
-    inlineGlobals(KV.first, KV.second);
-
-  if (Usage.empty()) {
-    return llvm::PreservedAnalyses::all();
-  }
-
-  llvm::PreservedAnalyses PA;
-  PA.preserveSet<CFGAnalyses>();
-  return PA;
-}
-
+};
 
 /**
  * Provides metadata and registration callbacks for the IntermediateTranspiler pass plugin.
@@ -276,7 +101,7 @@ llvm::PreservedAnalyses IntermediateTranspiler::run(Module &M, ModuleAnalysisMan
  *
  * @return PassPluginLibraryInfo Struct containing the plugin's metadata and registration hooks.
  */
-PassPluginLibraryInfo getIntermediateTranspilerPluginInfo() {
+PassPluginLibraryInfo getPolymorphicTranspilerPluginInfo() {
     return {
         LLVM_PLUGIN_API_VERSION, 
         "IntermediateTranspiler", 
@@ -292,14 +117,29 @@ PassPluginLibraryInfo getIntermediateTranspilerPluginInfo() {
                 }
             );
 
+            PB.registerPipelineParsingCallback(
+                [](StringRef Name, FunctionPassManager &FPM, ArrayRef<PassBuilder::PipelineElement>) {
+                    if (Name == "intermediate-transpiler") {
+                        FPM.addPass(IntermediateTranspiler());
+                        return true;
+                    }
+
+                    return false;
+                }
+            );
+
             PB.registerPipelineStartEPCallback(
                 [](ModulePassManager &MPM, OptimizationLevel Level) {
                     MPM.addPass(IntermediateTranspiler());
+
+                    FunctionPassManager FPM;
+                    FPM.addPass(IntermediateTranspiler());
+                    MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
                 }
             );
         }
     };
-}
+};
 
 /**
  * Entry point for the LLVM pass plugin.
@@ -310,5 +150,5 @@ PassPluginLibraryInfo getIntermediateTranspilerPluginInfo() {
  * @return ::llvm::PassPluginLibraryInfo Struct containing plugin metadata and callbacks.
  */
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo llvmGetPassPluginInfo() {
-    return getIntermediateTranspilerPluginInfo();
+    return getPolymorphicTranspilerPluginInfo();
 }
