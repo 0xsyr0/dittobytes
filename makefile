@@ -117,9 +117,9 @@ test-suite-test: check_environment
 	@set -e; \
 	for TEST_FILE in $(TEST_FILES); do \
 		$(PYTHON_PATH) ./scripts/verify-feature-test.py original "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-original.bin; \
-		$(PYTHON_PATH) ./scripts/verify-feature-test.py transpiled "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled.bin; \
 		$(PYTHON_PATH) ./scripts/verify-feature-test.py modify-mov-immediate "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-modify-mov-immediate.bin; \
 		$(PYTHON_PATH) ./scripts/verify-feature-test.py random-register-allocation "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-random-register-allocation.bin; \
+		$(PYTHON_PATH) ./scripts/verify-feature-test.py transpiled "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled.bin; \
 		$(PYTHON_PATH) ./scripts/verify-levenshtein-distance.py $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-original.bin $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled.bin; \
 	done
 
