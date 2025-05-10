@@ -2,11 +2,11 @@
     <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/a1386dc7a0a4186a6946ed955946c90474a6607b/dittobytes.svg" alt="Dittobytes Logo" />
 </p>
 <p align="center">
-    <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ec0545?style=for-the-badge&labelColor=c7003b" alt="License badge" /></a>
+    <a href="https://github.com/tijme/dittobytes/releases"><img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes release" /></a>
     &nbsp;
-    <img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes status" />
+    <a href="https://github.com/tijme/dittobytes/actions"><img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes status" /></a>
     &nbsp;
-    <img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes release" />
+    <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ec0545?style=for-the-badge&labelColor=c7003b" alt="Dittobytes license badge" /></a>
 </p>
 <p align="center">
     <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/f7b8fbe8a16ab6897122829544721f7ad5d006b4/arch_amd64.svg" alt="AMD64 logo" height="45" />

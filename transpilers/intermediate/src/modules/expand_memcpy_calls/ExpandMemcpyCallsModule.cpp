@@ -75,7 +75,7 @@ public:
 
         for (auto *CI : MemCpyCalls) {
             // Inform user that we encountered a `memcpy` call
-            dbgs() << "          ↳ Expanding a `memcpy` call.";
+            dbgs() << "          ↳ Expanding a `memcpy` call.\n";
 
             auto *Dst = CI->getArgOperand(0);
             auto *Src = CI->getArgOperand(1);
