@@ -177,6 +177,13 @@ jobs:
 
     steps:
 
+      # Fix for 'missing module' errors on MacOS ARM GitHub runners
+      # https://github.com/actions/runner-images/issues/10385
+      - name: Checkout repository
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       # Clone the Dittobytes repository into the runner.
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -197,12 +204,6 @@ jobs:
       - name: List all the build files
         shell: bash
         run: ls -lah ./builds/
-
-      # Fix for 'missing module' errors on MacOS ARM GitHub runners
-      # https://github.com/actions/runner-images/issues/10385
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
       # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
