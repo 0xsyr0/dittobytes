@@ -4,7 +4,9 @@
 <p align="center">
     <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ec0545?style=for-the-badge&labelColor=c7003b" alt="License badge" /></a>
     &nbsp;
-    <img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Build status" />
+    <img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes status" />
+    &nbsp;
+    <img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes release" />
 </p>
 <p align="center">
     <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/f7b8fbe8a16ab6897122829544721f7ad5d006b4/arch_amd64.svg" alt="AMD64 logo" height="45" />

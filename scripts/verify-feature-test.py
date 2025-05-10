@@ -262,6 +262,8 @@ def verify_result(metamorphication, source_path, shellcode_path):
 
     """
 
+    executable_result = None
+
     try:
         return_value_pattern = r'@return (\w+) The return value to verify: `(.+?)`'
         return_value_matches = re.findall(return_value_pattern, __read_file(source_path))
@@ -280,6 +282,9 @@ def verify_result(metamorphication, source_path, shellcode_path):
         )
     except Exception as exception:
         __print_exception(exception)
+        if executable_result:
+            print(f"    - {executable_result.stdout}")
+
         return (False, None)
 
 def main():
