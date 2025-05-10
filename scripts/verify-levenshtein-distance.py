@@ -11,7 +11,8 @@
 # include this same license and copyright notice.
 
 import sys
-import editdistance
+
+from Levenshtein import distance
 
 def __read_file(file_path, binary = False):
     """Read the contents of a file in either text or binary mode.
@@ -69,7 +70,7 @@ def main():
 
     print('    - Verify({}/transpiled): Measuring Levenshtein distance of original (size {}) to transpiled (size {}) shellcode.'.format(test_name, len(shellcode_left), len(shellcode_right)))
 
-    result_absolute = editdistance.eval(shellcode_left, shellcode_right)
+    result_absolute = distance(shellcode_left, shellcode_right)
     result_percentage = round((result_absolute / shellcode_length) * 100);
 
     print('    - Verify({}/transpiled): Result of Levenshtein distance measurement: {} ({}% change).'.format(test_name, result_absolute, result_percentage))
