@@ -229,6 +229,10 @@ private:
     bool isMovImmediate(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
+        if (instruction.getNumOperands() != 2) return false;
+        if (!instruction.getOperand(0).isReg()) return false;
+        if (!instruction.getOperand(1).isImm()) return false;
+
         switch (opcode) {
             case X86::MOV8ri:
             case X86::MOV16ri:

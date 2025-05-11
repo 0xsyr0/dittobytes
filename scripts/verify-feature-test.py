@@ -227,6 +227,7 @@ def verify_transpilation(metamorphication, source_path, shellcode_path):
     verify_pattern = r'@verify (\w+) (\w+) (\w+) (\w+) \('
     verify_matches = re.findall(verify_pattern, __read_file(source_path))
 
+    succeeded_verifications = 0
     available_verifications = {
         'hex_not_present': verify_hex_not_present
     }
@@ -238,13 +239,15 @@ def verify_transpilation(metamorphication, source_path, shellcode_path):
         if verification[1].lower() != metamorphication:
             continue
 
+        succeeded_verifications += 1
+
         if verification[2] not in available_verifications:
             return (False, 'Invalid verification method {}.'.format(verification[2]))
 
         if not available_verifications[verification[2]](verification[3], shellcode_path):
             return (False, 'Verification method {}({}) failed.'.format(verification[2], verification[3]))
 
-    return (True, '{} validator(s) executed successfully.'.format(len(verify_matches)))
+    return (True, '{} validator(s) executed successfully.'.format(succeeded_verifications))
 
 def verify_result(metamorphication, source_path, shellcode_path):
     """Verify the return value of the executed shellcode against an expected value defined in the source.
