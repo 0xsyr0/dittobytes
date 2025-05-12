@@ -18,10 +18,13 @@
  * This function is designed to test whether value assignments to registers
  * and intermediate computations are randomized after compilation.
  * 
- * @verify ANY modify_mov_immediate hex_not_present 3333333333333333 (`0x3333333333333333` in HEX).
+ * We use `0x19A47B22FAB903DA` to check whether the binary is original, because this value is not shortend (in contrast to e.g. `0x1111111111111111`).
+ * 
+ * @verify AMD64 modify_mov_immediate hex_not_present DA03B9FA227BA419 (`0x19A47B22FAB903DA` in HEX).
+ * @verify ARM64 modify_mov_immediate hex_not_present 487B80D2 (`mov x8,#0x3da` in HEX).
  * @verify ANY random_register_allocation not_identical_to original (this compilation must be different than the original compilation).
  * 
- * @return uint64_t The return value to verify: `11375492178787558702` (which must still be the case after transpilation).
+ * @return uint64_t The return value to verify: `11394632769328784690` (which must still be the case after transpilation).
  */
 uint64_t EntryFunction() {
     uint64_t r0 = 1;
@@ -39,7 +42,7 @@ uint64_t EntryFunction() {
     r5 = r5 - r0;
     r5 = r5 + r0;
 
-    uint64_t r6 = 0x3333333333333333;
+    uint64_t r6 = 0x19A47B22FAB903DA;
     uint64_t r7 = r6 & r5;
 
     uint64_t r8 = r7 << 4;

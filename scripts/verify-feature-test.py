@@ -187,6 +187,7 @@ def verify_original(source_path, shellcode_path):
         if metamorphication in ['random_register_allocation']:
             continue
 
+
         for verification in group:
             if verification['architecture'].lower() not in ['any', __get_architecture()]:
                 continue
