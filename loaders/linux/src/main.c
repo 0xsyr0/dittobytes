@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
         iResult = EXIT_FAILURE;
         goto CLEANUP_AND_RETURN;
     } else {
-        PRINT_SUCCESS("Allocated memory region for shellcode (RW): 0x%p.", lpShellcode);
+        PRINT_SUCCESS("Allocated memory region for shellcode (RW): %p.", lpShellcode);
     }
 
     // Read shellcode into allocated memory
@@ -184,10 +184,12 @@ int main(int argc, char** argv) {
         PRINT_SUCCESS("Changed memory protection to PAGE_EXECUTE_READ.");
     }
 
-    // Execute shellcode
+    // Preview & execute shellcode
+    PRINT_SUCCESS("Preview of shellcode: %02X %02X %02X %02X ... %02X %02X %02X %02X.", ((uint8_t*) lpShellcode)[0], ((uint8_t*) lpShellcode)[1], ((uint8_t*) lpShellcode)[2], ((uint8_t*) lpShellcode)[3], ((uint8_t*) lpShellcode)[iShellcodeSize - 4], ((uint8_t*) lpShellcode)[iShellcodeSize - 3], ((uint8_t*) lpShellcode)[iShellcodeSize - 2], ((uint8_t*) lpShellcode)[iShellcodeSize - 1]);
     PRINT_SUCCESS("Executing the shellcode (this might take a while or crash).");
     lpCallable = (size_t (*)()) lpShellcode;
     iCallableResult = lpCallable();
+    PRINT_SUCCESS("Finished executing shellcode.");
 
     PRINT_SUCCESS("Got result from shellcode (int64_t):  0x%016" PRIx64 " (signed %" PRId64 ").", (int64_t) iCallableResult, (int64_t) iCallableResult);
     PRINT_SUCCESS("Got result from shellcode (uint64_t): 0x%016" PRIx64 " (unsigned %" PRIu64 ").", (uint64_t) iCallableResult, (uint64_t) iCallableResult);

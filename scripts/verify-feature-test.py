@@ -277,6 +277,9 @@ def verify_result(metamorphication, source_path, shellcode_path):
 
         executable_result = subprocess.run([__get_loader(shellcode_path), shellcode_path], capture_output=True, text=True, timeout=5)
 
+        if executable_result.returncode != 0:
+            raise Exception('Process did not exit successfully.')
+
         result_return_value_pattern = r'Got result from shellcode \(' + expected_return_type + r'\): +0x\w+ \((signed|unsigned) (-?\d+)\)'
         result_return_value_matches = re.findall(result_return_value_pattern, executable_result.stdout)
 
