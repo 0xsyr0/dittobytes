@@ -1,23 +1,23 @@
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/a1386dc7a0a4186a6946ed955946c90474a6607b/dittobytes.svg" alt="Dittobytes Logo" />
+    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/4d1b52f3a38b0b5a4dc03ecb74654ce7b1c07a83/dittobytes.svg" alt="Dittobytes Logo" />
 </p>
 <p align="center">
-    <a href="https://github.com/tijme/dittobytes/releases"><img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes release" /></a>
+    <a href="https://github.com/tijme/dittobytes/releases"><img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=850447&color=ba0745" alt="Latest Dittobytes release" /></a>
     &nbsp;
-    <a href="https://github.com/tijme/dittobytes/actions"><img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=c7003b&color=ec0545" alt="Latest Dittobytes status" /></a>
+    <a href="https://github.com/tijme/dittobytes/actions"><img src="https://img.shields.io/github/actions/workflow/status/tijme/dittobytes/validation.yml?style=for-the-badge&labelColor=850447&color=ba0745" alt="Latest Dittobytes status" /></a>
     &nbsp;
-    <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ec0545?style=for-the-badge&labelColor=c7003b" alt="Dittobytes license badge" /></a>
+    <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ba0745?style=for-the-badge&labelColor=850447" alt="Dittobytes license badge" /></a>
 </p>
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/f7b8fbe8a16ab6897122829544721f7ad5d006b4/arch_amd64.svg" alt="AMD64 logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/2f4bfb6f639419b49c9a2e3bfa440fdfd7576949/arch_amd64.svg" alt="AMD64 logo" height="45" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_macos.svg" alt="MacOS logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_macos.svg" alt="MacOS logo" height="45" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/f10fbeb6f8d6cbbc1fa3bf864982f0dc120f651f/os_windows.svg" alt="Windows logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_windows.svg" alt="Windows logo" height="45" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/86ecf9d13c520d181ce6e944dc76b3ddb623d697/os_linux.svg" alt="Linux logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_linux.svg" alt="Linux logo" height="45" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/a5e815ace37e12dc8e36060cc31cee4d/raw/397c225c23f4e20a26b88508d21262423465fb04/arch_arm64.svg" alt="ARCH64 logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/a5e815ace37e12dc8e36060cc31cee4d/raw/2f6fba67d2d597294de5ccaec48d1325f0c76354/arch_arm64.svg" alt="ARCH64 logo" height="45" />
 </p>
 <p align="center">
     <b>Metamorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>

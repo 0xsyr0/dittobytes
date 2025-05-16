@@ -162,7 +162,7 @@ $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 
 $(WIN_AMD64_BEACON_PATH).mir: $(WIN_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).meta.mir: $(WIN_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
@@ -175,7 +175,7 @@ endif
 
 $(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).lkd: $(WIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -210,7 +210,7 @@ $(WIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 
 $(WIN_ARM64_BEACON_PATH).mir: $(WIN_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).meta.mir: $(WIN_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
@@ -223,7 +223,7 @@ endif
 
 $(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).lkd: $(WIN_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -258,7 +258,7 @@ $(LIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 
 $(LIN_AMD64_BEACON_PATH).mir: $(LIN_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
+	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).meta.mir: $(LIN_AMD64_BEACON_PATH).mir
 ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
@@ -271,7 +271,7 @@ endif
 
 $(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
+	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).lkd: $(LIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -306,7 +306,7 @@ $(LIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 
 $(LIN_ARM64_BEACON_PATH).mir: $(LIN_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
+	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).meta.mir: $(LIN_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
@@ -319,7 +319,7 @@ endif
 
 $(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
+	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).lkd: $(LIN_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -354,7 +354,7 @@ $(MAC_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 
 $(MAC_AMD64_BEACON_PATH).mir: $(MAC_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).meta.mir: $(MAC_AMD64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
@@ -367,7 +367,7 @@ endif
 
 $(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).lkd: $(MAC_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -402,7 +402,7 @@ $(MAC_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 
 $(MAC_ARM64_BEACON_PATH).mir: $(MAC_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -stop-after=virtregrewriter -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).meta.mir: $(MAC_ARM64_BEACON_PATH).mir
 	@echo "    - Intermediate compile of $@."
@@ -415,7 +415,7 @@ endif
 
 $(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -filetype=obj -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).lkd: $(MAC_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
