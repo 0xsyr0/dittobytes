@@ -17,7 +17,8 @@
  * 
  * @verify AMD64 modify_mov_immediate hex_not_present B0FF (`mov al, 0xff` is in HEX).
  * @verify AMD64 modify_mov_immediate hex_not_present B8FF000000  (`mov eax, 0xff` is in HEX).
- * @verify ARM64 modify_mov_immediate hex_not_present 00008012 (`mov w0, #0xff` is in HEX).
+ * @verify ARM64 modify_mov_immediate hex_not_present 00008012 (`mov w0, #0xff` in HEX on non-MacOS).
+ * @verify ARM64 modify_mov_immediate hex_not_present E01F8052 (`mov w0, #0xff` in HEX on MacOS).
  * 
  * @return uint8_t The return value to verify: `255` (which must still be the case after transpilation).
  */

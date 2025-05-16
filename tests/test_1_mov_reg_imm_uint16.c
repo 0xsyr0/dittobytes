@@ -17,7 +17,8 @@
  * 
  * @verify AMD64 modify_mov_immediate hex_not_present 66B8FFFF (`mov ax, 0xffff` in HEX).
  * @verify AMD64 modify_mov_immediate hex_not_present B8FFFF0000 (`mov eax, 0xffff` in HEX).
- * @verify ARM64 modify_mov_immediate hex_not_present 00008012 (`mov w0, #0xffff` in HEX).
+ * @verify ARM64 modify_mov_immediate hex_not_present 00008012 (`mov w0, #0xffff` in HEX on non-MacOS).
+ * @verify ARM64 modify_mov_immediate hex_not_present E0FF9F52 (`mov w0, #0xffff` in HEX on MacOS).
  * 
  * @return uint16_t The return value to verify: `65535` (which must still be the case after transpilation).
  */
