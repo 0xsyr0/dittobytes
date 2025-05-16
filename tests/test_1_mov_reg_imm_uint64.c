@@ -15,7 +15,7 @@
 /**
  * The main function of the code to test.
  * 
- * @verify AMD64 modify_mov_immediate hex_not_present 48C7C0FFFFFFFF (`mov rax, 0xffffffffffffffff` in HEX).
+ * @verify AMD64 modify_mov_immediate hex_not_present FFFFFFFF (`mov rax, 0xffffffffffffffff` in HEX).
  * @verify ARM64 modify_mov_immediate hex_not_present 00008092 (`mov x0, #-1` in HEX).
  * 
  * @return uint64_t The return value to verify: `18446744073709551615` (which must still be the case after transpilation).

@@ -68,7 +68,7 @@ def main():
     shellcode_right = __read_file(shellcode_right_path, binary=True)
     shellcode_length = max(len(shellcode_left), len(shellcode_right))
 
-    print('    - Verify({}/transpiled): Measuring Levenshtein distance of original (size {}) to transpiled (size {}) shellcode.'.format(test_name, len(shellcode_left), len(shellcode_right)))
+    print('    - Verify({}/transpiled): Measuring Levenshtein distance of transpiled-1 (size {}) to transpiled-2 (size {}) shellcode.'.format(test_name, len(shellcode_left), len(shellcode_right)))
 
     result_absolute = distance(shellcode_left, shellcode_right)
     result_percentage = round((result_absolute / shellcode_length) * 100);
