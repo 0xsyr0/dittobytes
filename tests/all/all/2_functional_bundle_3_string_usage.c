@@ -53,8 +53,9 @@ uint8_t get_5_o(int index);
  * The main function of the code to test.
  * 
  * This test focusses on string storage and usage, to verify whether strings are stored correctly (inline).
- * 
- * @return uint16_t The return value to verify: `500` (ASCII values: 72+101+108+108+111).
+
+ *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      all                     returns                           uint16_t,500                     Must be the case without metamorphications (ASCII values: 72+101+108+108+111).
  */
 uint16_t EntryFunction() {
     uint8_t h = get_1_h();

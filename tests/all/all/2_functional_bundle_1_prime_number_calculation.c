@@ -26,9 +26,10 @@ bool is_prime(int num);
  * The main function of the code to test.
  * 
  * This test focusses on ensuring that complex code still functions. It's goal is not so much to check whether
- * certain specific transpilations work correclty.
+ * certain specific transpilations work correctly.
  * 
- * @return uint32_t The return value to verify: `104729` (which must still be the case after transpilation).
+ *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      all                     returns                           uint32_t,104729                  Must be the case without metamorphications.
  */
 uint32_t EntryFunction() {
     int count = 0;

@@ -67,7 +67,8 @@ int count_primes(int n);
 /**
  * Return a deterministic uint64_t.
  *
- * @return uint64_t The return value to verify: `9876543454` (which must still be the case after transpilation).
+ *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      all                     returns                           uint64_t,9876543454              Must be the case without metamorphications.
  */
 uint64_t EntryFunction() {
     int values[5] = {

@@ -13,3 +13,4 @@
 
 # Except for these
 !.gitignore
+!*.c

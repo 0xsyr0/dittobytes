@@ -15,12 +15,10 @@
 /**
  * The main function of the code to test.
  * 
- * @verify AMD64 modify_mov_immediate hex_not_present B080 (`mov al, 0x80` in HEX).
- * @verify AMD64 modify_mov_immediate hex_not_present B880FFFFFF (`mov eax, 0xffffff80` in HEX).
- * @verify ARM64 modify_mov_immediate hex_not_present 00108052 (`mov w0, #0x80` in HEX).
- * @verify ARM64 modify_mov_immediate hex_not_present E00F8012 (`mov w0, #-0x80` in HEX).
- * 
- * @return int8_t The return value to verify: `-128` (which must still be the case after transpilation).
+ *            OS     Arch     Metamorphication        Test                              Argument(s)        Description
+ * @verify    all    amd64    modify_mov_immediate    hex_not_present                   B080               Is `mov w0, #0x80` in HEX.
+ * @verify    all    arm64    modify_mov_immediate    hex_not_present                   E00F8012           Is `mov w0, #-0x80` in HEX.
+ * @verify    all    all      all                     returns                           int8_t,-128        Must be the case without metamorphications.
  */
 int8_t EntryFunction() {
     return (int8_t) -128;

@@ -13,4 +13,4 @@
 
 # Except for these
 !.gitignore
-!loader-*
+!*.c

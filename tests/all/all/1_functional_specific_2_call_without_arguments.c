@@ -14,31 +14,28 @@
 #include <stdbool.h>
 
 /**
- * Add two integers.
+ * Get `7`.
  *
- * @param uint8_t a First integer.
- * @param uint8_t b Second integer.
  * @return uint8_t The result.
  */
-uint8_t add(uint8_t a, uint8_t b);
+uint8_t seven();
 
 /**
  * Return a deterministic uint8_t.
  *
- * @return uint8_t The return value to verify: `5` (which must still be the case after transpilation).
+ *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      all                     returns                           uint8_t,7                        Must be the case without metamorphications.
  */
 uint8_t EntryFunction() {
-	uint8_t result = add(3, 2);
+	uint8_t result = seven();
     return result;
 }
 
 /**
- * Add two integers.
+ * Get `7`.
  *
- * @param uint8_t a First integer.
- * @param uint8_t b Second integer.
  * @return uint8_t The result.
  */
-uint8_t add(uint8_t a, uint8_t b) {
-    return a + b;
+uint8_t seven() {
+    return 7;
 }
