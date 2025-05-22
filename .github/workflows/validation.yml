@@ -210,6 +210,14 @@ jobs:
         run: |
           python3 -m pip install -r scripts/requirements.txt --break-system-packages
 
+      # Conditionally install dependencies on Ubuntu
+      - name: Install OS-specific dependencies (Ubuntu only)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt update
+          sudo apt install -y qemu-user qemu-user-static 
+
       # Run all available tests
       - name: Run tests
         run:  make IS_COMPILER_CONTAINER=true test-suite-test
+
