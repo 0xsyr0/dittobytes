@@ -26,7 +26,7 @@
     <br/>
 </p>
 <p align="center">
-    <a href="#hardware-requirements">Hardware requirements</a>
+    <a href="#hardware-requirements">Requirements</a>
     &nbsp;•&nbsp;
     <a href="#getting-started">Getting started</a>
     &nbsp;•&nbsp;
@@ -36,9 +36,9 @@
     &nbsp;•&nbsp;
     <a href="#limitations">Limitations</a>
     &nbsp;•&nbsp;
-    <a href="#issues--requests">Issues & requests</a>
+    <a href="#issues--requests">Issues</a>
     &nbsp;•&nbsp;
-    <a href="#license--copyright">License & copyright</a>
+    <a href="#license--copyright">Copyright</a>
 </p>
 <hr>
 
@@ -196,7 +196,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         A hello world requires printing to the console, thus requiring an OS API call to e.g. <code>puts</code>. This is OS specific. For example, for Windows it would require loading <code>KERNEL32.dll</code>, ultimately resolving <code>LoadLibraryA</code> and <code>GetProcAddress</code>. With these two functions resolved, you can then load any function address, such as the address of <code>puts</code>.
     </p>
     <p>
-        An example would become quite large, thus for now I'd like to forward you to <a href="https://github.com/tijme/relocatable">Relocatable</a>. This is a Position Independent Code (PIC) which pops a message box and calculator as example.
+        An example would become quite large, thus for now I'd like to forward you to <a href="https://github.com/tijme/dittobytes/blob/master/tests/win/amd64/1_functional_specific_api_call.c">this</a> feature test file. It is a Position Independent Code (PIC) for Windows AMD64 which pops a calculator as example.
     </p>
     <hr>
 </details>
