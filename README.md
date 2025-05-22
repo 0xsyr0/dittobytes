@@ -26,28 +26,28 @@
     <br/>
 </p>
 <p align="center">
-    <a href="#abstract">Abstract</a>
-    •
-    <a href="#requirements">Requirements</a>
-    •
+    <a href="#hardware-requirements">Hardware requirements</a>
+    &nbsp;•&nbsp;
     <a href="#getting-started">Getting started</a>
-    •
+    &nbsp;•&nbsp;
+    <a href="#advanced-usage">Advanced usage</a>
+    &nbsp;•&nbsp;
     <a href="#roadmap">Roadmap</a>
-    •     
+    &nbsp;•&nbsp;
+    <a href="#limitations">Limitations</a>
+    &nbsp;•&nbsp;
     <a href="#issues--requests">Issues & requests</a>
-    •
+    &nbsp;•&nbsp;
     <a href="#license--copyright">License & copyright</a>
 </p>
 <hr>
-
-# Abstract
 
 Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a [metamorphic engine](https://en.wikipedia.org/wiki/Metamorphic_code) that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
 
 <p align="center">
     <img src="https://gist.githubusercontent.com/tijme/8a1e77e82316df8b41d62e8cdaca2ddb/raw/8fc6ef90df9bbff70c6fedf73c63ff6b07d449a1/dittobytes-example-diff.png" alt="Metamorphication example with Dittobytes" />
     <br>
-    <sup>Figure A: Metamorphication example by Dittobytes</sup>
+    <sup>Figure A: Example metamorphications by Dittobytes</sup>
 </p>
 
 <p>
@@ -56,7 +56,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 
 The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
-# Requirements
+## Hardware requirements
 
 <details>
     <summary>Requirements to compile with Docker (<strong>easy</strong>)</summary>
@@ -88,45 +88,9 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <hr>
 </details>
 
-# Getting started
+## Getting started
 
-### 1. Prerequisites
-
-<details>
-    <summary>Cloning the repository</summary>
-    <hr>
-    <ul>
-        <li>Clone this repository using Git:<br><pre><code>git clone https://github.com/tijme/dittobytes.git</code></pre></li>
-        <li>Manually <a href="https://github.com/tijme/dittobytes/blob/master/.github/laughing.gif">review</a> the code so you know what you're compiling and running.</li>
-        <li>Finally, move into the project directory and start developing:<br><pre><code>cd ./dittobytes/</code></pre></li>
-    </ul>
-    <hr>
-</details>
-
-<details>
-    <summary>Building the build tools in a Docker container (<strong>easy</strong>)</summary>
-    <hr>
-    <p>
-        The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>.
-        <br>
-        <ul>
-            <li>Build the Docker image:<br><pre><code>docker buildx build -t dittobytes .</code></pre></li>
-            <li>Building the image will take around 2.5 hours as LLVM needs to be built from source.</li>
-        </ul>
-    </p>
-    <hr>
-</details>
-
-<details>
-    <summary>Installing the build tools on your host instead (<strong>advanced</strong>)</summary>
-    <hr>
-    <p>
-        Clang and LLVM are used to cross-compile the beacon, loaders and transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
-    </p>
-    <hr>
-</details>
-
-### 2. Overview
+#### 1. Overview
 
 <details>
     <summary>Directory structure</summary>
@@ -164,7 +128,43 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 <hr>
 </details>
 
-### 3. Development
+#### 2. Preparing
+
+<details>
+    <summary>Cloning the repository</summary>
+    <hr>
+    <ul>
+        <li>Clone this repository using Git:<br><pre><code>git clone https://github.com/tijme/dittobytes.git</code></pre></li>
+        <li>Manually <a href="https://github.com/tijme/dittobytes/blob/master/.github/laughing.gif">review</a> the code so you know what you're compiling and running.</li>
+        <li>Finally, move into the project directory and start developing:<br><pre><code>cd ./dittobytes/</code></pre></li>
+    </ul>
+    <hr>
+</details>
+
+<details>
+    <summary>Building the build tools in a Docker container (<strong>easy</strong>)</summary>
+    <hr>
+    <p>
+        The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>.
+        <br>
+        <ul>
+            <li>Build the Docker image:<br><pre><code>docker buildx build -t dittobytes .</code></pre></li>
+            <li>Building the image will take around 2.5 hours as LLVM needs to be built from source.</li>
+        </ul>
+    </p>
+    <hr>
+</details>
+
+<details>
+    <summary>Installing the build tools on your host instead (<strong>advanced</strong>)</summary>
+    <hr>
+    <p>
+        Clang and LLVM are used to cross-compile the beacon, loaders and transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+    </p>
+    <hr>
+</details>
+
+#### 3. Developing
 
 <details>
     <summary>The basics</summary>
@@ -201,7 +201,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <hr>
 </details>
 
-### 4. Compiling
+#### 4. Compiling
 
 <details>
     <summary>Compile your code</summary>
@@ -213,7 +213,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <hr>
 </details>
 
-### 5. Testing
+#### 5. Testing
 
 <details>
     <summary>Running your shellcode</summary>
@@ -243,7 +243,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <hr>
 </details>
 
-### 6. Advanced
+## Advanced usage
 
 <details>
     <summary>Modification & compilation of the pre-shipped loaders</summary>
@@ -274,7 +274,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <hr>
 </details>
 
-# Roadmap
+## Roadmap
 
 There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
@@ -326,10 +326,16 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
     <hr>
 </details>
 
-# Issues & requests
+## Limitations
+
+There is currently one known limitation in the use of Dittobytes.
+
+* LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types only work in full executables and not in the shellcode.
+
+## Issues & requests
 
 Issues or new feature requests can be reported via the [issue tracker](https://github.com/tijme/dittobytes/issues). Please make sure your issue or feature has not yet been reported by anyone else before submitting a new one.
 
-# License & copyright
+## License & copyright
 
 Copyright &copy; 2025 Tijme Gommers. Dittobytes is released under the Mozilla Public License Version 2.0. View [LICENSE.md](https://github.com/tijme/dittobytes/blob/master/LICENSE.md) for the full license. Dittobytes depends on various open-source components which all have their own license and copyright.

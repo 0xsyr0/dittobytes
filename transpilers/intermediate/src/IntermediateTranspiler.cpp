@@ -33,6 +33,7 @@
  * Modules
  */
 #include "modules/expand_memcpy_calls/ExpandMemcpyCallsModule.cpp"
+#include "modules/expand_memset_calls/ExpandMemsetCallsModule.cpp"
 #include "modules/move_globals_to_stack/MoveGlobalsToStackModule.cpp"
 
 /**
@@ -66,6 +67,9 @@ struct IntermediateTranspiler : PassInfoMixin<IntermediateTranspiler> {
 
         // Module 1: Expand `memcpy` calls
         modified = ExpandMemcpyCallsModule().run(F) || modified;
+
+        // Module 2: Expand `memset` calls
+        modified = ExpandMemsetCallsModule().run(F) || modified;
 
         return modified ? PreservedAnalyses::none() : PreservedAnalyses::all();
     }

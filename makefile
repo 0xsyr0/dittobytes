@@ -16,7 +16,7 @@
 
 DEBUG                                := false
 BUILD_DIR                            := ./builds
-TEST_FILES                           := $(basename $(notdir $(wildcard ./tests/*)))
+TESTS_DIR                            := ./tests
 SOURCE_PATH                          ?= ./beacon/main.c
 PYTHON_PATH                          := python3
 LLVM_DIR_WIN                         := /opt/llvm-winlin/bin
@@ -77,9 +77,14 @@ endif
 ## Default runs                         ##
 ##########################################
 
+# By default compile all beacons
 all: check_environment beacons
 
-beacons: check_environment   \
+# Alias for all beacons
+beacons: check_environment beacon-all-all
+
+# All beacons
+beacon-all-all: check_environment \
 	$(WIN_AMD64_BEACON_NAME) \
 	$(WIN_ARM64_BEACON_NAME) \
 	$(LIN_AMD64_BEACON_NAME) \
@@ -87,16 +92,28 @@ beacons: check_environment   \
 	$(MAC_AMD64_BEACON_NAME) \
 	$(MAC_ARM64_BEACON_NAME)
 
+# Platform specific beacons
+beacon-win-all: check_environment $(WIN_AMD64_BEACON_NAME) $(WIN_ARM64_BEACON_NAME)
+beacon-lin-all: check_environment $(LIN_AMD64_BEACON_NAME) $(LIN_ARM64_BEACON_NAME)
+beacon-mac-all: check_environment $(MAC_AMD64_BEACON_NAME) $(MAC_ARM64_BEACON_NAME)
+
+# Architecture specific beacons
+beacon-all-amd64: check_environment $(WIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_NAME) $(MAC_AMD64_BEACON_NAME)
+beacon-all-arm64: check_environment $(WIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_NAME) $(MAC_ARM64_BEACON_NAME)
+
+# Loaders
 loaders: check_environment 
 	@echo "[+] Calling \`all\` in loaders makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./loaders/
 
+# Transpilers
 transpilers: check_environment
 	@echo "[+] Calling \`all\` in intermediate transpiler makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/intermediate/
 	@echo "[+] Calling \`all\` in machine transpiler makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/machine/
 
+# Everything
 extensive: check_environment transpilers loaders beacons
 
 ##########################################
@@ -105,23 +122,36 @@ extensive: check_environment transpilers loaders beacons
 
 test-suite-build: check_environment
 	@set -e; \
-	for TEST_FILE in $(TEST_FILES); do \
-		echo "[+] TestSuite building \`$$TEST_FILE\`."; \
-		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=false BEACON_NAME="$$TEST_FILE-original" --no-print-directory beacons; \
-		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=true BEACON_NAME="$$TEST_FILE-transpiled-1" --no-print-directory beacons; \
-		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=true BEACON_NAME="$$TEST_FILE-transpiled-2" --no-print-directory beacons; \
-		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=false MM_MODIFY_MOV_IMMEDIATE=true BEACON_NAME="$$TEST_FILE-modify-mov-immediate" --no-print-directory beacons; \
-		$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="./tests/$$TEST_FILE.c" MM_DEFAULT=false MM_RANDOM_REGISTER_ALLOCATION=true BEACON_NAME="$$TEST_FILE-random-register-allocation" --no-print-directory beacons; \
+	for TEST_OS in $(TESTS_DIR)/*; do \
+		for TEST_ARCH in $$TEST_OS/*; do \
+			for TEST_FILE in $$TEST_ARCH/*; do \
+				[ -f "$$TEST_FILE" ] || continue; \
+				TEST_OS_BASENAME=$$(basename "$$TEST_OS"); \
+				TEST_ARCH_BASENAME=$$(basename "$$TEST_ARCH"); \
+				TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
+				echo "[+] TestSuite building \`$$TEST_FILE_BASENAME\` for \`$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME\`."; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_modify_mov_immediate MM_DEFAULT=false MM_MODIFY_MOV_IMMEDIATE=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_random_register_allocation MM_DEFAULT=false MM_RANDOM_REGISTER_ALLOCATION=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
+			done \
+		done \
 	done
 
 test-suite-test: check_environment
 	@set -e; \
-	for TEST_FILE in $(TEST_FILES); do \
-		$(PYTHON_PATH) ./scripts/verify-feature-test.py original "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-original.bin; \
-		$(PYTHON_PATH) ./scripts/verify-feature-test.py modify-mov-immediate "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-modify-mov-immediate.bin; \
-		$(PYTHON_PATH) ./scripts/verify-feature-test.py random-register-allocation "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-random-register-allocation.bin; \
-		$(PYTHON_PATH) ./scripts/verify-feature-test.py transpiled "./tests/$$TEST_FILE.c" $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled-1.bin; \
-		$(PYTHON_PATH) ./scripts/verify-levenshtein-distance.py $$TEST_FILE $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled-1.bin $(BUILD_DIR)/beacon-$(CURRENT_PLATFORM)-$(CURRENT_ARCHITECTURE)-$$TEST_FILE-transpiled-2.bin; \
+	for TEST_OS in $(TESTS_DIR)/*; do \
+		for TEST_ARCH in $$TEST_OS/*; do \
+			for TEST_FILE in $$TEST_ARCH/*; do \
+				[ -f "$$TEST_FILE" ] || continue; \
+				TEST_OS_BASENAME=$$(basename "$$TEST_OS"); \
+				TEST_ARCH_BASENAME=$$(basename "$$TEST_ARCH"); \
+				TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
+				echo "[+] TestSuite testing \`$$TEST_FILE_BASENAME\` for \`$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME\`."; \
+				$(PYTHON_PATH) ./scripts/tests/test.py $${TEST_OS_BASENAME} $${TEST_ARCH_BASENAME} $${TEST_FILE_BASENAME%.*} $$TEST_FILE; \
+			done \
+		done \
 	done
 
 test: test-suite-build test-suite-test
@@ -152,9 +182,9 @@ endif
 WIN_AMD64_TARGET            := x86_64-w64-mingw32
 WIN_AMD64_DEFINES           := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellcode
 WIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
-WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
-WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
+WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone 
+WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) -global-isel=false
+WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone 
 
 $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -184,7 +214,7 @@ $(WIN_AMD64_BEACON_PATH).lkd: $(WIN_AMD64_BEACON_PATH).obj
 
 $(WIN_AMD64_BEACON_PATH).bin: $(WIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
 
 $(WIN_AMD64_BEACON_NAME): $(WIN_AMD64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -232,7 +262,7 @@ $(WIN_ARM64_BEACON_PATH).lkd: $(WIN_ARM64_BEACON_PATH).obj
 
 $(WIN_ARM64_BEACON_PATH).bin: $(WIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
 
 $(WIN_ARM64_BEACON_NAME): $(WIN_ARM64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -280,7 +310,7 @@ $(LIN_AMD64_BEACON_PATH).lkd: $(LIN_AMD64_BEACON_PATH).obj
 
 $(LIN_AMD64_BEACON_PATH).bin: $(LIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
 
 $(LIN_AMD64_BEACON_NAME): $(LIN_AMD64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -328,7 +358,7 @@ $(LIN_ARM64_BEACON_PATH).lkd: $(LIN_ARM64_BEACON_PATH).obj
 
 $(LIN_ARM64_BEACON_PATH).bin: $(LIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
 
 $(LIN_ARM64_BEACON_NAME): $(LIN_ARM64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -376,7 +406,7 @@ $(MAC_AMD64_BEACON_PATH).lkd: $(MAC_AMD64_BEACON_PATH).obj
 
 $(MAC_AMD64_BEACON_PATH).bin: $(MAC_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
 
 $(MAC_AMD64_BEACON_NAME): $(MAC_AMD64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -424,7 +454,7 @@ $(MAC_ARM64_BEACON_PATH).lkd: $(MAC_ARM64_BEACON_PATH).obj
 
 $(MAC_ARM64_BEACON_PATH).bin: $(MAC_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
 
 $(MAC_ARM64_BEACON_NAME): $(MAC_ARM64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
