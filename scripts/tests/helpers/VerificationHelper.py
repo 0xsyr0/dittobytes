@@ -167,8 +167,13 @@ class VerificationHelper:
 
     @staticmethod
     def get_verification_class(test_function):
-        """
+        """Get the class which contains the given test function.
+        
+        Args:
+            test_function (str): The name of the (supported) verification function.
 
+        Returns:
+            class: An initiated class which contains the test function.
         """
 
         available_verifications = {

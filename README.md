@@ -235,7 +235,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
         <br>
         <ul>
-        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
             <li>Build the tests:<br><code>make test-suite-build</code></li>
             <li>Run the tests:<br><code>make test-suite-test</code></li>
         </ul>
@@ -270,6 +270,21 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
             <li>Compile the transpilers:<br><code>make transpilers</code></li>
         </ul>
         Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphism.
+    </p>
+    <hr>
+</details>
+
+<details>
+    <summar>Compilation & running of one specific feature test</summary>
+    <hr>
+    <p>
+        The test-suite commands in the makefile usually compile and test all feature tests. If you just want to test one specific feature test, use the following commands:
+        <br>
+        <ul>
+            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+            <li>Build the test:<br><code>make TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c test-suite-build</code></li>
+            <li>Run the test:<br><code>make TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c  test-suite-test</code></li>
+        </ul>
     </p>
     <hr>
 </details>

@@ -126,6 +126,9 @@ test-suite-build: check_environment
 		for TEST_ARCH in $$TEST_OS/*; do \
 			for TEST_FILE in $$TEST_ARCH/*; do \
 				[ -f "$$TEST_FILE" ] || continue; \
+				if [ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ]; then \
+					continue; \
+				fi; \
 				TEST_OS_BASENAME=$$(basename "$$TEST_OS"); \
 				TEST_ARCH_BASENAME=$$(basename "$$TEST_ARCH"); \
 				TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
@@ -145,6 +148,9 @@ test-suite-test: check_environment
 		for TEST_ARCH in $$TEST_OS/*; do \
 			for TEST_FILE in $$TEST_ARCH/*; do \
 				[ -f "$$TEST_FILE" ] || continue; \
+				if [ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ]; then \
+					continue; \
+				fi; \
 				TEST_OS_BASENAME=$$(basename "$$TEST_OS"); \
 				TEST_ARCH_BASENAME=$$(basename "$$TEST_ARCH"); \
 				TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
@@ -183,7 +189,7 @@ WIN_AMD64_TARGET            := x86_64-w64-mingw32
 WIN_AMD64_DEFINES           := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellcode
 WIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone 
-WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) -global-isel=false
+WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone 
 
 $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
