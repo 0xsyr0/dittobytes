@@ -275,16 +275,17 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 </details>
 
 <details>
-    <summar>Compilation & running of one specific feature test</summary>
+    <summary>Compiling & running one specific feature test</summary>
     <hr>
     <p>
-        The test-suite commands in the makefile usually compile and test all feature tests. If you just want to test one specific feature test, use the following commands:
+        The test-suite commands in the makefile usually compile and test all feature tests (cross-os and cross-architecture). If you want to test just one specific feature test, or if you want to to test build artifacts for a specific os or architecture, use the commands below. You can adjust the <code>TEST_*</code> arguments to your needs.
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Build the test:<br><code>make TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c test-suite-build</code></li>
-            <li>Run the test:<br><code>make TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c  test-suite-test</code></li>
+            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c test-suite-build</code></li>
+            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c test-suite-test</code></li>
         </ul>
+        The above example would build the feature test <code>3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case ~5 (<code>1 × 1 × 1 × 5</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
     </p>
     <hr>
 </details>
@@ -303,24 +304,34 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <th>Source</th>
         </tr>
         <tr>
-            <td>✅ Done</td>
+            <td>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release-1.0.0</a>)</td>
+            <td>Register reallocation (randomize the registers to be used).</td>
+            <td><a href="https://github.com/tijme/forked-dittobytes-llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp">LLVM source</a></td>
+        </tr>
+        <tr>
+            <td>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release-1.0.1</a>)</td>
+            <td>Swap nullifications (e.g. <code>`xor [eax], [eax]`</code> → <code>`mov [eax], 0`</code>).</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release-1.0.0</a>)</td>
             <td>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>)</td>
             <td><a href="https://github.com/tijme/dittobytes/blob/master/transpilers/machine/src/modules/modify_mov_immediate/ModifyMovImmediateModule.cpp">MachineTranspiler</a></td>
         </tr>
         <tr>
             <td>⏳ ToDo</td>
-            <td>More substitution options for the existing immediate substitution module.</td>
+            <td>ToDo: More substitution options for the existing immediate substitution module.</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>⏳ ToDo</td>
+            <td>ToDo: Swap simple math (e.g., <code>`sub [reg], imm`</code> → <code>`add [reg], -imm`</code>).</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
             <td>⏳ ToDo</td>
             <td>ToDo: Instruction substitution (e.g., <code>`mov [mem], imm`</code> → <code>`push imm; pop [mem]`</code>).</td>
             <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>✅ Done</td>
-            <td>Register reallocation (randomize the registers to be used).</td>
-            <td><a href="https://github.com/tijme/forked-dittobytes-llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp">LLVM source</a></td>
         </tr>
         <tr>
             <td>⏳ ToDo</td>
@@ -335,8 +346,8 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
     <summary>Other To-Dos</summary>
     <hr>
     <ul>
-        <li>Test & report Levenshtein distance of different shellcode compilations.</li>
-        <li>Implement a more complex and larger feature test to verify correctness of compiled shellcode.</li>
+        <li>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release-1.0.1</a>): Implement a more complex and larger feature test to verify correctness of compiled shellcode.</li>
+        <li>⏳ ToDo: Test & report Levenshtein distance of different shellcode compilations.</li>
     </ul>
     <hr>
 </details>

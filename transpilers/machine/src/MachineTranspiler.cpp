@@ -35,6 +35,7 @@
  * Modules
  */
 #include "modules/modify_mov_immediate/ModifyMovImmediateModule.cpp"
+#include "modules/modify_xor_reg_reg/ModifyXorRegRegModule.cpp"
 
 /**
  * Namespace(s) to use
@@ -56,6 +57,32 @@ private:
      * Whether this class modified the machine function.
      */
     bool modified = false;
+
+    /**
+     * Available steps in the pass pipeline where this pass is invoked.
+     */
+    enum MachineTranspilerStep {
+        UnknownStep,
+        FirstStep,
+        LastStep
+    };
+
+    /**
+     * Retrieve a state of where we currently are in the pass pipeline.
+     * 
+     * @returns MachineTranspilerStep Where in the pass pipeline we currently are.
+     */
+    MachineTranspilerStep getMachineTranspilerStep() {
+        const char* machineTranspilerStep = std::getenv("MACHINE_TRANSPILER_STEP");
+
+        if (machineTranspilerStep) {
+            if (std::string(machineTranspilerStep) == "first") return FirstStep;
+            if (std::string(machineTranspilerStep) == "last") return LastStep;
+        }
+
+        return UnknownStep;
+    }
+
 
 public:
 
@@ -85,6 +112,8 @@ public:
         return "MachineTranspiler";
     }
 
+
+
     /**
      * Main execution method for the MachineTranspiler pass.
      *
@@ -95,10 +124,23 @@ public:
      * @return bool Indicates if the machine function was modified.
      */
     bool runOnMachineFunction(MachineFunction &MF) override {
-        dbgs() << "      ↳ MachineTranspiler passing function `" << MF.getName() << "(...)`.\n";
+        MachineTranspilerStep step = getMachineTranspilerStep();
 
-        // Module 1: Modify `mov` immediate's
-        modified = ModifyMovImmediateModule().runOnMachineFunction(MF) || modified;
+        dbgs() << "      ↳ MachineTranspiler passing function `" << MF.getName() << "(...)` for step `" << step << "`.\n";
+
+        switch (step) {
+            case FirstStep:
+                // Module 1: Modify `mov` immediate's
+                modified = ModifyMovImmediateModule().runOnMachineFunction(MF) || modified;
+                break;
+            case LastStep:
+                // Module 2: Replace `xor reg, reg` instructions
+                modified = ModifyXorRegRegModule().runOnMachineFunction(MF) || modified;
+                break;
+            case UnknownStep:        
+                dbgs() << "        ↳ Unknown step `" << step << "`.\n";
+                break;
+        }
 
         return modified;
     }

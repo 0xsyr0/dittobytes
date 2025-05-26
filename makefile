@@ -37,8 +37,15 @@ IS_COMPILER_CONTAINER  := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || 
 ##########################################
 
 MM_DEFAULT						     ?= true
+
 MM_MODIFY_MOV_IMMEDIATE              ?= $(MM_DEFAULT)
+MM_TEST_MODIFY_MOV_IMMEDIATE         ?= $(MM_MODIFY_MOV_IMMEDIATE)
+
+MM_MODIFY_XOR_REG_REG                ?= $(MM_DEFAULT)
+MM_TEST_MODIFY_XOR_REG_REG           ?= $(MM_MODIFY_XOR_REG_REG)
+
 MM_RANDOM_REGISTER_ALLOCATION        ?= $(MM_DEFAULT)
+MM_TEST_RANDOM_REGISTER_ALLOCATION   ?= $(MM_RANDOM_REGISTER_ALLOCATION)
 
 ##########################################
 ## Platform & architecture              ##
@@ -122,43 +129,45 @@ extensive: check_environment transpilers loaders beacons
 
 test-suite-build: check_environment
 	@set -e; \
-	for TEST_OS in $(TESTS_DIR)/*; do \
-		for TEST_ARCH in $$TEST_OS/*; do \
-			for TEST_FILE in $$TEST_ARCH/*; do \
+	for AVAILABLE_TEST_OS in $(TESTS_DIR)/*; do \
+		for AVAILABLE_TEST_ARCH in $$AVAILABLE_TEST_OS/*; do \
+			for TEST_FILE in $$AVAILABLE_TEST_ARCH/*; do \
 				[ -f "$$TEST_FILE" ] || continue; \
-				if [ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ]; then \
-					continue; \
-				fi; \
-				TEST_OS_BASENAME=$$(basename "$$TEST_OS"); \
-				TEST_ARCH_BASENAME=$$(basename "$$TEST_ARCH"); \
-				TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
-				echo "[+] TestSuite building \`$$TEST_FILE_BASENAME\` for \`$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME\`."; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_modify_mov_immediate MM_DEFAULT=false MM_MODIFY_MOV_IMMEDIATE=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${TEST_OS_BASENAME}_$${TEST_ARCH_BASENAME}_$${TEST_FILE_BASENAME%.*}_random_register_allocation MM_DEFAULT=false MM_RANDOM_REGISTER_ALLOCATION=true --no-print-directory beacon-$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME; \
+				AVAILABLE_TEST_OS_BASENAME=$$(basename "$$AVAILABLE_TEST_OS"); \
+				AVAILABLE_TEST_ARCH_BASENAME=$$(basename "$$AVAILABLE_TEST_ARCH"); \
+				AVAILABLE_TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
+				[ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ] && continue; \
+				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$$AVAILABLE_TEST_OS_BASENAME"; fi; \
+				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$$AVAILABLE_TEST_ARCH_BASENAME"; fi; \
+				echo "[+] TestSuite building \`$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_modify_mov_immediate MM_DEFAULT=false MM_MODIFY_MOV_IMMEDIATE=true MM_TEST_MODIFY_MOV_IMMEDIATE=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_modify_xor_reg_reg MM_DEFAULT=false MM_MODIFY_XOR_REG_REG=true MM_TEST_MODIFY_XOR_REG_REG=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_random_register_allocation MM_DEFAULT=false MM_RANDOM_REGISTER_ALLOCATION=true MM_TEST_RANDOM_REGISTER_ALLOCATION=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
 			done \
 		done \
 	done
 
 test-suite-test: check_environment
 	@set -e; \
-	for TEST_OS in $(TESTS_DIR)/*; do \
-		for TEST_ARCH in $$TEST_OS/*; do \
-			for TEST_FILE in $$TEST_ARCH/*; do \
+	for AVAILABLE_TEST_OS in $(TESTS_DIR)/*; do \
+		for AVAILABLE_TEST_ARCH in $$AVAILABLE_TEST_OS/*; do \
+			for TEST_FILE in $$AVAILABLE_TEST_ARCH/*; do \
 				[ -f "$$TEST_FILE" ] || continue; \
-				if [ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ]; then \
-					continue; \
-				fi; \
-				TEST_OS_BASENAME=$$(basename "$$TEST_OS"); \
-				TEST_ARCH_BASENAME=$$(basename "$$TEST_ARCH"); \
-				TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
-				echo "[+] TestSuite testing \`$$TEST_FILE_BASENAME\` for \`$$TEST_OS_BASENAME-$$TEST_ARCH_BASENAME\`."; \
-				$(PYTHON_PATH) ./scripts/tests/test.py $${TEST_OS_BASENAME} $${TEST_ARCH_BASENAME} $${TEST_FILE_BASENAME%.*} $$TEST_FILE; \
-			done \
-		done \
-	done
+				AVAILABLE_TEST_OS_BASENAME=$$(basename "$$AVAILABLE_TEST_OS"); \
+				AVAILABLE_TEST_ARCH_BASENAME=$$(basename "$$AVAILABLE_TEST_ARCH"); \
+				AVAILABLE_TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
+				[ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ] && continue; \
+				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$${AVAILABLE_TEST_OS_BASENAME}"; fi; \
+				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$${AVAILABLE_TEST_ARCH_BASENAME}"; fi; \
+				echo "[+] TestSuite testing \`$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
+				$(PYTHON_PATH) ./scripts/tests/test.py $${AVAILABLE_TEST_OS_BASENAME} $${AVAILABLE_TEST_ARCH_BASENAME} $${AVAILABLE_TEST_FILE_BASENAME%.*} $$TEST_FILE $$BEACON_OS $$BEACON_ARCH; \
+			done; \
+		done; \
+	done; \
+	echo "[+] TestSuite finished successfully!";
 
 test: test-suite-build test-suite-test
 
@@ -167,7 +176,10 @@ test: test-suite-build test-suite-test
 ##########################################
 
 check_environment:
-	@echo "[+] Running on platform \`$(CURRENT_PLATFORM)\` and architecture \`$(CURRENT_ARCHITECTURE)\`."
+	@echo "[+] Current makefile configuration for platform \`$(CURRENT_PLATFORM)\` and architecture \`$(CURRENT_ARCHITECTURE)\`:"
+	@echo "    MM_MODIFY_MOV_IMMEDIATE:         \`$(MM_MODIFY_MOV_IMMEDIATE)\` (testing: \`$(MM_TEST_MODIFY_MOV_IMMEDIATE)\`)"
+	@echo "    MM_MODIFY_XOR_REG_REG:           \`$(MM_MODIFY_XOR_REG_REG)\` (testing: \`$(MM_TEST_MODIFY_XOR_REG_REG)\`)"
+	@echo "    MM_RANDOM_REGISTER_ALLOCATION:   \`$(MM_RANDOM_REGISTER_ALLOCATION)\` (testing: \`$(MM_TEST_RANDOM_REGISTER_ALLOCATION)\`)"
 ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
@@ -197,22 +209,25 @@ $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) clang $(WIN_AMD64_BEACON_CL1FLAGS) $< -o $@
 
-$(WIN_AMD64_BEACON_PATH).mir: $(WIN_AMD64_BEACON_PATH).ll
+$(WIN_AMD64_BEACON_PATH).meta0.mir: $(WIN_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -stop-before=regallocfast -o $@ $<
 
-$(WIN_AMD64_BEACON_PATH).meta.mir: $(WIN_AMD64_BEACON_PATH).mir
+$(WIN_AMD64_BEACON_PATH).meta1.mir: $(WIN_AMD64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
-else
-	@echo "    - Skipping compile of $@."
-	@cp $< $@
-endif
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta.mir
+$(WIN_AMD64_BEACON_PATH).meta2.mir: $(WIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -start-before=regallocfast -stop-after=virtregrewriter -o $@ $<
+
+$(WIN_AMD64_BEACON_PATH).meta3.mir: $(WIN_AMD64_BEACON_PATH).meta2.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+
+$(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta3.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).lkd: $(WIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -245,22 +260,25 @@ $(WIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) clang $(WIN_ARM64_BEACON_CL1FLAGS) $< -o $@
 
-$(WIN_ARM64_BEACON_PATH).mir: $(WIN_ARM64_BEACON_PATH).ll
+$(WIN_ARM64_BEACON_PATH).meta0.mir: $(WIN_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -stop-before=regallocfast -o $@ $<
 
-$(WIN_ARM64_BEACON_PATH).meta.mir: $(WIN_ARM64_BEACON_PATH).mir
+$(WIN_ARM64_BEACON_PATH).meta1.mir: $(WIN_ARM64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
-else
-	@echo "    - Skipping compile of $@."
-	@cp $< $@
-endif
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta.mir
+$(WIN_ARM64_BEACON_PATH).meta2.mir: $(WIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -start-before=regallocfast -stop-after=virtregrewriter -o $@ $<
+
+$(WIN_ARM64_BEACON_PATH).meta3.mir: $(WIN_ARM64_BEACON_PATH).meta2.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+
+$(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta3.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).lkd: $(WIN_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -293,22 +311,25 @@ $(LIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) clang $(LIN_AMD64_BEACON_CL1FLAGS) $< -o $@
 
-$(LIN_AMD64_BEACON_PATH).mir: $(LIN_AMD64_BEACON_PATH).ll
+$(LIN_AMD64_BEACON_PATH).meta0.mir: $(LIN_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -stop-before=regallocfast -o $@ $<
 
-$(LIN_AMD64_BEACON_PATH).meta.mir: $(LIN_AMD64_BEACON_PATH).mir
-ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
+$(LIN_AMD64_BEACON_PATH).meta1.mir: $(LIN_AMD64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
-else
-	@echo "    - Skipping compile of $@."
-	@cp $< $@
-endif
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta.mir
+$(LIN_AMD64_BEACON_PATH).meta2.mir: $(LIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -start-before=regallocfast -stop-after=virtregrewriter -o $@ $<
+
+$(LIN_AMD64_BEACON_PATH).meta3.mir: $(LIN_AMD64_BEACON_PATH).meta2.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+
+$(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta3.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).lkd: $(LIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -341,22 +362,25 @@ $(LIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) clang $(LIN_ARM64_BEACON_CL1FLAGS) $< -o $@
 
-$(LIN_ARM64_BEACON_PATH).mir: $(LIN_ARM64_BEACON_PATH).ll
+$(LIN_ARM64_BEACON_PATH).meta0.mir: $(LIN_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -stop-before=regallocfast -o $@ $<
 
-$(LIN_ARM64_BEACON_PATH).meta.mir: $(LIN_ARM64_BEACON_PATH).mir
+$(LIN_ARM64_BEACON_PATH).meta1.mir: $(LIN_ARM64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
-else
-	@echo "    - Skipping compile of $@."
-	@cp $< $@
-endif
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta.mir
+$(LIN_ARM64_BEACON_PATH).meta2.mir: $(LIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_LIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -start-before=regallocfast -stop-after=virtregrewriter -o $@ $<
+
+$(LIN_ARM64_BEACON_PATH).meta3.mir: $(LIN_ARM64_BEACON_PATH).meta2.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+
+$(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta3.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).lkd: $(LIN_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -389,22 +413,25 @@ $(MAC_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) clang $(MAC_AMD64_BEACON_CL1FLAGS) $< -o $@
 
-$(MAC_AMD64_BEACON_PATH).mir: $(MAC_AMD64_BEACON_PATH).ll
+$(MAC_AMD64_BEACON_PATH).meta0.mir: $(MAC_AMD64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -stop-before=regallocfast -o $@ $<
 
-$(MAC_AMD64_BEACON_PATH).meta.mir: $(MAC_AMD64_BEACON_PATH).mir
+$(MAC_AMD64_BEACON_PATH).meta1.mir: $(MAC_AMD64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
-else
-	@echo "    - Skipping compile of $@."
-	@cp $< $@
-endif
+	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta.mir
+$(MAC_AMD64_BEACON_PATH).meta2.mir: $(MAC_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -start-before=regallocfast -stop-after=virtregrewriter -o $@ $<
+
+$(MAC_AMD64_BEACON_PATH).meta3.mir: $(MAC_AMD64_BEACON_PATH).meta2.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+
+$(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta3.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).lkd: $(MAC_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -437,22 +464,25 @@ $(MAC_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) clang $(MAC_ARM64_BEACON_CL1FLAGS) $< -o $@
 
-$(MAC_ARM64_BEACON_PATH).mir: $(MAC_ARM64_BEACON_PATH).ll
+$(MAC_ARM64_BEACON_PATH).meta0.mir: $(MAC_ARM64_BEACON_PATH).ll
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -stop-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -stop-before=regallocfast -o $@ $<
 
-$(MAC_ARM64_BEACON_PATH).meta.mir: $(MAC_ARM64_BEACON_PATH).mir
+$(MAC_ARM64_BEACON_PATH).meta1.mir: $(MAC_ARM64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-ifeq ($(MM_MODIFY_MOV_IMMEDIATE), true)
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
-else
-	@echo "    - Skipping compile of $@."
-	@cp $< $@
-endif
+	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
-$(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta.mir
+$(MAC_ARM64_BEACON_PATH).meta2.mir: $(MAC_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=finalize-isel -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -start-before=regallocfast -stop-after=virtregrewriter -o $@ $<
+
+$(MAC_ARM64_BEACON_PATH).meta3.mir: $(MAC_ARM64_BEACON_PATH).meta2.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+
+$(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta3.mir
+	@echo "    - Intermediate compile of $@."
+	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).lkd: $(MAC_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."

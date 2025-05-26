@@ -74,6 +74,18 @@ public:
         return rng;
     }
 
+    /**
+     * Get a positive result 1 in X times.
+     * 
+     * @param int x The one in X chance variable.
+     * @return bool Positive if the 1 in X chance hit.
+     */
+    static bool getChanceOneIn(int x) {
+        auto rng = RandomHelper::getRandomGenerator();
+        std::uniform_int_distribution<int> dist(1, x);
+        return dist(rng) == 1;
+    }
+
 private:
 
     /**

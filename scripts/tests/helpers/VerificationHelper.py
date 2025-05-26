@@ -90,12 +90,14 @@ class VerificationHelper:
         return available_metamorphications
 
     @staticmethod
-    def get_feature_tests(shellcode_is_compatible_with_os, shellcode_is_compatible_with_arch, shellcode_feature_test_file_name, shellcode_feature_test_file_path):
+    def get_feature_tests(shellcode_is_compatible_with_os, filter_os, shellcode_is_compatible_with_arch, filter_arch, shellcode_feature_test_file_name, shellcode_feature_test_file_path):
         """Return a dict of all verifications to check, and for which shellcodes.
 
         Args:
             shellcode_is_compatible_with_os (str): The OS the shellcode could potentially run on.
+            filter_os (str): Only run feature tests for this specific OS.
             shellcode_is_compatible_with_arch (str): The architecture the shellcode could potentially run on.
+            filter_arch (str): Only run feature tests for this specific architecture.
             shellcode_feature_test_file_name (str): The file name of the feature test.
             shellcode_feature_test_file_path (str): The file path of the feature test.
 
@@ -125,6 +127,13 @@ class VerificationHelper:
 
                     metamorphications = available_metamorphications if verify_match_metamorphication == 'all' else [verify_match_metamorphication]
                     for metamorphication in metamorphications:
+
+                        # If we are running specific tests, only add those to the return dict
+                        if filter_os != 'all' and filter_os != verify_match_os:
+                            continue
+
+                        if filter_arch != 'all' and filter_arch != verify_match_arch:
+                            continue
                
                         # Define shellcode test file index key
                         shellcode_file_path = './builds/beacon-{}-{}-tests_{}_{}_{}_{}.bin'.format(

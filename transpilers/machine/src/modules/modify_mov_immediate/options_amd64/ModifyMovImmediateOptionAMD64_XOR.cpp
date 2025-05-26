@@ -45,7 +45,7 @@
 /**
  * Regular includes
  */
-#include "../../../helpers/RandomHelper.cpp"
+#include "../../../../../shared/helpers/RandomHelper.cpp"
 
 /**
  * Namespace(s) to use
@@ -70,9 +70,10 @@ public:
      * Main execution method for the ModifyMovImmediateOptionAMD64_XOR class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
+     * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
      * @return bool Indicates if the machine function was modified.
      */
-    bool runOnMachineFunction(MachineFunction &MF) {
+    bool runOnMachineFunction(MachineFunction &MF, bool modifyAll) {
         // Local variables
         const TargetInstrInfo *TII = MF.getSubtarget().getInstrInfo();
         MachineRegisterInfo &MRI = MF.getRegInfo();

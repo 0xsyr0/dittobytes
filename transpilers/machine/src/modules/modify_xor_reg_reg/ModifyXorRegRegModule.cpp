@@ -50,8 +50,8 @@
 /**
  * Modify `mov` immediate substitution options
  */
-#include "options_amd64/ModifyMovImmediateOptionAMD64_XOR.cpp"
-#include "options_arm64/ModifyMovImmediateOptionARM64_XOR.cpp"
+#include "options_amd64/ModifyXorRegRegOptionAMD64.cpp"
+#include "options_arm64/ModifyXorRegRegOptionARM64.cpp"
 
 /**
  * Namespace(s) to use
@@ -59,9 +59,9 @@
 using namespace llvm;
 
 /**
- * A class to obfuscate mov immediate values.
+ * A class to substitute `xor reg, reg` to `mov reg, 0`
  */
-class ModifyMovImmediateModule {
+class ModifyXorRegRegModule {
 
 private:
 
@@ -86,8 +86,8 @@ private:
      * @returns bool Positive if enabled.
      */
     bool moduleIsBeingTested() {
-        const char* MM_MODIFY_MOV_IMMEDIATE = std::getenv("MM_MODIFY_MOV_IMMEDIATE");
-        bool result = (MM_MODIFY_MOV_IMMEDIATE && std::string(MM_MODIFY_MOV_IMMEDIATE) == "true");
+        const char* MM_MODIFY_XOR_REG_REG = std::getenv("MM_MODIFY_XOR_REG_REG");
+        bool result = (MM_MODIFY_XOR_REG_REG && std::string(MM_MODIFY_XOR_REG_REG) == "true");
 
         return result;
     }
@@ -98,8 +98,8 @@ private:
      * @returns bool Positive if enabled.
      */
     bool moduleIsEnabled() {
-        const char* MM_TEST_MODIFY_MOV_IMMEDIATE = std::getenv("MM_TEST_MODIFY_MOV_IMMEDIATE");
-        bool result = (MM_TEST_MODIFY_MOV_IMMEDIATE && std::string(MM_TEST_MODIFY_MOV_IMMEDIATE) == "true");
+        const char* MM_TEST_MODIFY_XOR_REG_REG = std::getenv("MM_TEST_MODIFY_XOR_REG_REG");
+        bool result = (MM_TEST_MODIFY_XOR_REG_REG && std::string(MM_TEST_MODIFY_XOR_REG_REG) == "true");
 
         return result || moduleIsBeingTested();
     }
@@ -109,18 +109,18 @@ public:
     /**
      * Constructor that initializes the list of substitution option classes.
      */
-    ModifyMovImmediateModule() {
+    ModifyXorRegRegModule() {
         options_amd64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return ModifyMovImmediateOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return ModifyXorRegRegOptionAMD64().runOnMachineFunction(MF, modifyAll); }
         };
 
         options_arm64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return ModifyMovImmediateOptionARM64_XOR().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return ModifyXorRegRegOptionARM64().runOnMachineFunction(MF, modifyAll); }
         };
     }
 
     /**
-     * Main execution method for the ModifyMovImmediateModule class.
+     * Main execution method for the ModifyXorRegRegModule class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @return bool Indicates if the machine function was modified.
@@ -147,7 +147,7 @@ public:
                 break;
             // Unknown architecture
             default:
-                report_fatal_error(formatv("ModifyMovImmediateModule failed due to unknown architecture: {0}.", architecture));
+                report_fatal_error(formatv("ModifyXorRegRegModule failed due to unknown architecture: {0}.", architecture));
                 break;
         }
 

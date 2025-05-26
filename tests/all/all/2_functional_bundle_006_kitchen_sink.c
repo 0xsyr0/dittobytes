@@ -242,6 +242,7 @@ uint64_t TestMatrixMultiplication();
  * certain specific transpilations work correclty.
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      all                     metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      all                     returns                           uint64_t,18154888378             Must be the case without metamorphications.
  */
 uint64_t EntryFunction() {

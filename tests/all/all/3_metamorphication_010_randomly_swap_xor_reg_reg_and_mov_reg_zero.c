@@ -14,7 +14,12 @@
 
 /**
  * The main function of the code to test.
+ * 
+ * 
+ * @verify    all    amd64    modify_xor_reg_reg      hex_not_present                   31C0                             Is `xor, eax, eax` in HEX.
+ * @verify    all    arm64    modify_xor_reg_reg      hex_not_present                   E0031F2A                         Is `mov w0, wzr` in HEX.
+ * @verify    all    all      all                     returns                           uint32_t,0                       Must be the case without metamorphications.
  */
-uint64_t EntryFunction() {
-    return (uint64_t) 1ULL;
+uint32_t EntryFunction() {
+    return 0UL;
 }

@@ -63,7 +63,7 @@ class VerificationHexNotPresent:
             ))
 
         if not hex_is_present_in_original:
-            print('      Found `{}` in `{}-{}` shellcode without metamorphication: `{}`.'.format(
+            print('      Did not find `{}` in `{}-{}` shellcode without metamorphication: `{}`.'.format(
                 feature_test_specification['test_arguments'][0],
                 feature_test_specification['compiled_for_os'],
                 feature_test_specification['compiled_for_arch'],
