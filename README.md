@@ -304,17 +304,17 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <th>Source</th>
         </tr>
         <tr>
-            <td>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release-1.0.0</a>)</td>
+            <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">Release 1.0.0</a></td>
             <td>Register reallocation (randomize the registers to be used).</td>
             <td><a href="https://github.com/tijme/forked-dittobytes-llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp">LLVM source</a></td>
         </tr>
         <tr>
-            <td>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release-1.0.1</a>)</td>
+            <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">Release 1.0.2</a></td>
             <td>Swap nullifications (e.g. <code>`xor [eax], [eax]`</code> → <code>`mov [eax], 0`</code>).</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release-1.0.0</a>)</td>
+            <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">Release 1.0.0</a></td>
             <td>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>)</td>
             <td><a href="https://github.com/tijme/dittobytes/blob/master/transpilers/machine/src/modules/modify_mov_immediate/ModifyMovImmediateModule.cpp">MachineTranspiler</a></td>
         </tr>

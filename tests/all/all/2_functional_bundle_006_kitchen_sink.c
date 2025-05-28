@@ -236,6 +236,14 @@ void MultiplyMatrix(uint64_t A[3][3], uint64_t B[3][3], uint64_t C[3][3]);
 uint64_t TestMatrixMultiplication();
 
 /**
+ * Test return zero (by e.g. xor'ing the same register).
+ * 
+ * @return uint32_t Always zero.
+ */
+uint32_t TestNullification();
+
+
+/**
  * The main function of the code to test.
  * 
  * This test focusses on ensuring that complex code still functions. It's goal is not so much to check whether
@@ -268,6 +276,7 @@ uint64_t EntryFunction() {
     result += LinearCongruentialGenerator(10);
     result += TestKnapsackProblem();
     result += TestMatrixMultiplication();
+    result += TestNullification();
     
     return result;
 }
@@ -835,4 +844,13 @@ uint64_t TestMatrixMultiplication() {
     }
     
     return sum;
+}
+
+/**
+ * Test return zero (by e.g. xor'ing the same register).
+ * 
+ * @return uint32_t Always zero.
+ */
+uint32_t TestNullification() {
+    return 0UL;
 }

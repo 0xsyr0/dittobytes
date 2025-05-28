@@ -85,8 +85,11 @@ public:
             for (auto MachineInstruction = MachineBasicBlock.begin(); MachineInstruction != MachineBasicBlock.end(); ) {
                 MachineInstr &Instruction = *MachineInstruction++;
 
+                bool instructionIsXorToNullifyRegister = isXorToNullifyRegister(Instruction);
+                bool instructionIsMovToNullifyRegister = isMovToNullifyRegister(Instruction);
+
                 // Only modify `mov` instructions with immediate values
-                if (!isXorToNullifyRegister(Instruction)) {
+                if (!instructionIsXorToNullifyRegister && !instructionIsMovToNullifyRegister) {
                     continue;
                 }
 
@@ -98,9 +101,23 @@ public:
                     dbgs() << "          ↳ Skipping modification because change of 1 in X was not hit.";
                 }
 
-                // Build the new instruction: mov reg, 0
                 DebugLoc DL = Instruction.getDebugLoc();
-                BuildMI(MachineBasicBlock, Instruction, DL, TII->get(getXorSizeMovReplacement(Instruction)), Instruction.getOperand(0).getReg()).addImm(0).addImm(0);
+
+                if (instructionIsXorToNullifyRegister) {
+                    // Build the new instruction: mov reg, 0
+                    BuildMI(MachineBasicBlock, Instruction, DL, TII->get(getXorSizeMovReplacement(Instruction)), Instruction.getOperand(0).getReg())
+                        .addImm(0)
+                        .addImm(0);
+                }
+
+                if (instructionIsMovToNullifyRegister) {
+                    // Build the new instruction: xor reg, reg
+                    unsigned xorOpcode = getMovSizeXorReplacement(Instruction);
+                    BuildMI(MachineBasicBlock, Instruction, DL, TII->get(xorOpcode), Instruction.getOperand(0).getReg())
+                        .addReg((xorOpcode == AArch64::ORRWrs) ? AArch64::WZR : AArch64::XZR)
+                        .addReg((xorOpcode == AArch64::ORRWrs) ? AArch64::WZR : AArch64::XZR)
+                        .addImm(0);
+                }
 
                 Instruction.eraseFromParent();
                 modified = true;
@@ -115,10 +132,10 @@ private:
     /**
      * Checks if the given instruction is a XOR with two times the same registry (to nullify a register).
      * 
-     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine if it's a XOR to nullify a register.
+     * @param MachineFunction& instruction instruction The `MachineInstr` whose opcode will be checked to determine if it's a XOR to nullify a register.
      * @return bool Returns `true` if the instruction is a XOR to nullify a register, otherwise `false`.
      */
-    bool isXorToNullifyRegister(const MachineInstr &instruction) {
+    bool isXorToNullifyRegister(const MachineInstr& instruction) {
         unsigned opcode = instruction.getOpcode();
 
         if (instruction.getNumOperands() < 4) return false;
@@ -159,6 +176,30 @@ private:
     }
 
     /**
+     * Checks if the given instruction is a MOV with that moves zero to a register (to nullify a register).
+     * 
+     * @param MachineFunction& instruction instruction The `MachineInstr` whose opcode will be checked to determine if it's a MOV to nullify a register.
+     * @return bool Returns `true` if the instruction is a MOV to nullify a register, otherwise `false`.
+     */
+    bool isMovToNullifyRegister(const MachineInstr& instruction) {
+        unsigned opcode = instruction.getOpcode();
+
+        // Match only MOVZ (zeroing) instructions
+        if (opcode != AArch64::MOVZWi && opcode != AArch64::MOVZXi)
+            return false;
+
+        // Must have 3 operands: dest reg, imm, shift
+        if (instruction.getNumOperands() != 3)
+            return false;
+
+        const MachineOperand &immOp = instruction.getOperand(1);
+        const MachineOperand &shiftOp = instruction.getOperand(2);
+
+        // Check immediate and shift
+        return immOp.isImm() && immOp.getImm() == 0 && shiftOp.isImm() && shiftOp.getImm() == 0;
+    }
+
+    /**
      * Determines the MOV replacement opcode for a given XOR instruction opcode.
      * 
      * This function maps certain XOR instruction opcodes to corresponding MOV opcodes
@@ -184,6 +225,32 @@ private:
                 return AArch64::MOVZXi;
             default:
                 report_fatal_error(formatv("ModifyXorRegRegOptionARM64 - Unknown MOV replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                return 0;
+        }
+    }
+
+    /**
+     * Determines the XOR replacement opcode for a given MOV instruction opcode.
+     * 
+     * This function maps certain MOV instruction opcodes to corresponding XOR opcodes
+     * for AMD64 instructions. The provided `MachineInstr`'s opcode is checked and
+     * replaced with an appropriate MOV opcode based on the XOR instruction's size.
+     * 
+     * If the opcode does not match any known MOV instruction types, a fatal error is reported.
+     *
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding MOV opcode.
+     * @return unsigned The corresponding XOR opcode for the MOV instruction's immediate size.
+     */
+    unsigned getMovSizeXorReplacement(const MachineInstr &instruction) {
+        unsigned opcode = instruction.getOpcode();
+
+        switch (opcode) {
+            case AArch64::MOVZWi:
+                return AArch64::ORRWrs;
+            case AArch64::MOVZXi:
+                return AArch64::ORRXrs;
+            default:
+                report_fatal_error(formatv("ModifyXorRegRegOptionARM64 - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
