@@ -311,7 +311,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
         <tr>
             <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">Release 1.0.2</a></td>
             <td>Swap nullifications (e.g. <code>`xor [eax], [eax]`</code> → <code>`mov [eax], 0`</code>).</td>
-            <td>&nbsp;</td>
+            <td><a href="https://github.com/tijme/dittobytes/blob/master/transpilers/machine/src/modules/modify_xor_reg_reg/ModifyXorRegRegModule.cpp">MachineTranspiler</a></td>
         </tr>
         <tr>
             <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">Release 1.0.0</a></td>
