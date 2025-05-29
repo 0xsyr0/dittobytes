@@ -53,11 +53,11 @@ class VerificationMinimumLevenshteinDistance:
         result_enough = result_percentage >= result_percentage_required
 
         if result_enough:
-            # pass
-            print('      Succesfull. Levenshtein distance measurement: {} ({}% change)'.format(
-                result_absolute,
-                result_percentage
-            ))
+            pass
+            # print('      Succesfull. Levenshtein distance measurement: {} ({}% change)'.format(
+            #     result_absolute,
+            #     result_percentage
+            # ))
         else:
             print('      Levenshtein insufficient. Minimum change of {}% required for length {}, but got {}%.'.format(
                 result_percentage_required,
