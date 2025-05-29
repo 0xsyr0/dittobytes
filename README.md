@@ -32,7 +32,7 @@
     &nbsp;•&nbsp;
     <a href="#advanced-usage">Advanced usage</a>
     &nbsp;•&nbsp;
-    <a href="#roadmap">Roadmap</a>
+    <a href="#roadmap">Metamorphications</a>
     &nbsp;•&nbsp;
     <a href="#limitations">Limitations</a>
     &nbsp;•&nbsp;
@@ -51,7 +51,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 </p>
 
 <p>
-    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) transformations.
+    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
 </p>
 
 The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used for testing purposes.
@@ -282,10 +282,10 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c test-suite-build</code></li>
-            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c test-suite-test</code></li>
+            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c test-suite-build</code></li>
+            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c test-suite-test</code></li>
         </ul>
-        The above example would build the feature test <code>3_metamorphication_010_randomly_swap_xor_reg_reg_and_mov_reg_zero.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case ~5 (<code>1 × 1 × 1 × 5</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
+        The above example would build the feature test <code>3_metamorphication_010_transform_nullifications.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case ~5 (<code>1 × 1 × 1 × 5</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
     </p>
     <hr>
 </details>
@@ -295,50 +295,45 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
 <details>
-    <summary>Metamorphication</summary>
+    <summary>Metamorphications</summary>
     <hr>
-    <table>
-        <tr>
-            <th>Status</th>
-            <th>Description</th>
-            <th>Source</th>
-        </tr>
-        <tr>
-            <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">Release 1.0.0</a></td>
-            <td>Register reallocation (randomize the registers to be used).</td>
-            <td><a href="https://github.com/tijme/forked-dittobytes-llvm-project/blob/main/llvm/lib/CodeGen/RegAllocGreedy.cpp">LLVM source</a></td>
-        </tr>
-        <tr>
-            <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">Release 1.0.2</a></td>
-            <td>Swap nullifications (e.g. <code>`xor [eax], [eax]`</code> → <code>`mov [eax], 0`</code>).</td>
-            <td><a href="https://github.com/tijme/dittobytes/blob/master/transpilers/machine/src/modules/modify_xor_reg_reg/ModifyXorRegRegModule.cpp">MachineTranspiler</a></td>
-        </tr>
-        <tr>
-            <td>✅ Done<br><a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">Release 1.0.0</a></td>
-            <td>Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>)</td>
-            <td><a href="https://github.com/tijme/dittobytes/blob/master/transpilers/machine/src/modules/modify_mov_immediate/ModifyMovImmediateModule.cpp">MachineTranspiler</a></td>
-        </tr>
-        <tr>
-            <td>⏳ ToDo</td>
-            <td>ToDo: More substitution options for the existing immediate substitution module.</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>⏳ ToDo</td>
-            <td>ToDo: Swap simple math (e.g., <code>`sub [reg], imm`</code> → <code>`add [reg], -imm`</code>).</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>⏳ ToDo</td>
-            <td>ToDo: Instruction substitution (e.g., <code>`mov [mem], imm`</code> → <code>`push imm; pop [mem]`</code>).</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>⏳ ToDo</td>
-            <td>Insertion of fake basic blocks based on assembly from trusted software.</td>
-            <td>&nbsp;</td>
-        </tr>
-    </table>
+    <ul>
+        <li>
+            ✅ <b>RandomizeRegisterAllocation</b>: Randomizes the allocation order of CPU registers.
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
+        </li>
+        <li>
+            ✅ <b>TransformNullifications</b>: Substitutes e.g. <code>`xor [eax], [eax]`</code> with <code>`mov [eax], 0`</code>.
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.
+        </li>
+        <li>
+            ✅ Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
+        </li>
+        <li>
+            ⏳ More substitution options for the existing immediate substitution module.
+            <br/>
+            <sup>Yet to implement.</sup>
+        </li>
+        <li>
+            ⏳ Swap simple math (e.g., <code>`sub [reg], imm`</code> → <code>`add [reg], -imm`</code>).
+            <br/>
+            <sup>Yet to implement.</sup>
+        </li>
+        <li>
+            ⏳ Instruction substitution (e.g., <code>`mov [mem], imm`</code> → <code>`push imm; pop [mem]`</code>)
+            <br/>
+            <sup>Yet to implement.</sup>
+        </li>
+        <li>
+            ⏳ Insertion of fake basic blocks based on assembly from trusted software.
+            <br/>
+            <sup>Yet to implement.</sup>
+        </li>
+    </ul>
     <hr>
 </details>
 
@@ -346,8 +341,16 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
     <summary>Other To-Dos</summary>
     <hr>
     <ul>
-        <li>✅ Done (<a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release-1.0.1</a>): Implement a more complex and larger feature test to verify correctness of compiled shellcode.</li>
-        <li>⏳ ToDo: Test & report Levenshtein distance of different shellcode compilations.</li>
+        <li>
+            ✅ Implement a more complex and larger feature test to verify correctness of compiled shellcode.
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release 1.0.1</a>.
+        </li>
+        <li>
+            ⏳ Test & report Levenshtein distance of different shellcode compilations.
+            <br/>
+            <sup>Yet to implement.</sup>
+        </li>
     </ul>
     <hr>
 </details>

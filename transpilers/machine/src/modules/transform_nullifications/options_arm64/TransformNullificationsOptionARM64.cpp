@@ -54,7 +54,7 @@ using namespace llvm;
 /**
  * A class to obfuscate `mov` immediate values.
  */
-class ModifyXorRegRegOptionARM64 {
+class TransformNullificationsOptionARM64 {
 
 private:
 
@@ -66,7 +66,7 @@ private:
 public:
 
     /**
-     * Main execution method for the ModifyXorRegRegOptionARM64 class.
+     * Main execution method for the TransformNullificationsOptionARM64 class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -78,7 +78,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running ARM64 module: ModifyXorRegReg(modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running ARM64 module: TransformNullifications(modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
@@ -224,7 +224,7 @@ private:
             case AArch64::ORRXrs:
                 return AArch64::MOVZXi;
             default:
-                report_fatal_error(formatv("ModifyXorRegRegOptionARM64 - Unknown MOV replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformNullificationsOptionARM64 - Unknown MOV replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -250,7 +250,7 @@ private:
             case AArch64::MOVZXi:
                 return AArch64::ORRXrs;
             default:
-                report_fatal_error(formatv("ModifyXorRegRegOptionARM64 - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformNullificationsOptionARM64 - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }

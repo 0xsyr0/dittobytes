@@ -50,8 +50,8 @@
 /**
  * Modify `mov` immediate substitution options
  */
-#include "options_amd64/ModifyMovImmediateOptionAMD64_XOR.cpp"
-#include "options_arm64/ModifyMovImmediateOptionARM64_XOR.cpp"
+#include "options_amd64/TransformMovImmediatesOptionAMD64_XOR.cpp"
+#include "options_arm64/TransformMovImmediatesOptionARM64_XOR.cpp"
 
 /**
  * Namespace(s) to use
@@ -61,7 +61,7 @@ using namespace llvm;
 /**
  * A class to obfuscate mov immediate values.
  */
-class ModifyMovImmediateModule {
+class TransformMovImmediatesModule {
 
 private:
 
@@ -81,27 +81,27 @@ private:
     std::vector<std::function<bool(MachineFunction&, bool)>> options_arm64;
 
     /**
-     * Whether the module is being feature tested or not (default).
-     * 
-     * @returns bool Positive if enabled.
-     */
-    bool moduleIsBeingTested() {
-        const char* MM_MODIFY_MOV_IMMEDIATE = std::getenv("MM_MODIFY_MOV_IMMEDIATE");
-        bool result = (MM_MODIFY_MOV_IMMEDIATE && std::string(MM_MODIFY_MOV_IMMEDIATE) == "true");
-
-        return result;
-    }
-
-    /**
      * Whether the module is enabled (default) or disabled.
      * 
      * @returns bool Positive if enabled.
      */
     bool moduleIsEnabled() {
-        const char* MM_TEST_MODIFY_MOV_IMMEDIATE = std::getenv("MM_TEST_MODIFY_MOV_IMMEDIATE");
-        bool result = (MM_TEST_MODIFY_MOV_IMMEDIATE && std::string(MM_TEST_MODIFY_MOV_IMMEDIATE) == "true");
+        const char* MM_TEST_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TEST_TRANSFORM_MOV_IMMEDIATES");
+        bool result = (MM_TEST_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TEST_TRANSFORM_MOV_IMMEDIATES) == "true");
 
         return result || moduleIsBeingTested();
+    }
+
+    /**
+     * Whether the module is being feature tested or not (default).
+     * 
+     * @returns bool Positive if enabled.
+     */
+    bool moduleIsBeingTested() {
+        const char* MM_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TRANSFORM_MOV_IMMEDIATES");
+        bool result = (MM_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TRANSFORM_MOV_IMMEDIATES) == "true");
+
+        return result;
     }
 
 public:
@@ -109,18 +109,18 @@ public:
     /**
      * Constructor that initializes the list of substitution option classes.
      */
-    ModifyMovImmediateModule() {
+    TransformMovImmediatesModule() {
         options_amd64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return ModifyMovImmediateOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
 
         options_arm64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return ModifyMovImmediateOptionARM64_XOR().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
     }
 
     /**
-     * Main execution method for the ModifyMovImmediateModule class.
+     * Main execution method for the TransformMovImmediatesModule class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @return bool Indicates if the machine function was modified.
@@ -147,7 +147,7 @@ public:
                 break;
             // Unknown architecture
             default:
-                report_fatal_error(formatv("ModifyMovImmediateModule failed due to unknown architecture: {0}.", architecture));
+                report_fatal_error(formatv("TransformMovImmediatesModule failed due to unknown architecture: {0}.", architecture));
                 break;
         }
 
