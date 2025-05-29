@@ -112,8 +112,6 @@ public:
         return "MachineTranspiler";
     }
 
-
-
     /**
      * Main execution method for the MachineTranspiler pass.
      *

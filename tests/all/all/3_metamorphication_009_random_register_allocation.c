@@ -23,6 +23,7 @@
  *            OS     Arch     Metamorphication            Test                              Argument(s)                      Description
  * @verify    all    amd64    transform_mov_immediates    hex_not_present                   DA03B9FA227BA419                 Is `0x19A47B22FAB903DA` in HEX.
  * @verify    all    arm64    transform_mov_immediates    hex_not_present                   487B80D2                         Is `mov x8,#0x3da` in HEX.
+ * @verify    all    all      transpiled_1                minimum_levenshtein_distance      transpiled_2,35                  There must be a minimum % change per compile.
  * @verify    all    all      all                         returns                           uint64_t,11394632769328784690    Must be the case without metamorphications.
  */
 uint64_t EntryFunction() {

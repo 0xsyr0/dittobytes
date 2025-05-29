@@ -27,6 +27,7 @@ void xorcrypt(char* plainv, size_t plainc, char* passwv, size_t passwc);
  * Return a deterministic uint8_t.
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,20                  There must be a minimum % change per compile.
  * @verify    all    all      all                     returns                           uint8_t,2                        Must be the case without metamorphications.
  */
 uint8_t EntryFunction() {

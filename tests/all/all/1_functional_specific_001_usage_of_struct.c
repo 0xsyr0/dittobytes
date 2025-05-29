@@ -25,7 +25,8 @@ typedef struct {
  * The main function of the code to test.
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
- * @verify    all    all      all                     returns                           uint64_t,6352075299651498008     Must be the case without metamorphications.
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,35                  There must be a minimum % change per compile.
+ * @verify    all    all      all                     returns                           uint64_t,6352075299651498008     The return value must always be correct.
  */
 uint64_t EntryFunction() {
     // Usually stored in `.rodata`

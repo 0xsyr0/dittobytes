@@ -35,6 +35,7 @@ void multiply_matrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SI
  * certain specific transpilations work correctly.
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,20                  There must be a minimum % change per compile.
  * @verify    all    all      all                     returns                           uint32_t,100621                  Must be the case without metamorphications.
  */
 uint32_t EntryFunction() {
