@@ -15,12 +15,12 @@
 /**
  * The main function of the code to test.
  * 
- *            OS     Arch     Metamorphication        Test                              Argument(s)        Description
- * @verify    all    amd64    modify_mov_immediate    hex_not_present                   66B8FFFF           Is `mov eax, 0xffff8000` in HEX.
- * @verify    win    arm64    modify_mov_immediate    hex_not_present                   00008012           Is `mov w0, #0x8000` in HEX.
- * @verify    lin    arm64    modify_mov_immediate    hex_not_present                   00008012           Is `mov w0, #0x8000` in HEX.
- * @verify    mac    arm64    modify_mov_immediate    hex_not_present                   E0FF9F52           Is `mov w0, #0x8000` in HEX.
- * @verify    all    all      all                     returns                           uint16_t,65535     Must be the case without metamorphications.
+ *            OS     Arch     Metamorphication            Test                              Argument(s)        Description
+ * @verify    all    amd64    transform_mov_immediates    hex_not_present                   66B8FFFF           Is `mov eax, 0xffff8000` in HEX.
+ * @verify    win    arm64    transform_mov_immediates    hex_not_present                   00008012           Is `mov w0, #0x8000` in HEX.
+ * @verify    lin    arm64    transform_mov_immediates    hex_not_present                   00008012           Is `mov w0, #0x8000` in HEX.
+ * @verify    mac    arm64    transform_mov_immediates    hex_not_present                   E0FF9F52           Is `mov w0, #0x8000` in HEX.
+ * @verify    all    all      all                         returns                           uint16_t,65535     Must be the case without metamorphications.
  */
 uint16_t EntryFunction() {
     return (uint16_t) 65535;

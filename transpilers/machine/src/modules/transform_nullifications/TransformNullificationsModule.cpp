@@ -50,8 +50,8 @@
 /**
  * Modify `mov` immediate substitution options
  */
-#include "options_amd64/ModifyXorRegRegOptionAMD64.cpp"
-#include "options_arm64/ModifyXorRegRegOptionARM64.cpp"
+#include "options_amd64/TransformNullificationsOptionAMD64.cpp"
+#include "options_arm64/TransformNullificationsOptionARM64.cpp"
 
 /**
  * Namespace(s) to use
@@ -61,7 +61,7 @@ using namespace llvm;
 /**
  * A class to substitute `xor reg, reg` to `mov reg, 0`
  */
-class ModifyXorRegRegModule {
+class TransformNullificationsModule {
 
 private:
 
@@ -81,27 +81,27 @@ private:
     std::vector<std::function<bool(MachineFunction&, bool)>> options_arm64;
 
     /**
-     * Whether the module is being feature tested or not (default).
-     * 
-     * @returns bool Positive if enabled.
-     */
-    bool moduleIsBeingTested() {
-        const char* MM_MODIFY_XOR_REG_REG = std::getenv("MM_MODIFY_XOR_REG_REG");
-        bool result = (MM_MODIFY_XOR_REG_REG && std::string(MM_MODIFY_XOR_REG_REG) == "true");
-
-        return result;
-    }
-
-    /**
      * Whether the module is enabled (default) or disabled.
      * 
      * @returns bool Positive if enabled.
      */
     bool moduleIsEnabled() {
-        const char* MM_TEST_MODIFY_XOR_REG_REG = std::getenv("MM_TEST_MODIFY_XOR_REG_REG");
-        bool result = (MM_TEST_MODIFY_XOR_REG_REG && std::string(MM_TEST_MODIFY_XOR_REG_REG) == "true");
+        const char* MM_TRANSFORM_NULLIFICATIONS = std::getenv("MM_TRANSFORM_NULLIFICATIONS");
+        bool result = (MM_TRANSFORM_NULLIFICATIONS && std::string(MM_TRANSFORM_NULLIFICATIONS) == "true");
 
         return result || moduleIsBeingTested();
+    }
+
+    /**
+     * Whether the module is being feature tested or not (default).
+     * 
+     * @returns bool Positive if enabled.
+     */
+    bool moduleIsBeingTested() {
+        const char* MM_TEST_TRANSFORM_NULLIFICATIONS = std::getenv("MM_TEST_TRANSFORM_NULLIFICATIONS");
+        bool result = (MM_TEST_TRANSFORM_NULLIFICATIONS && std::string(MM_TEST_TRANSFORM_NULLIFICATIONS) == "true");
+
+        return result;
     }
 
 public:
@@ -109,18 +109,18 @@ public:
     /**
      * Constructor that initializes the list of substitution option classes.
      */
-    ModifyXorRegRegModule() {
+    TransformNullificationsModule() {
         options_amd64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return ModifyXorRegRegOptionAMD64().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return TransformNullificationsOptionAMD64().runOnMachineFunction(MF, modifyAll); }
         };
 
         options_arm64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return ModifyXorRegRegOptionARM64().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return TransformNullificationsOptionARM64().runOnMachineFunction(MF, modifyAll); }
         };
     }
 
     /**
-     * Main execution method for the ModifyXorRegRegModule class.
+     * Main execution method for the TransformNullificationsModule class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @return bool Indicates if the machine function was modified.
@@ -147,7 +147,7 @@ public:
                 break;
             // Unknown architecture
             default:
-                report_fatal_error(formatv("ModifyXorRegRegModule failed due to unknown architecture: {0}.", architecture));
+                report_fatal_error(formatv("TransformNullificationsModule failed due to unknown architecture: {0}.", architecture));
                 break;
         }
 

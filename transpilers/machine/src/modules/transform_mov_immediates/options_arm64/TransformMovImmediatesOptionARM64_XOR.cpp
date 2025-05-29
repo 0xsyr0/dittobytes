@@ -54,7 +54,7 @@ using namespace llvm;
 /**
  * A class to obfuscate `mov` immediate values.
  */
-class ModifyMovImmediateOptionARM64_XOR {
+class TransformMovImmediatesOptionARM64_XOR {
 
 private:
 
@@ -66,7 +66,7 @@ private:
 public:
 
     /**
-     * Main execution method for the ModifyMovImmediateOptionARM64_XOR class.
+     * Main execution method for the TransformMovImmediatesOptionARM64_XOR class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -78,7 +78,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running ARM64 ModifyMovImmediate module with random option `XOR`.\n";
+        dbgs() << "        ↳ Running ARM64 module: TransformMovImmediates(modifyAll=" << modifyAll << ").\n";
 
         // First convert `movn`, `movz` or `movk` instructions to regular movs
         normalizeMovs(MF);
@@ -166,7 +166,7 @@ private:
                 return 64;
                 break;
             default:
-                report_fatal_error(formatv("ModifyMovImmediateOptionARM64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -190,7 +190,7 @@ private:
             case AArch64::MOVi32imm: return AArch64::EORWrr;
             case AArch64::MOVi64imm: return AArch64::EORXrr;
             default:
-                report_fatal_error(formatv("ModifyMovImmediateOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }

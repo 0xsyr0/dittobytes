@@ -34,8 +34,8 @@
 /**
  * Modules
  */
-#include "modules/modify_mov_immediate/ModifyMovImmediateModule.cpp"
-#include "modules/modify_xor_reg_reg/ModifyXorRegRegModule.cpp"
+#include "modules/transform_mov_immediates/TransformMovImmediatesModule.cpp"
+#include "modules/transform_nullifications/TransformNullificationsModule.cpp"
 
 /**
  * Namespace(s) to use
@@ -131,11 +131,11 @@ public:
         switch (step) {
             case FirstStep:
                 // Module 1: Modify `mov` immediate's
-                modified = ModifyMovImmediateModule().runOnMachineFunction(MF) || modified;
+                modified = TransformMovImmediatesModule().runOnMachineFunction(MF) || modified;
                 break;
             case LastStep:
                 // Module 2: Replace `xor reg, reg` instructions
-                modified = ModifyXorRegRegModule().runOnMachineFunction(MF) || modified;
+                modified = TransformNullificationsModule().runOnMachineFunction(MF) || modified;
                 break;
             case UnknownStep:        
                 dbgs() << "        ↳ Unknown step `" << step << "`.\n";

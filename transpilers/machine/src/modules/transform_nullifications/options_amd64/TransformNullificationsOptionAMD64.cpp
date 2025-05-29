@@ -55,7 +55,7 @@ using namespace llvm;
 /**
  * A class to obfuscate mov immediate values.
  */
-class ModifyXorRegRegOptionAMD64 {
+class TransformNullificationsOptionAMD64 {
 
 private:
 
@@ -67,7 +67,7 @@ private:
 public:
 
     /**
-     * Main execution method for the ModifyXorRegRegOptionAMD64 class.
+     * Main execution method for the TransformNullificationsOptionAMD64 class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -79,7 +79,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running AMD64 ModifyXorRegReg module with random option `AMD64`.\n";
+        dbgs() << "        ↳ Running ARM64 module: TransformNullifications(modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
@@ -160,7 +160,7 @@ private:
             case X86::XOR32rr: return X86::MOV32ri;
             case X86::XOR64rr: return X86::MOV64ri;
             default:
-                report_fatal_error(formatv("ModifyXorRegRegOptionAMD64 - Unknown MOV replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformNullificationsOptionAMD64 - Unknown MOV replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }

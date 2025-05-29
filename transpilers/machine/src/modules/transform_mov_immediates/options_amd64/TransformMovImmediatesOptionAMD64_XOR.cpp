@@ -55,7 +55,7 @@ using namespace llvm;
 /**
  * A class to obfuscate mov immediate values.
  */
-class ModifyMovImmediateOptionAMD64_XOR {
+class TransformMovImmediatesOptionAMD64_XOR {
 
 private:
 
@@ -67,7 +67,7 @@ private:
 public:
 
     /**
-     * Main execution method for the ModifyMovImmediateOptionAMD64_XOR class.
+     * Main execution method for the TransformMovImmediatesOptionAMD64_XOR class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -79,7 +79,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running AMD64 ModifyMovImmediate module with random option `XOR`.\n";
+        dbgs() << "        ↳ Running AMD64 module: TransformMovImmediates(modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
@@ -181,7 +181,7 @@ private:
             // case X86::MOV64mi32:
             // case X86::MOV32mi64:
             default:
-                report_fatal_error(formatv("ModifyMovImmediateOptionAMD64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -216,7 +216,7 @@ private:
             // case X86::MOV64ri32: return X86::XOR64rr;
             // case X86::MOV64mi32: return X86::XOR64mi32;
             default:
-                report_fatal_error(formatv("ModifyMovImmediateOptionAMD64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }

@@ -36,16 +36,16 @@ IS_COMPILER_CONTAINER  := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || 
 ## Metamorphications                    ##
 ##########################################
 
-MM_DEFAULT						     ?= true
+MM_DEFAULT						        ?= true
 
-MM_MODIFY_MOV_IMMEDIATE              ?= $(MM_DEFAULT)
-MM_TEST_MODIFY_MOV_IMMEDIATE         ?= $(MM_MODIFY_MOV_IMMEDIATE)
+MM_TRANSFORM_MOV_IMMEDIATES             ?= $(MM_DEFAULT)
+MM_TEST_TRANSFORM_MOV_IMMEDIATES        ?= $(MM_TRANSFORM_MOV_IMMEDIATES)
 
-MM_MODIFY_XOR_REG_REG                ?= $(MM_DEFAULT)
-MM_TEST_MODIFY_XOR_REG_REG           ?= $(MM_MODIFY_XOR_REG_REG)
+MM_TRANSFORM_NULLIFICATIONS             ?= $(MM_DEFAULT)
+MM_TEST_TRANSFORM_NULLIFICATIONS        ?= $(MM_TRANSFORM_NULLIFICATIONS)
 
-MM_RANDOM_REGISTER_ALLOCATION        ?= $(MM_DEFAULT)
-MM_TEST_RANDOM_REGISTER_ALLOCATION   ?= $(MM_RANDOM_REGISTER_ALLOCATION)
+MM_RANDOMIZE_REGISTER_ALLOCATION        ?= $(MM_DEFAULT)
+MM_TEST_RANDOMIZE_REGISTER_ALLOCATION   ?= $(MM_RANDOMIZE_REGISTER_ALLOCATION)
 
 ##########################################
 ## Platform & architecture              ##
@@ -143,9 +143,9 @@ test-suite-build: check_environment
 				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
 				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
 				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_modify_mov_immediate MM_DEFAULT=false MM_MODIFY_MOV_IMMEDIATE=true MM_TEST_MODIFY_MOV_IMMEDIATE=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_modify_xor_reg_reg MM_DEFAULT=false MM_MODIFY_XOR_REG_REG=true MM_TEST_MODIFY_XOR_REG_REG=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_random_register_allocation MM_DEFAULT=false MM_RANDOM_REGISTER_ALLOCATION=true MM_TEST_RANDOM_REGISTER_ALLOCATION=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_mov_immediates MM_DEFAULT=false MM_TRANSFORM_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_MOV_IMMEDIATES=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_nullifications MM_DEFAULT=false MM_TRANSFORM_NULLIFICATIONS=true MM_TEST_TRANSFORM_NULLIFICATIONS=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_register_allocation MM_DEFAULT=false MM_RANDOMIZE_REGISTER_ALLOCATION=true MM_TEST_RANDOMIZE_REGISTER_ALLOCATION=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
 			done \
 		done \
 	done
@@ -177,9 +177,9 @@ test: test-suite-build test-suite-test
 
 check_environment:
 	@echo "[+] Current makefile configuration for platform \`$(CURRENT_PLATFORM)\` and architecture \`$(CURRENT_ARCHITECTURE)\`:"
-	@echo "    MM_MODIFY_MOV_IMMEDIATE:         \`$(MM_MODIFY_MOV_IMMEDIATE)\` (testing: \`$(MM_TEST_MODIFY_MOV_IMMEDIATE)\`)"
-	@echo "    MM_MODIFY_XOR_REG_REG:           \`$(MM_MODIFY_XOR_REG_REG)\` (testing: \`$(MM_TEST_MODIFY_XOR_REG_REG)\`)"
-	@echo "    MM_RANDOM_REGISTER_ALLOCATION:   \`$(MM_RANDOM_REGISTER_ALLOCATION)\` (testing: \`$(MM_TEST_RANDOM_REGISTER_ALLOCATION)\`)"
+	@echo "    MM_TRANSFORM_MOV_IMMEDIATES:     \`$(MM_TRANSFORM_MOV_IMMEDIATES)\` (testing: \`$(MM_TEST_TRANSFORM_MOV_IMMEDIATES)\`)"
+	@echo "    MM_TRANSFORM_NULLIFICATIONS:     \`$(MM_TRANSFORM_NULLIFICATIONS)\` (testing: \`$(MM_TEST_TRANSFORM_NULLIFICATIONS)\`)"
+	@echo "    MM_RANDOMIZE_REGISTER_ALLOCATION:\`$(MM_RANDOMIZE_REGISTER_ALLOCATION)\` (testing: \`$(MM_TEST_RANDOMIZE_REGISTER_ALLOCATION)\`)"
 ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
@@ -201,7 +201,7 @@ WIN_AMD64_TARGET            := x86_64-w64-mingw32
 WIN_AMD64_DEFINES           := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellcode
 WIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone 
-WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
+WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone 
 
 $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
@@ -252,7 +252,7 @@ WIN_ARM64_TARGET            := aarch64-w64-mingw32
 WIN_ARM64_DEFINES           := -D__WINDOWS__ -D__ARM64__ -DEntryFunction=shellcode
 WIN_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 WIN_ARM64_BEACON_CL1FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
-WIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(WIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
+WIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(WIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 WIN_ARM64_BEACON_CL2FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
 
 $(WIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
@@ -303,7 +303,7 @@ LIN_AMD64_TARGET            := x86_64-linux-gnu
 LIN_AMD64_DEFINES           := -D__LINUX__ -D__AMD64__ -DEntryFunction=shellcode
 LIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(LIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 LIN_AMD64_BEACON_CL1FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
-LIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(LIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
+LIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(LIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 LIN_AMD64_BEACON_CL2FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
 
 $(LIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
@@ -354,7 +354,7 @@ LIN_ARM64_TARGET            := aarch64-linux-gnu
 LIN_ARM64_DEFINES           := -D__LINUX__ -D__ARM64__ -DEntryFunction=shellcode
 LIN_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(LIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 LIN_ARM64_BEACON_CL1FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
-LIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(LIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
+LIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(LIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 LIN_ARM64_BEACON_CL2FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
 
 $(LIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
@@ -405,7 +405,7 @@ MAC_AMD64_TARGET            := x86_64-apple-darwin
 MAC_AMD64_DEFINES           := -D__MACOS__ -D__AMD64__ -DEntryFunction=main
 MAC_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(MAC_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 MAC_AMD64_BEACON_CL1FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
-MAC_AMD64_BEACON_LLCFLAGS   := -mtriple $(MAC_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
+MAC_AMD64_BEACON_LLCFLAGS   := -mtriple $(MAC_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 MAC_AMD64_BEACON_CL2FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib
 
 $(MAC_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
@@ -456,7 +456,7 @@ MAC_ARM64_TARGET         := arm64-apple-darwin
 MAC_ARM64_DEFINES        := -D__MACOS__ -D__ARM64__ -DEntryFunction=main
 MAC_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(MAC_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
 MAC_ARM64_BEACON_CL1FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
-MAC_ARM64_BEACON_LLCFLAGS   := -mtriple $(MAC_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOM_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
+MAC_ARM64_BEACON_LLCFLAGS   := -mtriple $(MAC_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation)
 MAC_ARM64_BEACON_CL2FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib
 
 $(MAC_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)

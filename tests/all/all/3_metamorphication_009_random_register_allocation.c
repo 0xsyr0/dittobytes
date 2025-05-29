@@ -20,10 +20,10 @@
  * 
  * We use `0x19A47B22FAB903DA` to check whether the binary is original, because this value is not shortend (in contrast to e.g. `0x1111111111111111`).
  * 
- *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
- * @verify    all    amd64    modify_mov_immediate    hex_not_present                   DA03B9FA227BA419                 Is `0x19A47B22FAB903DA` in HEX.
- * @verify    all    arm64    modify_mov_immediate    hex_not_present                   487B80D2                         Is `mov x8,#0x3da` in HEX.
- * @verify    all    all      all                     returns                           uint64_t,11394632769328784690    Must be the case without metamorphications.
+ *            OS     Arch     Metamorphication            Test                              Argument(s)                      Description
+ * @verify    all    amd64    transform_mov_immediates    hex_not_present                   DA03B9FA227BA419                 Is `0x19A47B22FAB903DA` in HEX.
+ * @verify    all    arm64    transform_mov_immediates    hex_not_present                   487B80D2                         Is `mov x8,#0x3da` in HEX.
+ * @verify    all    all      all                         returns                           uint64_t,11394632769328784690    Must be the case without metamorphications.
  */
 uint64_t EntryFunction() {
     uint64_t r0 = 1;
