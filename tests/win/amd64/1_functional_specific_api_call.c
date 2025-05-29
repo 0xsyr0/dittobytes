@@ -139,6 +139,7 @@ void PopulateTables(struct Relocatable* context);
  * The main function of the code to test.
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,30                  There must be a minimum % change per compile.
  * @verify    win    amd64    all                     returns                           uint32_t,1                       Must always be the return value.
  */
 uint32_t EntryFunction() {

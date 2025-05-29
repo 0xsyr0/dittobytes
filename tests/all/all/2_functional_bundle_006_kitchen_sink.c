@@ -251,6 +251,7 @@ uint32_t TestNullification();
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      all                     metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,10                  There must be a minimum % change per compile.
  * @verify    all    all      all                     returns                           uint64_t,18154888378             Must be the case without metamorphications.
  */
 uint64_t EntryFunction() {

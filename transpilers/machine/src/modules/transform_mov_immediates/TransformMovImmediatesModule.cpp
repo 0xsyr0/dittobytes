@@ -86,8 +86,8 @@ private:
      * @returns bool Positive if enabled.
      */
     bool moduleIsEnabled() {
-        const char* MM_TEST_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TEST_TRANSFORM_MOV_IMMEDIATES");
-        bool result = (MM_TEST_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TEST_TRANSFORM_MOV_IMMEDIATES) == "true");
+        const char* MM_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TRANSFORM_MOV_IMMEDIATES");
+        bool result = (MM_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TRANSFORM_MOV_IMMEDIATES) == "true");
 
         return result || moduleIsBeingTested();
     }
@@ -98,8 +98,8 @@ private:
      * @returns bool Positive if enabled.
      */
     bool moduleIsBeingTested() {
-        const char* MM_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TRANSFORM_MOV_IMMEDIATES");
-        bool result = (MM_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TRANSFORM_MOV_IMMEDIATES) == "true");
+        const char* MM_TEST_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TEST_TRANSFORM_MOV_IMMEDIATES");
+        bool result = (MM_TEST_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TEST_TRANSFORM_MOV_IMMEDIATES) == "true");
 
         return result;
     }

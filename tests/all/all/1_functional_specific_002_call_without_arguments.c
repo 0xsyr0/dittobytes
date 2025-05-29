@@ -24,6 +24,7 @@ uint8_t seven();
  * Return a deterministic uint8_t.
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,15                  There must be a minimum % change per compile.
  * @verify    all    all      all                     returns                           uint8_t,7                        Must be the case without metamorphications.
  */
 uint8_t EntryFunction() {

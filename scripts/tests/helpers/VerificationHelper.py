@@ -20,9 +20,10 @@ from helpers.ExceptionHelper import ExceptionHelper
 from helpers.StatusHelper import StatusHelper
 from helpers.EnvironmentHelper import EnvironmentHelper
 
-from verifications.VerificationReturns import VerificationReturns
-from verifications.VerificationMetamorphicationsNotOriginal import VerificationMetamorphicationsNotOriginal
 from verifications.VerificationHexNotPresent import VerificationHexNotPresent
+from verifications.VerificationMinimumLevenshteinDistance import VerificationMinimumLevenshteinDistance
+from verifications.VerificationMetamorphicationsNotOriginal import VerificationMetamorphicationsNotOriginal
+from verifications.VerificationReturns import VerificationReturns
 
 class VerificationHelper:
     """The VerificationHelper class contains functions to parse feature test files."""
@@ -188,7 +189,9 @@ class VerificationHelper:
         available_verifications = {
             'hex_not_present': VerificationHexNotPresent(),
             'metamorphications_not_original': VerificationMetamorphicationsNotOriginal(),
+            'minimum_levenshtein_distance': VerificationMinimumLevenshteinDistance(),
             'returns': VerificationReturns()
+
         }
 
 

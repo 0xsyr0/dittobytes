@@ -176,10 +176,6 @@ test: test-suite-build test-suite-test
 ##########################################
 
 check_environment:
-	@echo "[+] Current makefile configuration for platform \`$(CURRENT_PLATFORM)\` and architecture \`$(CURRENT_ARCHITECTURE)\`:"
-	@echo "    MM_TRANSFORM_MOV_IMMEDIATES:     \`$(MM_TRANSFORM_MOV_IMMEDIATES)\` (testing: \`$(MM_TEST_TRANSFORM_MOV_IMMEDIATES)\`)"
-	@echo "    MM_TRANSFORM_NULLIFICATIONS:     \`$(MM_TRANSFORM_NULLIFICATIONS)\` (testing: \`$(MM_TEST_TRANSFORM_NULLIFICATIONS)\`)"
-	@echo "    MM_RANDOMIZE_REGISTER_ALLOCATION:\`$(MM_RANDOMIZE_REGISTER_ALLOCATION)\` (testing: \`$(MM_TEST_RANDOMIZE_REGISTER_ALLOCATION)\`)"
 ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
@@ -215,7 +211,11 @@ $(WIN_AMD64_BEACON_PATH).meta0.mir: $(WIN_AMD64_BEACON_PATH).ll
 
 $(WIN_AMD64_BEACON_PATH).meta1.mir: $(WIN_AMD64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=first \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).meta2.mir: $(WIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -223,7 +223,11 @@ $(WIN_AMD64_BEACON_PATH).meta2.mir: $(WIN_AMD64_BEACON_PATH).meta1.mir
 
 $(WIN_AMD64_BEACON_PATH).meta3.mir: $(WIN_AMD64_BEACON_PATH).meta2.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=last \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -266,7 +270,11 @@ $(WIN_ARM64_BEACON_PATH).meta0.mir: $(WIN_ARM64_BEACON_PATH).ll
 
 $(WIN_ARM64_BEACON_PATH).meta1.mir: $(WIN_ARM64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=first \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).meta2.mir: $(WIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -274,7 +282,11 @@ $(WIN_ARM64_BEACON_PATH).meta2.mir: $(WIN_ARM64_BEACON_PATH).meta1.mir
 
 $(WIN_ARM64_BEACON_PATH).meta3.mir: $(WIN_ARM64_BEACON_PATH).meta2.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=last \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -317,7 +329,11 @@ $(LIN_AMD64_BEACON_PATH).meta0.mir: $(LIN_AMD64_BEACON_PATH).ll
 
 $(LIN_AMD64_BEACON_PATH).meta1.mir: $(LIN_AMD64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=first \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).meta2.mir: $(LIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -325,7 +341,11 @@ $(LIN_AMD64_BEACON_PATH).meta2.mir: $(LIN_AMD64_BEACON_PATH).meta1.mir
 
 $(LIN_AMD64_BEACON_PATH).meta3.mir: $(LIN_AMD64_BEACON_PATH).meta2.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=last \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -368,7 +388,11 @@ $(LIN_ARM64_BEACON_PATH).meta0.mir: $(LIN_ARM64_BEACON_PATH).ll
 
 $(LIN_ARM64_BEACON_PATH).meta1.mir: $(LIN_ARM64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=first \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).meta2.mir: $(LIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -376,7 +400,11 @@ $(LIN_ARM64_BEACON_PATH).meta2.mir: $(LIN_ARM64_BEACON_PATH).meta1.mir
 
 $(LIN_ARM64_BEACON_PATH).meta3.mir: $(LIN_ARM64_BEACON_PATH).meta2.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_WIN):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_WIN):$(PATH) \
+	MACHINE_TRANSPILER_STEP=last \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -419,7 +447,11 @@ $(MAC_AMD64_BEACON_PATH).meta0.mir: $(MAC_AMD64_BEACON_PATH).ll
 
 $(MAC_AMD64_BEACON_PATH).meta1.mir: $(MAC_AMD64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) \
+	MACHINE_TRANSPILER_STEP=first \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).meta2.mir: $(MAC_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -427,7 +459,11 @@ $(MAC_AMD64_BEACON_PATH).meta2.mir: $(MAC_AMD64_BEACON_PATH).meta1.mir
 
 $(MAC_AMD64_BEACON_PATH).meta3.mir: $(MAC_AMD64_BEACON_PATH).meta2.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) \
+	MACHINE_TRANSPILER_STEP=last \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -470,7 +506,11 @@ $(MAC_ARM64_BEACON_PATH).meta0.mir: $(MAC_ARM64_BEACON_PATH).ll
 
 $(MAC_ARM64_BEACON_PATH).meta1.mir: $(MAC_ARM64_BEACON_PATH).meta0.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=first llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) \
+	MACHINE_TRANSPILER_STEP=first \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).meta2.mir: $(MAC_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -478,7 +518,11 @@ $(MAC_ARM64_BEACON_PATH).meta2.mir: $(MAC_ARM64_BEACON_PATH).meta1.mir
 
 $(MAC_ARM64_BEACON_PATH).meta3.mir: $(MAC_ARM64_BEACON_PATH).meta2.mir
 	@echo "    - Intermediate compile of $@."
-	@PATH=$(LLVM_DIR_MAC):$(PATH) MACHINE_TRANSPILER_STEP=last llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	@PATH=$(LLVM_DIR_MAC):$(PATH) \
+	MACHINE_TRANSPILER_STEP=last \
+	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -547,7 +591,7 @@ list:
 	@echo "    - $(MAC_AMD64_BEACON_NAME)             // (Re)compile the MacOS beacon for AMD64"
 	@echo "    - $(MAC_ARM64_BEACON_NAME)             // (Re)compile the MacOS beacon for ARM64"
 
-.PHONY: all dependencies clean \
+.PHONY: all check_environment dependencies clean \
 	$(WIN_AMD64_BEACON_NAME) $(WIN_AMD64_BEACON_PATH) $(WIN_AMD64_BEACON_PATH).exe $(WIN_AMD64_BEACON_PATH).obj $(WIN_AMD64_BEACON_PATH).bin $(WIN_AMD64_BEACON_PATH).lkd $(WIN_AMD64_BEACON_PATH).ll $(WIN_AMD64_BEACON_PATH).meta.mir $(WIN_AMD64_BEACON_PATH).mir \
 	$(WIN_ARM64_BEACON_NAME) $(WIN_ARM64_BEACON_PATH) $(WIN_ARM64_BEACON_PATH).exe $(WIN_ARM64_BEACON_PATH).obj $(WIN_ARM64_BEACON_PATH).bin $(WIN_ARM64_BEACON_PATH).lkd $(WIN_ARM64_BEACON_PATH).ll $(WIN_ARM64_BEACON_PATH).meta.mir $(WIN_ARM64_BEACON_PATH).mir \
 	$(LIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_PATH) $(LIN_AMD64_BEACON_PATH).exe $(LIN_AMD64_BEACON_PATH).obj $(LIN_AMD64_BEACON_PATH).bin $(LIN_AMD64_BEACON_PATH).lkd $(LIN_AMD64_BEACON_PATH).ll $(LIN_AMD64_BEACON_PATH).meta.mir $(LIN_AMD64_BEACON_PATH).mir \
