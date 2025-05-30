@@ -347,7 +347,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release 1.0.1</a>.
         </li>
         <li>
-            ⏳ Test & report Levenshtein distance of different shellcode compilations.
+            ✅ Test & report Levenshtein distance of different shellcode compilations.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.4">release 1.0.4</a>.
         </li>
