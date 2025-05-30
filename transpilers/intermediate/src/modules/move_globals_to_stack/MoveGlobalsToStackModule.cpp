@@ -100,7 +100,6 @@ public:
         for (GlobalVariable &G : M.globals()) {
             if (shouldInline(G)) {
                 dbgs() << "        ↳ Found a global variable to inline.\n";
-                dbgs() << G << "\n";
                 usage[getUsingFunction(G)].insert(&G);
             }
         }
@@ -281,7 +280,7 @@ private:
                 }
 
 
-                
+
             }
             
         }

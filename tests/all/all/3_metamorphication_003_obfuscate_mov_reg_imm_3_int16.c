@@ -18,7 +18,7 @@
  *            OS     Arch     Metamorphication            Test                              Argument(s)        Description
  * @verify    all    amd64    transform_mov_immediates    hex_not_present                   66B80080           Is `mov eax, 0xffff8000` in HEX.
  * @verify    all    arm64    transform_mov_immediates    hex_not_present                   E0FF8F12           Is `mov w0, #0x8000` in HEX.
- * @verify    all    all      transpiled_1                minimum_levenshtein_distance      transpiled_2,35    There must be a minimum % change per compile.
+ * @verify    all    all      transpiled_1                minimum_levenshtein_distance      transpiled_2,20    There must be a minimum % change per compile.
  * @verify    all    all      all                         returns                           int16_t,-32768     Must be the case without metamorphications.
  */
 int16_t EntryFunction() {

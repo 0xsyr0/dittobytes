@@ -349,6 +349,11 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
         <li>
             ⏳ Test & report Levenshtein distance of different shellcode compilations.
             <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.4">release 1.0.4</a>.
+        </li>
+        <li>
+            ⏳ Generate regular executable files alongside the already compiled shellcodes.
+            <br/>
             <sup>Yet to implement.</sup>
         </li>
     </ul>

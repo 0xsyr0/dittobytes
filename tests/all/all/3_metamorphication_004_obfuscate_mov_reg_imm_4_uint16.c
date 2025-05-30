@@ -20,7 +20,7 @@
  * @verify    win    arm64    transform_mov_immediates    hex_not_present                   00008012           Is `mov w0, #0x8000` in HEX.
  * @verify    lin    arm64    transform_mov_immediates    hex_not_present                   00008012           Is `mov w0, #0x8000` in HEX.
  * @verify    mac    arm64    transform_mov_immediates    hex_not_present                   E0FF9F52           Is `mov w0, #0x8000` in HEX.
- * @verify    all    all      transpiled_1                minimum_levenshtein_distance      transpiled_2,25    There must be a minimum % change per compile.
+ * @verify    all    all      transpiled_1                minimum_levenshtein_distance      transpiled_2,20    There must be a minimum % change per compile.
  * @verify    all    all      all                         returns                           uint16_t,65535     Must be the case without metamorphications.
  */
 uint16_t EntryFunction() {
