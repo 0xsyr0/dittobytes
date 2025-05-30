@@ -12,6 +12,7 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
+import os
 import sys
 import traceback
 
@@ -29,4 +30,4 @@ class ExceptionHelper:
 
         exc_type, exc_value, exc_tb = sys.exc_info()
         filename, lineno, _, _ = traceback.extract_tb(exc_tb)[-1]
-        print(f"    - {type(exception).__name__} exception at {filename}:{lineno}: {exception}")
+        print(f"    - {type(exception).__name__} exception at {os.path.basename(filename)}:{lineno}: {exception}")

@@ -91,7 +91,7 @@ class VerificationHelper:
         return available_metamorphications
 
     @staticmethod
-    def get_feature_tests(shellcode_is_compatible_with_os, filter_os, shellcode_is_compatible_with_arch, filter_arch, shellcode_feature_test_file_name, shellcode_feature_test_file_path):
+    def get_feature_tests(shellcode_is_compatible_with_os, filter_os, shellcode_is_compatible_with_arch, filter_arch, filter_metamorphication, shellcode_feature_test_file_name, shellcode_feature_test_file_path):
         """Return a dict of all verifications to check, and for which shellcodes.
 
         Args:
@@ -99,6 +99,7 @@ class VerificationHelper:
             filter_os (str): Only run feature tests for this specific OS.
             shellcode_is_compatible_with_arch (str): The architecture the shellcode could potentially run on.
             filter_arch (str): Only run feature tests for this specific architecture.
+            filter_metamorphication (str): Only run feature tests for this specific metamorphication.
             shellcode_feature_test_file_name (str): The file name of the feature test.
             shellcode_feature_test_file_path (str): The file path of the feature test.
 
@@ -135,6 +136,9 @@ class VerificationHelper:
 
                         if filter_arch != 'all' and filter_arch != verify_match_arch:
                             continue
+
+                        if filter_metamorphication != 'all' and not metamorphication.startswith(filter_metamorphication): 
+                            continue
                
                         # Define shellcode test file index key
                         shellcode_file_path = './builds/beacon-{}-{}-tests_{}_{}_{}_{}.bin'.format(
@@ -162,6 +166,7 @@ class VerificationHelper:
 
                         results[shellcode_file_path][verify_specification_index_key] = {
                             'metamorphication': metamorphication,
+                            'metamorphication_is_filtered': filter_metamorphication != 'all',
                             'test_file_name': shellcode_feature_test_file_name,
                             'test_file_path': shellcode_feature_test_file_path,
                             'test_function': verify_match_test_function,

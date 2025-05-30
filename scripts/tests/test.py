@@ -22,8 +22,8 @@ from collections import OrderedDict
 def main():
     """Run all `@verify` verifications that are supported on this os/arch."""
 
-    if len(sys.argv) != 7:
-        StatusHelper.error('Usage: python test.py <shellcode_is_compatible_with_os> <shellcode_is_compatible_with_arch> <shellcode_feature_test_file_name> <test_file_path> <filter_os> <filter_arch>')
+    if len(sys.argv) != 7 and len(sys.argv) != 8:
+        StatusHelper.error('Usage: python test.py <shellcode_is_compatible_with_os> <shellcode_is_compatible_with_arch> <shellcode_feature_test_file_name> <test_file_path> <filter_os> <filter_arch> <filter_metamorphication:optional>')
         StatusHelper.error('Given: {}'.format(' '.join(sys.argv)))
         StatusHelper.fatal(StatusHelper.ERROR_INVALID_ARGUMENTS)
 
@@ -33,8 +33,9 @@ def main():
     shellcode_feature_test_file_path = sys.argv[4]
     filter_os = sys.argv[5]
     filter_arch = sys.argv[6]
+    filter_metamorphication = sys.argv[7] if len(sys.argv) == 8 else 'all'
 
-    feature_tests = VerificationHelper.get_feature_tests(shellcode_is_compatible_with_os, filter_os, shellcode_is_compatible_with_arch, filter_arch, shellcode_feature_test_file_name, shellcode_feature_test_file_path)
+    feature_tests = VerificationHelper.get_feature_tests(shellcode_is_compatible_with_os, filter_os, shellcode_is_compatible_with_arch, filter_arch, filter_metamorphication, shellcode_feature_test_file_name, shellcode_feature_test_file_path)
     feature_tests = OrderedDict(sorted(feature_tests.items()))
 
     for shellcode_file, feature_test_specifications in feature_tests.items():

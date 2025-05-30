@@ -282,10 +282,10 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c test-suite-build</code></li>
-            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c test-suite-test</code></li>
+            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-build</code></li>
+            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-test</code></li>
         </ul>
-        The above example would build the feature test <code>3_metamorphication_010_transform_nullifications.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case ~5 (<code>1 × 1 × 1 × 5</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
+        The above example would build the feature test <code>3_metamorphication_010_transform_nullifications.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case 1 (<code>1 × 1 × 1 × 1</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
     </p>
     <hr>
 </details>
@@ -348,6 +348,11 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
         </li>
         <li>
             ⏳ Test & report Levenshtein distance of different shellcode compilations.
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.4">release 1.0.4</a>.
+        </li>
+        <li>
+            ⏳ Generate regular executable files alongside the already compiled shellcodes.
             <br/>
             <sup>Yet to implement.</sup>
         </li>
