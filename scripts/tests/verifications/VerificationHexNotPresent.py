@@ -41,11 +41,8 @@ class VerificationHexNotPresent:
         haystack = FileHelper.read_file(feature_test_specification['shellcode'], 'rb')
         needle = bytes.fromhex(feature_test_specification['test_arguments'][0])
         hex_is_not_present_in_shellcode = needle not in haystack
-
-        original_path = feature_test_specification['shellcode'].replace(f"{feature_test_specification['metamorphication']}.bin", 'original.bin')
-        haystack = FileHelper.read_file(original_path, 'rb')
-        hex_is_present_in_original = needle in haystack
-
+        hex_is_present_in_original = False
+        
         if hex_is_not_present_in_shellcode:
             pass
             # print('      Succesfull. Did not find `{}` in shellcode `{}`.'.format(
@@ -62,12 +59,17 @@ class VerificationHexNotPresent:
                 feature_test_specification['shellcode']
             ))
 
-        if not hex_is_present_in_original:
-            print('      Did not find `{}` in `{}-{}` shellcode without metamorphication: `{}`.'.format(
-                feature_test_specification['test_arguments'][0],
-                feature_test_specification['compiled_for_os'],
-                feature_test_specification['compiled_for_arch'],
-                original_path
-            ))
+        if feature_test_specification['metamorphication_is_filtered']:
+            original_path = feature_test_specification['shellcode'].replace(f"{feature_test_specification['metamorphication']}.bin", 'original.bin')
+            haystack = FileHelper.read_file(original_path, 'rb')
+            hex_is_present_in_original = needle in haystack
+
+            if not hex_is_present_in_original:
+                print('      Did not find `{}` in `{}-{}` shellcode without metamorphication: `{}`.'.format(
+                    feature_test_specification['test_arguments'][0],
+                    feature_test_specification['compiled_for_os'],
+                    feature_test_specification['compiled_for_arch'],
+                    original_path
+                ))
 
         return hex_is_not_present_in_shellcode and hex_is_present_in_original

@@ -47,6 +47,16 @@ private:
      */
     bool modified = false;
 
+    /**
+     * Whether the module is enabled (default) or disabled.
+     * 
+     * @returns bool Positive if enabled.
+     */
+    bool moduleIsEnabled() {
+        const char* EXPAND_MEMCPY_CALLS = std::getenv("EXPAND_MEMCPY_CALLS");
+        return (EXPAND_MEMCPY_CALLS && std::string(EXPAND_MEMCPY_CALLS) == "true");
+    }
+
 public:
 
     /**
@@ -56,6 +66,9 @@ public:
      * @return bool Indicates if the intermediate function was modified.
      */
     bool run(Function &F) {
+        // Ensure module is enabled
+        if (!moduleIsEnabled()) return false;
+        
         SmallVector<CallInst *, 8> MemCpyCalls;
 
         // Inform user that we are running this module

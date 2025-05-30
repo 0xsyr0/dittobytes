@@ -67,6 +67,18 @@ using namespace llvm;
  */
 class MoveGlobalsToStackModule {
 
+private:
+
+    /**
+     * Whether the module is enabled (default) or disabled.
+     * 
+     * @returns bool Positive if enabled.
+     */
+    bool moduleIsEnabled() {
+        const char* MOVE_GLOBALS_TO_STACK = std::getenv("MOVE_GLOBALS_TO_STACK");
+        return (MOVE_GLOBALS_TO_STACK && std::string(MOVE_GLOBALS_TO_STACK) == "true");
+    }
+
 public:
 
     /**
@@ -77,6 +89,9 @@ public:
      * @return bool Indicates if the intermediate module was modified.
      */
     bool run(Module &M, ModuleAnalysisManager &) {
+        // Ensure module is enabled
+        if (!moduleIsEnabled()) return false;
+        
         // Inform user that we are running this module
         dbgs() << "        ↳ Running MoveGlobalsToStackModule module.\n";
 

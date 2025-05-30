@@ -40,8 +40,13 @@ class VerificationMetamorphicationsNotOriginal:
 
         # Skip if this is the original shellcode itself
         if feature_test_specification['metamorphication'] == 'original':
-            # print('      Skipped. Shellcode is the original itself.'.format(
-            #     feature_test_specification['test_function']
+            # print('      Skipped. Shellcode is the original itself.')
+            return True
+
+        # Skip if the original shellcode is not available
+        if feature_test_specification['metamorphication_is_filtered']:
+            # print('      Skipped. Feature tests are filtered on metamorphication: {}.'.format(
+            #     feature_test_specification['metamorphication']
             # ))
 
             return True
@@ -51,6 +56,10 @@ class VerificationMetamorphicationsNotOriginal:
 
         original_path = transpiled_path.replace(f"{feature_test_specification['metamorphication']}.bin", 'original.bin')
         original = FileHelper.read_file(original_path, binary=True)
+
+        if transpiled == None or original == None:
+            print('      The given or original shellcode could not be found.')
+            return False;
 
         is_not_original = original != transpiled
 
