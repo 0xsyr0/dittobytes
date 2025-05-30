@@ -99,12 +99,14 @@ public:
 
         for (GlobalVariable &G : M.globals()) {
             if (shouldInline(G)) {
+                dbgs() << "        ↳ Found a global variable to inline.\n";
+                dbgs() << G << "\n";
                 usage[getUsingFunction(G)].insert(&G);
             }
         }
 
         for (auto &KV : usage) {
-            inlineGlobals(KV.first, KV.second);
+            inlineGlobals(M, KV.first, KV.second);
         }
 
         return !usage.empty();
@@ -150,6 +152,173 @@ private:
 
         return F;
     }
+
+    bool shouldInline(GlobalVariable & G) {
+        if (!G.isDiscardableIfUnused())
+            return false; // Goal is to discard these; ignore if that's not possible
+
+        if (!getUsingFunction(G))
+            return false; // This isn't safe. We can only be on one function's stack.
+
+        return true;
+    }
+
+    void inlineGlobals(Module &M, Function *F, SmallSetVector<GlobalVariable *, 4> &Vars) {
+        BasicBlock &BB = F->getEntryBlock();
+        Instruction *insertionPoint = &*BB.getFirstInsertionPt();
+        LLVMContext &Ctx = F->getContext();
+
+        IRBuilder<> builder(insertionPoint);
+
+        SmallMapVector<GlobalVariable *, Value *, 4> Replacements;
+        StoreInst * firstStore = nullptr;
+
+        for (auto *G : Vars) {
+            Constant *initializer = G->getInitializer();
+            Type *globalType = G->getValueType();
+
+            if (!initializer) {
+                dbgs() << "        ↳ Skipping global (no initializer): " << G->getName() << "\n";
+                continue;
+            }
+
+            bool isString = false;
+
+            if (auto *CA = dyn_cast<ConstantDataArray>(initializer)) {
+                if (CA->isString()) {
+
+                    isString = true;
+
+                    // Allocate one contiguous stack buffer for the entire global
+                    AllocaInst *alloca = builder.CreateAlloca(globalType, nullptr, G->getName() + ".stack");
+                    Replacements[G] = alloca;
+
+                    // Get size in bytes of the global type
+                    uint64_t sizeInBytes = M.getDataLayout().getTypeAllocSize(globalType);
+
+                    // Flatten initializer to raw bytes
+                    SmallVector<uint8_t, 64> data;
+                    {
+                        // Use DataLayout helper to get raw bytes from constant initializer
+                        // Since LLVM has no direct API, use ConstantDataSequential or ConstantAggregate parsing:
+                        if (auto *CDS = dyn_cast<ConstantDataSequential>(initializer)) {
+                            StringRef raw = CDS->getRawDataValues();
+                            data.append(raw.bytes_begin(), raw.bytes_end());
+                        } else if (auto *CI = dyn_cast<ConstantInt>(initializer)) {
+                            uint64_t val = CI->getZExtValue();
+                            data.resize(sizeInBytes, 0);
+                            memcpy(data.data(), &val, std::min(sizeInBytes, static_cast<uint64_t>(8)));
+                        } else if (auto *CA = dyn_cast<ConstantAggregate>(initializer)) {
+                            // Rough fallback: serialize each element recursively (not implemented here)
+                            // Just zero fill to be safe
+                            data.resize(sizeInBytes, 0);
+                        } else {
+                            // Unsupported initializer type, zero initialize
+                            data.resize(sizeInBytes, 0);
+                        }
+                    }
+
+                    // Store bytes in largest chunks into alloca sequentially
+                    uint64_t offset = 0;
+                    while (offset < sizeInBytes) {
+                        uint64_t remaining = sizeInBytes - offset;
+                        Type *writeType;
+                        size_t writeSize;
+
+                        if (remaining >= 8) {
+                            writeType = Type::getInt64Ty(Ctx);
+                            writeSize = 8;
+                        } else if (remaining >= 4) {
+                            writeType = Type::getInt32Ty(Ctx);
+                            writeSize = 4;
+                        } else if (remaining >= 2) {
+                            writeType = Type::getInt16Ty(Ctx);
+                            writeSize = 2;
+                        } else {
+                            writeType = Type::getInt8Ty(Ctx);
+                            writeSize = 1;
+                        }
+
+                        uint64_t chunk = 0;
+                        memcpy(&chunk, data.data() + offset, writeSize);
+
+                        // Compute pointer to offset bytes inside alloca
+                        // Value *bytePtr = builder.CreateBitCast(alloca, Type::getInt8PtrTy(Ctx));
+                        Value *bytePtr = builder.CreateBitCast(alloca, builder.getPtrTy());
+
+                        Value *gepPtr = builder.CreateGEP(Type::getInt8Ty(Ctx), bytePtr,
+                                                         ConstantInt::get(Type::getInt64Ty(Ctx), offset));
+                        Value *castedPtr = builder.CreateBitCast(gepPtr, PointerType::getUnqual(writeType));
+
+                        builder.CreateStore(ConstantInt::get(writeType, chunk), castedPtr);
+
+                        offset += writeSize;
+                    }
+
+                }
+            }
+
+            if (!isString) {
+
+                Instruction * inst =
+                    new AllocaInst(G -> getValueType(), G -> getType() -> getAddressSpace(),
+                        nullptr, G -> getAlign().valueOrOne(), "",
+                        firstStore ? firstStore : insertionPoint);
+
+                inst -> takeName(G);
+
+                Replacements[G] = inst;
+
+                if (G -> hasInitializer()) {
+                    Constant * initializer = G -> getInitializer();
+                    StoreInst * store = new StoreInst(initializer, inst, insertionPoint);
+                    G -> setInitializer(nullptr);
+
+                    extractValuesFromStore(store, Vars);
+
+                    if (!firstStore)
+                        firstStore = store;
+                }
+
+
+                
+            }
+            
+        }
+
+        // Replace all uses of globals with their alloca pointers
+        for (auto *G : Vars) {
+            if (!Replacements.count(G))
+                continue;
+            
+            Value *replacement = Replacements[G];
+
+            SmallVector<User *, 8> users(G->users());
+            for (User *U : users) {
+                if (auto *CE = dyn_cast<ConstantExpr>(U)) {
+                    // For constant expr users, replace their uses recursively
+                    SmallVector<User *, 8> CEUsers(CE->users());
+                    for (User *CEUser : CEUsers) {
+                        if (Instruction *I = dyn_cast<Instruction>(CEUser)) {
+                            IRBuilder<> ib(I);
+                            Value *replacementVal = CE;
+                            if (CE->getOpcode() == Instruction::BitCast) {
+                                replacementVal = ib.CreateBitCast(replacement, CE->getType());
+                            }
+                            I->replaceUsesOfWith(CE, replacementVal);
+                        }
+                    }
+                } else if (Instruction *I = dyn_cast<Instruction>(U)) {
+                    I->replaceUsesOfWith(G, replacement);
+                }
+            }
+
+            G->eraseFromParent();
+        }
+    }
+
+
+
 
     // Copied from GlobalOpt.cpp
     void makeAllConstantUsesInstructions(Constant * C) {
@@ -203,14 +372,7 @@ private:
         }
     }
 
-    bool shouldInline(GlobalVariable & G) {
-        if (!G.isDiscardableIfUnused())
-            return false; // Goal is to discard these; ignore if that's not possible
-        if (!getUsingFunction(G))
-            return false; // This isn't safe. We can only be on one function's stack.
 
-        return true;
-    }
 
     void disaggregateVars(
         Instruction * After, Value * Ptr, SmallVectorImpl < Value * > & Idx,
@@ -257,48 +419,6 @@ private:
 
         disaggregateVars(inst, inst -> getPointerOperand(), Idx,
             cast < ConstantAggregate > ( * V), Vars);
-    }
-
-    void inlineGlobals(Function * F,
-        SmallSetVector < GlobalVariable * , 4 > & Vars) {
-        BasicBlock & BB = F -> getEntryBlock();
-        Instruction * insertionPoint = & * BB.getFirstInsertionPt();
-
-        // Step one: Bring all vars into F
-        SmallMapVector < GlobalVariable * , Instruction * , 4 > Replacements;
-        StoreInst * firstStore = nullptr;
-        for (auto * G: Vars) {
-            Instruction * inst =
-                new AllocaInst(G -> getValueType(), G -> getType() -> getAddressSpace(),
-                    nullptr, G -> getAlign().valueOrOne(), "",
-                    firstStore ? firstStore : insertionPoint);
-
-            inst -> takeName(G);
-
-            Replacements[G] = inst;
-
-            if (G -> hasInitializer()) {
-                Constant * initializer = G -> getInitializer();
-                StoreInst * store = new StoreInst(initializer, inst, insertionPoint);
-                G -> setInitializer(nullptr);
-
-                extractValuesFromStore(store, Vars);
-
-                if (!firstStore)
-                    firstStore = store;
-            }
-        }
-
-        // Step two: Replace all uses
-        for (auto & KV: Replacements) {
-            // Some users of G might be ConstantExprs. These can't refer
-            // to Instructions, so we need to turn them into explicit Instructions.
-            makeAllConstantUsesInstructions(KV.first);
-
-            KV.first -> replaceAllUsesWith(KV.second);
-            KV.first -> eraseFromParent();
-        }
-
     }
 
 };

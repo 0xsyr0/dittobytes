@@ -21,6 +21,7 @@
  * @verify    all    all      all                     returns                           uint64_t,5208208757389214273     Must be the case without metamorphications (ASCII values: 72+101+108+108+111).
  */
 uint64_t EntryFunction() {
-	char* result = "ABCDEFGH";
-	return * (uint64_t*) result;
+	char* result = "AAAAAAAAABCDEFGHBBBBBBBB";
+	uint64_t* results = (uint64_t*) result;
+	return results[1];
 }
