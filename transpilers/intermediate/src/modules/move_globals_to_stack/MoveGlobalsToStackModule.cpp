@@ -99,7 +99,6 @@ public:
 
         for (GlobalVariable &G : M.globals()) {
             if (shouldInline(G)) {
-                dbgs() << "        ↳ Found a global variable to inline.\n";
                 usage[getUsingFunction(G)].insert(&G);
             }
         }
@@ -175,6 +174,8 @@ private:
         for (auto *G : Vars) {
             Constant *initializer = G->getInitializer();
             Type *globalType = G->getValueType();
+
+            dbgs() << "        ↳ Found a global variable to inline.\n";
 
             if (!initializer) {
                 dbgs() << "        ↳ Skipping global (no initializer): " << G->getName() << "\n";
