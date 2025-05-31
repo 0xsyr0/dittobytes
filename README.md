@@ -304,14 +304,19 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
         </li>
         <li>
+            ✅ Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
+        </li>
+        <li>
             ✅ <b>TransformNullifications</b>: Substitutes e.g. <code>`xor [eax], [eax]`</code> with <code>`mov [eax], 0`</code>.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.
         </li>
         <li>
-            ✅ Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).
+            ✅ <b>RandomizeFrameInsertions</b>: Randomizes the function prologue/epilogue insertion.
             <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.
         </li>
         <li>
             ⏳ More substitution options for the existing immediate substitution module.
