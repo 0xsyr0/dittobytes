@@ -97,7 +97,7 @@ public:
      * Initializes the pass with the unique ID.
      */
     MachineTranspiler() : MachineFunctionPass(ID) {
-        std::srand(std::time(nullptr));
+        RandomHelper::seed();
     }
 
     /**
