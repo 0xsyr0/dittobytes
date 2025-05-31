@@ -301,22 +301,100 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
         <li>
             ✅ <b>RandomizeRegisterAllocation</b>: Randomizes the allocation order of CPU registers.
             <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
+            <table>
+                <tr>
+                    <th colspan="3">Example</th>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>mov     r15, 4BC202D525C93492h
+mov     r10, 6BB16BF556A05CE6h
+xor     r10, r15
+mov     [rbp+var_2B], r10
+mov     r9, 3081F61A6A1776DDh
+mov     r11, 44EF9F7B066756BCh</pre>
+                    </td>
+                    <td>→</td>
+                    <td>
+                        <pre>mov     r13, 4BC202D525C93492h
+mov     r14, 6BB16BF556A05CE6h
+xor     r14, r13
+mov     [rbp+var_2B], r14
+mov     r10, 3081F61A6A1776DDh
+mov     r9, 44EF9F7B066756BCh</pre>
+                    </td>                
+                </tr>
+            </table>
         </li>
         <li>
-            ✅ Immediate substitution (e.g., <code>mov [reg], imm</code> → <code>mov [reg], encoded; xor [reg], key</code>).
+            ✅ <b>TransformMovImmediates</b>: Substitutes instructions that move an immediate value in various ways.
             <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
+            <table>
+                <tr>
+                    <th colspan="3">Example</th>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>mov     rcx, 2073692073696874</pre>
+                    </td>
+                    <td>→</td>
+                    <td>
+                        <pre>mov     rax, 4BC202D525C93492h
+mov     rcx, 6BB16BF556A05CE6h
+xor     rcx, rax</pre>
+                    </td>                
+                </tr>
+            </table>
         </li>
         <li>
-            ✅ <b>TransformNullifications</b>: Substitutes e.g. <code>`xor [eax], [eax]`</code> with <code>`mov [eax], 0`</code>.
+            ✅ <b>TransformNullifications</b>: Substitutes various instructions that nullify a register.
             <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.</sup>
+            <table>
+                <tr>
+                    <th colspan="3">Example</th>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>xor reg, reg</pre>
+                    </td>
+                    <td>→</td>
+                    <td>
+                        <pre>mov reg, 0</pre>
+                    </td>                
+                </tr>
+            </table>
         </li>
         <li>
             ✅ <b>RandomizeFrameInsertions</b>: Randomizes the function prologue/epilogue insertion.
             <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.</sup>
+            <table>
+                <tr>
+                    <th colspan="3">Example</th>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>sub_0
+push    rbp
+mov     rbp, rsp
+push    r11
+push    r15
+sub     rsp, 40h</pre>
+                    </td>
+                    <td>→</td>
+                    <td>
+                        <pre>sub_0
+push    rbp
+mov     rbp, rsp
+push    r15
+push    r14
+sub     rsp, 40h</pre>
+                    </td>                
+                </tr>
+            </table>
         </li>
         <li>
             ⏳ More substitution options for the existing immediate substitution module.
