@@ -54,15 +54,15 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
         <td>
 
 ```diff
-# seg0:00014    push    rbp
-# seg0:00015    mov     rbp, rsp
-- seg0:00018    push    r15
-- seg0:00019    push    r11
-- seg0:0001A    sub     rsp, 40h
-- seg0:0001E    mov     rax, 2073692073696874h
+# 00014    push    rbp
+# 00015    mov     rbp, rsp
+- 00018    push    r15
+- 00019    push    r11
+- 0001A    sub     rsp, 40h
+- 0001E    mov     rax, 2073692073696874h
 
 
-- seg0:00028    mov     [rbp+var_1B], rax
+- 00028    mov     [rbp+var_1B], rax
 ```
 
 </td>
@@ -70,15 +70,15 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 <td>
         
 ```diff
-# seg0:00014    push    rbp
-# seg0:00015    mov     rbp, rsp
-+ seg0:00018    push    r9
-+ seg0:0001A    push    r15
-+ seg0:0001C    sub     rsp, 38h
-+ seg0:00020    mov     r14, 6E055571BF8F0D8Eh
-+ seg0:0002A    mov     rdx, 4E763C51CCE665FAh
-+ seg0:00034    xor     rdx, r14
-+ seg0:00037    mov     [rbp+var_33], rdx
+# 00014    push    rbp
+# 00015    mov     rbp, rsp
++ 00018    push    r9
++ 0001A    push    r15
++ 0001C    sub     rsp, 38h
++ 00020    mov     r14, 6E055571BF8F0D8Eh
++ 0002A    mov     rdx, 4E763C51CCE665FAh
++ 00034    xor     rdx, r14
++ 00037    mov     [rbp+var_33], rdx
 ```
 
 </td>
