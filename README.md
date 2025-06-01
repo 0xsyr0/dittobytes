@@ -54,15 +54,15 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
         <td>
 
 ```diff
-# seg000:0000014       push     rbp
-# seg000:0000015       mov      rbp, rsp
-- seg000:0000018       push     r15
-- seg000:0000019       push     r11
-- seg000:000001A       sub      rsp, 40h
-- seg000:000001E       mov      rax, 2073692073696874h
+# seg0:00014    push    rbp
+# seg0:00015    mov     rbp, rsp
+- seg0:00018    push    r15
+- seg0:00019    push    r11
+- seg0:0001A    sub     rsp, 40h
+- seg0:0001E    mov     rax, 2073692073696874h
 
 
-- seg000:0000028       mov      [rbp+var_1B], rax
+- seg0:00028    mov     [rbp+var_1B], rax
 ```
 
 </td>
@@ -70,15 +70,15 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 <td>
         
 ```diff
-# seg000:0000014       push     rbp
-# seg000:0000015       mov      rbp, rsp
-+ seg000:0000018       push     r9
-+ seg000:000001A       push     r15
-+ seg000:000001C       sub      rsp, 38h
-+ seg000:0000020       mov      r14, 6E055571BF8F0D8Eh
-+ seg000:000002A       mov      rdx, 4E763C51CCE665FAh
-+ seg000:0000034       xor      rdx, r14
-+ seg000:0000037       mov      [rbp+var_33], rdx
+# seg0:00014    push    rbp
+# seg0:00015    mov     rbp, rsp
++ seg0:00018    push    r9
++ seg0:0001A    push    r15
++ seg0:0001C    sub     rsp, 38h
++ seg0:00020    mov     r14, 6E055571BF8F0D8Eh
++ seg0:0002A    mov     rdx, 4E763C51CCE665FAh
++ seg0:00034    xor     rdx, r14
++ seg0:00037    mov     [rbp+var_33], rdx
 ```
 
 </td>
@@ -338,11 +338,11 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             ✅ <b>RandomizeRegisterAllocation</b>: Randomizes the allocation order of CPU registers.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
-            <table align=center>
+            <table>
                 <tr>
                     <td align=center>Original</td>
-                    <td align=center></td>
-                    <td align=center>Metamorphicated</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
@@ -357,7 +357,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 ```
 
 </td>
-                    <td>→</td>
+<td align=center>→</td>
 <td>
 
 ```diff
@@ -369,7 +369,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 + mov     r9, 44EF9F7B066756BCh
 ```
 
-</td>                
+</td>
                 </tr>
             </table>
         </li>
@@ -377,22 +377,30 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             ✅ <b>TransformMovImmediates</b>: Substitutes instructions that move an immediate value in various ways.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
-            <table align=center>
+            <table>
                 <tr>
                     <td align=center>Original</td>
-                    <td align=center></td>
-                    <td align=center>Metamorphicated</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>mov     rcx, 2073692073696874</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>mov     rax, 4BC202D525C93492h
-mov     rcx, 6BB16BF556A05CE6h
-xor     rcx, rax</pre>
-                    </td>                
+
+```diff
+- mov     rcx, 2073692073696874
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, 4BC202D525C93492h
++ mov     rcx, 6BB16BF556A05CE6h
++ xor     rcx, rax
+```
+
+</td>
                 </tr>
             </table>
         </li>
@@ -400,20 +408,28 @@ xor     rcx, rax</pre>
             ✅ <b>TransformNullifications</b>: Substitutes various instructions that nullify a register.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.</sup>
-            <table align=center>
+            <table>
                 <tr>
                     <td align=center>Original</td>
-                    <td align=center></td>
-                    <td align=center>Metamorphicated</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>xor reg, reg</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>mov reg, 0</pre>
-                    </td>                
+
+```diff
+- xor reg, reg
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov reg, 0
+```
+
+</td>
                 </tr>
             </table>
         </li>
@@ -421,30 +437,36 @@ xor     rcx, rax</pre>
             ✅ <b>RandomizeFrameInsertions</b>: Randomizes the function prologue/epilogue insertion.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.</sup>
-            <table align=center>
+            <table>
                 <tr>
                     <td align=center>Original</td>
-                    <td align=center></td>
-                    <td align=center>Metamorphicated</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>sub_0
-push    rbp
-mov     rbp, rsp
-push    r11
-push    r15
-sub     rsp, 40h</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>sub_0
-push    rbp
-mov     rbp, rsp
-push    r15
-push    r14
-sub     rsp, 40h</pre>
-                    </td>                
+
+```diff
+# sub_0
+# push    rbp
+# mov     rbp, rsp
+- push    r11
+- push    r15
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
+# sub_0
+# push    rbp
+# mov     rbp, rsp
++ push    r15
++ push    r14
+```
+
+</td>
                 </tr>
             </table>
         </li>
