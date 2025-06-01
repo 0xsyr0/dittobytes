@@ -97,7 +97,7 @@ public:
      * Initializes the pass with the unique ID.
      */
     MachineTranspiler() : MachineFunctionPass(ID) {
-        std::srand(std::time(nullptr));
+        RandomHelper::seed();
     }
 
     /**
@@ -128,11 +128,11 @@ public:
 
         switch (step) {
             case FirstStep:
-                // Module 1: Modify `mov` immediate's
+                // Module: Modify `mov` immediate's
                 modified = TransformMovImmediatesModule().runOnMachineFunction(MF) || modified;
                 break;
             case LastStep:
-                // Module 2: Replace `xor reg, reg` instructions
+                // Module: Replace `xor reg, reg` instructions
                 modified = TransformNullificationsModule().runOnMachineFunction(MF) || modified;
                 break;
             case UnknownStep:        
