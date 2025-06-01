@@ -44,11 +44,47 @@
 
 Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a [metamorphic engine](https://en.wikipedia.org/wiki/Metamorphic_code) that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
 
-<p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/8a1e77e82316df8b41d62e8cdaca2ddb/raw/8fc6ef90df9bbff70c6fedf73c63ff6b07d449a1/dittobytes-example-diff.png" alt="Metamorphication example with Dittobytes" />
-    <br>
-    <sup>Figure A: Example metamorphications by Dittobytes</sup>
-</p>
+<table align=center>
+    <tr>
+        <td align=center>Original</td>
+        <td align=center></td>
+        <td align=center>Metamorphicated</td>
+    </tr>
+    <tr>
+        <td>
+
+```diff
+# 00014  push  rbp
+# 00015  mov   rbp, rsp
+- 00018  push  r15
+- 00019  push  r11
+- 0001A  sub   rsp, 40h
+- 0001E  mov   rax, 2073692073696874h
+
+
+- 00028  mov   [rbp+var_1B], rax
+```
+
+</td>
+<td align=center>→</td>
+<td>
+        
+```diff
+# 00014  push  rbp
+# 00015  mov   rbp, rsp
++ 00018  push  r9
++ 0001A  push  r15
++ 0001C  sub   rsp, 38h
++ 00020  mov   r14, 6E055571BF8F0D8Eh
++ 0002A  mov   rdx, 4E763C51CCE665FAh
++ 00034  xor   rdx, r14
++ 00037  mov   [rbp+var_33], rdx
+```
+
+</td>
+</tr>
+</table>
+<p align=center><sup>Illustration A: Example metamorphications by Dittobytes.</sup></p>
 
 <p>
     Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
@@ -304,26 +340,36 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3" align="center"><small>Example</small></th>
+                    <td align=center>Original</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>mov     r15, 4BC202D525C93492h
-mov     r10, 6BB16BF556A05CE6h
-xor     r10, r15
-mov     [rbp+var_2B], r10
-mov     r9, 3081F61A6A1776DDh
-mov     r11, 44EF9F7B066756BCh</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>mov     r13, 4BC202D525C93492h
-mov     r14, 6BB16BF556A05CE6h
-xor     r14, r13
-mov     [rbp+var_2B], r14
-mov     r10, 3081F61A6A1776DDh
-mov     r9, 44EF9F7B066756BCh</pre>
-                    </td>                
+
+```diff
+- mov     r15, 4BC202D525C93492h
+- mov     r10, 6BB16BF556A05CE6h
+- xor     r10, r15
+- mov     [rbp+var_2B], r10
+- mov     r9, 3081F61A6A1776DDh
+- mov     r11, 44EF9F7B066756BCh
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     r13, 4BC202D525C93492h
++ mov     r14, 6BB16BF556A05CE6h
++ xor     r14, r13
++ mov     [rbp+var_2B], r14
++ mov     r10, 3081F61A6A1776DDh
++ mov     r9, 44EF9F7B066756BCh
+```
+
+</td>
                 </tr>
             </table>
         </li>
@@ -333,18 +379,28 @@ mov     r9, 44EF9F7B066756BCh</pre>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3" align="center"><small>Example</small></th>
+                    <td align=center>Original</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>mov     rcx, 2073692073696874</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>mov     rax, 4BC202D525C93492h
-mov     rcx, 6BB16BF556A05CE6h
-xor     rcx, rax</pre>
-                    </td>                
+
+```diff
+- mov     rcx, 2073692073696874
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, 4BC202D525C93492h
++ mov     rcx, 6BB16BF556A05CE6h
++ xor     rcx, rax
+```
+
+</td>
                 </tr>
             </table>
         </li>
@@ -354,16 +410,26 @@ xor     rcx, rax</pre>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3" align="center"><small>Example</small></th>
+                    <td align=center>Original</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>xor reg, reg</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>mov reg, 0</pre>
-                    </td>                
+
+```diff
+- xor reg, reg
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov reg, 0
+```
+
+</td>
                 </tr>
             </table>
         </li>
@@ -373,26 +439,34 @@ xor     rcx, rax</pre>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3" align="center"><small>Example</small></th>
+                    <td align=center>Original</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
                 </tr>
                 <tr>
                     <td>
-                        <pre>sub_0
-push    rbp
-mov     rbp, rsp
-push    r11
-push    r15
-sub     rsp, 40h</pre>
-                    </td>
-                    <td>→</td>
-                    <td>
-                        <pre>sub_0
-push    rbp
-mov     rbp, rsp
-push    r15
-push    r14
-sub     rsp, 40h</pre>
-                    </td>                
+
+```diff
+# sub_0
+# push    rbp
+# mov     rbp, rsp
+- push    r11
+- push    r15
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
+# sub_0
+# push    rbp
+# mov     rbp, rsp
++ push    r15
++ push    r14
+```
+
+</td>
                 </tr>
             </table>
         </li>
