@@ -397,11 +397,6 @@ sub     rsp, 40h</pre>
             </table>
         </li>
         <li>
-            ⏳ More substitution options for the existing immediate substitution module.
-            <br/>
-            <sup>Yet to implement.</sup>
-        </li>
-        <li>
             ⏳ Swap simple math (e.g., <code>`sub [reg], imm`</code> → <code>`add [reg], -imm`</code>).
             <br/>
             <sup>Yet to implement.</sup>
