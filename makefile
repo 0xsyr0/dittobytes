@@ -144,9 +144,11 @@ test-suite-build: check_environment
 				AVAILABLE_TEST_ARCH_BASENAME=$$(basename "$$AVAILABLE_TEST_ARCH"); \
 				AVAILABLE_TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
 				[ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ] && continue; \
+				[ -n "$(TEST_OS)" ] && [ "$$AVAILABLE_TEST_OS_BASENAME" != "all" ] && [ "$$AVAILABLE_TEST_OS_BASENAME" != "$(TEST_OS)" ] && continue; \
+				[ -n "$(TEST_ARCH)" ] && [ "$$AVAILABLE_TEST_ARCH_BASENAME" != "all" ] && [ "$$AVAILABLE_TEST_ARCH_BASENAME" != "$(TEST_ARCH)" ] && continue; \
 				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$$AVAILABLE_TEST_OS_BASENAME"; fi; \
 				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$$AVAILABLE_TEST_ARCH_BASENAME"; fi; \
-				echo "[+] TestSuite building \`$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
+				echo "[+] TestSuite building \`$$AVAILABLE_TEST_OS_BASENAME-$$AVAILABLE_TEST_ARCH_BASENAME-$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
 				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "original" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
 				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
 				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
@@ -168,9 +170,11 @@ test-suite-test: check_environment
 				AVAILABLE_TEST_ARCH_BASENAME=$$(basename "$$AVAILABLE_TEST_ARCH"); \
 				AVAILABLE_TEST_FILE_BASENAME=$$(basename "$$TEST_FILE"); \
 				[ -n "$(TEST_SOURCE_PATH)" ] && [ "$$(realpath "$$TEST_FILE")" != "$$(realpath $(TEST_SOURCE_PATH))" ] && continue; \
+				[ -n "$(TEST_OS)" ] && [ "$$AVAILABLE_TEST_OS_BASENAME" != "all" ] && [ "$$AVAILABLE_TEST_OS_BASENAME" != "$(TEST_OS)" ] && continue; \
+				[ -n "$(TEST_ARCH)" ] && [ "$$AVAILABLE_TEST_ARCH_BASENAME" != "all" ] && [ "$$AVAILABLE_TEST_ARCH_BASENAME" != "$(TEST_ARCH)" ] && continue; \
 				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$${AVAILABLE_TEST_OS_BASENAME}"; fi; \
 				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$${AVAILABLE_TEST_ARCH_BASENAME}"; fi; \
-				echo "[+] TestSuite testing \`$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
+				echo "[+] TestSuite testing  \`$$AVAILABLE_TEST_OS_BASENAME-$$AVAILABLE_TEST_ARCH_BASENAME-$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
 				$(PYTHON_PATH) ./scripts/tests/test.py $${AVAILABLE_TEST_OS_BASENAME} $${AVAILABLE_TEST_ARCH_BASENAME} $${AVAILABLE_TEST_FILE_BASENAME%.*} $$TEST_FILE $$BEACON_OS $$BEACON_ARCH $$TEST_METAMORPHICATION; \
 			done; \
 		done; \

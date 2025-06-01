@@ -50,8 +50,12 @@
 /**
  * Modify `mov` immediate substitution options
  */
+#include "options_amd64/TransformMovImmediatesOptionAMD64_ADD.cpp"
+#include "options_amd64/TransformMovImmediatesOptionAMD64_SUB.cpp"
 #include "options_amd64/TransformMovImmediatesOptionAMD64_XOR.cpp"
 #include "options_arm64/TransformMovImmediatesOptionARM64_XOR.cpp"
+#include "options_arm64/TransformMovImmediatesOptionARM64_ADD.cpp"
+#include "options_arm64/TransformMovImmediatesOptionARM64_SUB.cpp"
 
 /**
  * Namespace(s) to use
@@ -111,10 +115,14 @@ public:
      */
     TransformMovImmediatesModule() {
         options_amd64 = {
+            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_ADD().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_SUB().runOnMachineFunction(MF, modifyAll); },
             [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
 
         options_arm64 = {
+            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_ADD().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_SUB().runOnMachineFunction(MF, modifyAll); },
             [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
     }

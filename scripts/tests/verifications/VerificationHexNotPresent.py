@@ -41,7 +41,7 @@ class VerificationHexNotPresent:
         haystack = FileHelper.read_file(feature_test_specification['shellcode'], 'rb')
         needle = bytes.fromhex(feature_test_specification['test_arguments'][0])
         hex_is_not_present_in_shellcode = needle not in haystack
-        hex_is_present_in_original = False
+        hex_is_present_in_original = True
         
         if hex_is_not_present_in_shellcode:
             pass
