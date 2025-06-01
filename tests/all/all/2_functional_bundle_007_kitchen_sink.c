@@ -242,17 +242,20 @@ uint64_t TestMatrixMultiplication();
  */
 uint32_t TestNullification();
 
-
 /**
  * The main function of the code to test.
  * 
  * This test focusses on ensuring that complex code still functions. It's goal is not so much to check whether
  * certain specific transpilations work correclty.
  * 
- *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
- * @verify    all    all      all                     metamorphications_not_original    None                             Must be the case without metamorphications.
- * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,10                  There must be a minimum % change per compile.
- * @verify    all    all      all                     returns                           uint64_t,18154888378             Must be the case without metamorphications.
+ *            OS     Arch     Metamorphication                  Test                              Argument(s)                      Description
+ * @verify    all    all      randomize_register_allocation     metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transform_mov_immediates          metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transform_nullifications          metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transpiled_1                      metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transpiled_2                      metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transpiled_1                      minimum_levenshtein_distance      transpiled_2,10                  There must be a minimum % change per compile.
+ * @verify    all    all      all                               returns                           uint64_t,18154888378             Must be the case without metamorphications.
  */
 uint64_t EntryFunction() {
     uint64_t result = 0;
