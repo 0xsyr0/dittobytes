@@ -54,7 +54,7 @@ using namespace llvm;
 /**
  * A class to obfuscate `mov` immediate values.
  */
-class TransformMovImmediatesOptionARM64_XOR {
+class TransformMovImmediatesOptionARM64_ADD {
 
 private:
 
@@ -66,7 +66,7 @@ private:
 public:
 
     /**
-     * Main execution method for the TransformMovImmediatesOptionARM64_XOR class.
+     * Main execution method for the TransformMovImmediatesOptionARM64_ADD class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -78,7 +78,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running ARM64 module: TransformMovImmediates(option=XOR,modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running ARM64 module: TransformMovImmediates(option=ADD,modifyAll=" << modifyAll << ").\n";
 
         // First convert `movn`, `movz` or `movk` instructions to regular movs
         normalizeMovs(MF);
@@ -103,38 +103,38 @@ public:
                 size_t immediateValue = (size_t) Instruction.getOperand(1).getImm();
                 size_t immediateSize = getMovImmediateSize(Instruction);
                 size_t originalOpcode = Instruction.getOpcode();
-                unsigned xorOpcode = getMovSizeXorReplacement(Instruction);
+                unsigned addOpcode = getMovSizeAddReplacement(Instruction);
 
-                // Generate XOR key on compile time
-                size_t xorKey = RandomHelper::getSimilarIntegerForDestination(immediateSize, immediateValue, false);
+                // Generate mask on compile time
+                size_t addKey = RandomHelper::getSimilarIntegerForDestination(immediateSize, immediateValue, false);
 
-                // `xor` the immediate value and mask it to the correct size
-                size_t immediateValueEncoded = immediateValue ^ xorKey;
+                // `sub` the immediate value and mask it to the correct size
+                size_t immediateValueEncoded = (immediateValue - addKey);
                 int64_t immediateMask = (immediateSize == 64) ? -1 : ((1ULL << immediateSize) - 1);
                 immediateValueEncoded = immediateValueEncoded & immediateMask;
 
                 // Register to use in the substition
-                Register virtualXorKeyRegister;
+                Register virtualAddKeyRegister;
 
-                // Allocate a virtual register for the `xor` key
+                // Allocate a virtual register for the `add` key
                 switch (immediateSize) {
-                    case 64: virtualXorKeyRegister = MRI.createVirtualRegister(&AArch64::GPR64RegClass); break;
-                    default: virtualXorKeyRegister = MRI.createVirtualRegister(&AArch64::GPR32RegClass); break;
+                    case 64: virtualAddKeyRegister = MRI.createVirtualRegister(&AArch64::GPR64RegClass); break;
+                    default: virtualAddKeyRegister = MRI.createVirtualRegister(&AArch64::GPR32RegClass); break;
                 }
 
                 // 1. mov [original register], [encoded immediate value]
-                // 2. mov [xor key register], [xor key]
-                // 3. xor [original register], [original register], [xor key register]
+                // 2. mov [add key register], [add key]
+                // 3. add [original register], [original register], [add key register]
                 BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), destinationRegister).addImm(immediateValueEncoded);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), virtualXorKeyRegister).addImm(xorKey);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode), destinationRegister).addReg(destinationRegister).addReg(virtualXorKeyRegister);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), virtualAddKeyRegister).addImm(addKey);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(addOpcode), destinationRegister).addReg(destinationRegister).addReg(virtualAddKeyRegister);
 
                 // Erase the original instruction after inserting the new ones
                 Instruction.eraseFromParent();
 
                 // Inform module and user that we've successfully substituted the immediate value.
                 modified = true;
-                dbgs() << "          ✓ Modified immediate value using random option `XOR`.\n";
+                dbgs() << "          ✓ Modified immediate value using random option `ADD`.\n";
             }
         }
         
@@ -166,31 +166,31 @@ private:
                 return 64;
                 break;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_ADD - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
 
     /**
-     * Determines the XOR replacement opcode for a given MOV instruction opcode.
+     * Determines the ADD replacement opcode for a given MOV instruction opcode.
      * 
-     * This function maps certain MOV instruction opcodes to corresponding XOR opcodes
+     * This function maps certain MOV instruction opcodes to corresponding ADD opcodes
      * for AMD64 instructions. The provided `MachineInstr`'s opcode is checked and
-     * replaced with an appropriate XOR opcode based on the MOV instruction's immediate size.
+     * replaced with an appropriate ADD opcode based on the MOV instruction's immediate size.
      * 
      * If the opcode does not match any known MOV instruction types, a fatal error is reported.
      *
-     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding XOR opcode.
-     * @return unsigned The corresponding XOR opcode for the MOV instruction's immediate size.
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding ADD opcode.
+     * @return unsigned The corresponding ADD opcode for the MOV instruction's immediate size.
      */
-    unsigned getMovSizeXorReplacement(const MachineInstr &instruction) {
+    unsigned getMovSizeAddReplacement(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
         switch (opcode) {
-            case AArch64::MOVi32imm: return AArch64::EORWrr;
-            case AArch64::MOVi64imm: return AArch64::EORXrr;
+            case AArch64::MOVi32imm: return AArch64::ADDWrr;
+            case AArch64::MOVi64imm: return AArch64::ADDXrr;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_ADD - Unknown ADD replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -224,7 +224,7 @@ private:
      *
      * This function scans through the machine function's instructions and replaces supported
      * immediate-move variants (e.g., MOVN, MOVZ) with equivalent `MOVi32imm` or `MOVi64imm`
-     * instructions. This simplifies further transformations, such as XOR-based immediate obfuscation.
+     * instructions. This simplifies further transformations, such as ADD-based immediate obfuscation.
      * 
      * `MOVK` instructions are skipped as they require reconstructing full register values from partial updates.
      *
