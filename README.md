@@ -304,7 +304,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3">Example</th>
+                    <th colspan="3" align="center"><small>Example</small></th>
                 </tr>
                 <tr>
                     <td>
@@ -333,7 +333,7 @@ mov     r9, 44EF9F7B066756BCh</pre>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3">Example</th>
+                    <th colspan="3" align="center"><small>Example</small></th>
                 </tr>
                 <tr>
                     <td>
@@ -354,7 +354,7 @@ xor     rcx, rax</pre>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3">Example</th>
+                    <th colspan="3" align="center"><small>Example</small></th>
                 </tr>
                 <tr>
                     <td>
@@ -373,7 +373,7 @@ xor     rcx, rax</pre>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.</sup>
             <table>
                 <tr>
-                    <th colspan="3">Example</th>
+                    <th colspan="3" align="center"><small>Example</small></th>
                 </tr>
                 <tr>
                     <td>
