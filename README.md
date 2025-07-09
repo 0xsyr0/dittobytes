@@ -296,6 +296,18 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 </details>
 
 <details>
+    <summary>Using C++ instead of C-code for your beacon</summary>
+    <hr>
+    <p>
+        You can easily utilize functionality of C++ by renaming your beacon file <code>./beacon/main.c</code> to <code>./beacon/main.cpp</code>. Just make sure to prepend the <code>EntryFunction</code> with <code>extern "C"</code>.
+    </p>
+    <p>
+        Please do note that you <b>cannot</b> use external libraries by default. This means you <b>cannot</b> make use of e.g. <code>std::string</code>, as it's part of <code>libstdc++</code> or <code>libc++</code>.
+    </p>
+    <hr>
+</details>
+
+<details>
     <summary>Modification & compilation of the pre-shipped transpilers</summary>
     <hr>
     <p>
