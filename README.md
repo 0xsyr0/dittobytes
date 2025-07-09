@@ -9,15 +9,15 @@
     <a href="https://github.com/tijme/dittobytes/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MPL%20V2.0-ba0745?style=for-the-badge&labelColor=850447" alt="Dittobytes license badge" /></a>
 </p>
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/2f4bfb6f639419b49c9a2e3bfa440fdfd7576949/arch_amd64.svg" alt="AMD64 logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/ac043c7360ebcb89ac3be393a152dde0/raw/2f4bfb6f639419b49c9a2e3bfa440fdfd7576949/arch_amd64.svg" alt="AMD64 logo" width="50" height="50" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_macos.svg" alt="MacOS logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_macos.svg" alt="MacOS logo" width="50" height="50" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_windows.svg" alt="Windows logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_windows.svg" alt="Windows logo" width="50" height="50" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_linux.svg" alt="Linux logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/7262f114a2e018e323fd97837525f87d/raw/5e58faa4765f054e86e7c774be06bacb6e630b7b/os_linux.svg" alt="Linux logo" width="50" height="50" />
     &nbsp;&nbsp;
-    <img src="https://gist.githubusercontent.com/tijme/a5e815ace37e12dc8e36060cc31cee4d/raw/2f6fba67d2d597294de5ccaec48d1325f0c76354/arch_arm64.svg" alt="ARCH64 logo" height="45" />
+    <img src="https://gist.githubusercontent.com/tijme/a5e815ace37e12dc8e36060cc31cee4d/raw/2f6fba67d2d597294de5ccaec48d1325f0c76354/arch_arm64.svg" alt="ARCH64 logo" width="50" height="50" />
 </p>
 <p align="center">
     <b>Metamorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
