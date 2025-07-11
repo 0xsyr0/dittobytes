@@ -12,6 +12,9 @@
 
 #include <stdint.h>
 
+/**
+ * A simple class demonstrating the use of private and public variables.
+ */
 class ExampleClass {
 
 private:

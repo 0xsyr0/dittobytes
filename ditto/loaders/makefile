@@ -14,7 +14,7 @@
 ## Globals                              ##
 ##########################################
 
-BUILD_DIR              := ../builds
+BUILD_DIR              := ../build
 PYTHON_PATH            := /usr/bin/python3
 LLVM_DIR_WIN           := /opt/llvm-winlin/bin
 LLVM_DIR_LIN           := /opt/llvm-winlin/bin
@@ -50,7 +50,7 @@ ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Loaders Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
 	@echo "    $ docker buildx build -t dittobytes ."
-	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes-loaders"
+	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
@@ -176,7 +176,7 @@ clean:
 dependencies:
 	@echo "[+] Installing Python dependencies."
 	@$(PYTHON_PATH) -m pip install --upgrade pip
-	@$(PYTHON_PATH) -m pip install -r scripts/requirements.txt --break-system-packages
+	@$(PYTHON_PATH) -m pip install -r ditto/scripts/requirements.txt --break-system-packages
 
 list:
 	@echo "[+] Available loader targets:"

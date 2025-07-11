@@ -35,7 +35,7 @@ ifeq ($(IS_COMPILER_CONTAINER), false)
 	@echo "[+] It appears you are not running this command inside the \`Dittobytes Transpilers Compiler Container\`."
 	@echo "[+] You can build it and run in in the root of the Dittobytes project directory."
 	@echo "    $ docker buildx build -t dittobytes ."
-	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes-transpilers"
+	@echo "    $ docker run --rm -v ".:/tmp/workdir" -it dittobytes"
 	@read -p "[+] Do you want to continue anyway? (y/N) " CONTINUE && \
 	case "$$CONTINUE" in \
 		[yY][eE][sS]|[yY]) echo "[+] Continuing outside container..." ;; \
@@ -49,11 +49,11 @@ endif
 ##########################################
 
 $(BUILD_DIR):
-	@echo "[+] Creating machine transpiler build folder."
+	@echo "[+] Creating intermediate transpiler build folder."
 	@mkdir -p $(BUILD_DIR)
 
 clean:
-	@echo "[+] Removing machine transpiler from build folder."
+	@echo "[+] Removing intermediate transpiler from build folder."
 	@rm -rf $(BUILD_DIR)/*
 
 .PHONY: all clean
