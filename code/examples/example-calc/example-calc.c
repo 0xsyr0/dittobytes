@@ -10,7 +10,12 @@
  * include this same license and copyright notice.
  */
 
-#include <stdint.h>
+/**
+ * This `calc.exe` pop example only works on Windows AMD64.
+ */
+#if !defined(__WINDOWS__) || !defined(__AMD64__)
+#error "This `calc.exe` pop example only works on Windows AMD64."
+#endif
 
 /**
  * Booleans.
@@ -136,11 +141,7 @@ void InitializeRelocatable(struct Relocatable* context);
 void PopulateTables(struct Relocatable* context);
 
 /**
- * The main function of the code to test.
- * 
- *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
- * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,30                  There must be a minimum % change per compile.
- * @verify    win    amd64    all                     returns                           uint32_t,1                       Must always be the return value.
+ * The main function to pop `calc.exe`.
  */
 uint32_t EntryFunction() {
     struct Relocatable context;

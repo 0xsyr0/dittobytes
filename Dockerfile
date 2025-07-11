@@ -30,7 +30,7 @@ RUN apt install -qqy --no-install-recommends \
     qemu-user qemu-user-static 
 
 # Install Python dependencies
-RUN python3 -m pip install -r scripts/requirements.txt --break-system-packages
+RUN python3 -m pip install -r ditto/scripts/requirements.txt --break-system-packages
 
 # Install MacOS SDK
 WORKDIR /opt

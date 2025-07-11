@@ -72,8 +72,8 @@ class VerificationHelper:
             if verify_match_metamorphication not in available_metamorphications:
                 available_metamorphications.append(verify_match_metamorphication)
 
-        # Then list all metamorphications in the builds directory
-        wildcard = './builds/beacon-{}-{}-tests_*_*_{}_*.bin'.format(
+        # Then list all metamorphications in the build directory
+        wildcard = './build/beacon-{}-{}-tests_*_*_{}_*.bin'.format(
             shellcode_compiled_for_os,
             shellcode_compiled_for_arch,
             shellcode_feature_test_file_name
@@ -141,7 +141,7 @@ class VerificationHelper:
                             continue
                
                         # Define shellcode test file index key
-                        shellcode_file_path = './builds/beacon-{}-{}-tests_{}_{}_{}_{}.bin'.format(
+                        shellcode_file_path = './build/beacon-{}-{}-tests_{}_{}_{}_{}.bin'.format(
                             verify_match_os,
                             verify_match_arch,
                             shellcode_is_compatible_with_os,

@@ -15,9 +15,9 @@
 ##########################################
 
 DEBUG                                := false
-BUILD_DIR                            := ./builds
-TESTS_DIR                            := ./tests
-SOURCE_PATH                          ?= ./beacon/main.c
+BUILD_DIR                            := ./build
+TESTS_DIR                            := ./ditto/tests
+SOURCE_PATH                          ?= ./code/beacon.c
 PYTHON_PATH                          := python3
 LLVM_DIR_WIN                         := /opt/llvm-winlin/bin
 LLVM_DIR_LIN                         := /opt/llvm-winlin/bin
@@ -118,14 +118,14 @@ beacon-all-arm64: check_environment $(WIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_
 # Loaders
 loaders: check_environment 
 	@echo "[+] Calling \`all\` in loaders makefile."
-	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./loaders/
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/loaders/
 
 # Transpilers
 transpilers: check_environment
 	@echo "[+] Calling \`all\` in intermediate transpiler makefile."
-	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/intermediate/
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/intermediate/
 	@echo "[+] Calling \`all\` in machine transpiler makefile."
-	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/machine/
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/machine/
 
 # Everything
 extensive: check_environment transpilers loaders beacons
@@ -175,7 +175,7 @@ test-suite-test: check_environment
 				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$${AVAILABLE_TEST_OS_BASENAME}"; fi; \
 				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$${AVAILABLE_TEST_ARCH_BASENAME}"; fi; \
 				echo "[+] TestSuite testing  \`$$AVAILABLE_TEST_OS_BASENAME-$$AVAILABLE_TEST_ARCH_BASENAME-$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
-				$(PYTHON_PATH) ./scripts/tests/test.py $${AVAILABLE_TEST_OS_BASENAME} $${AVAILABLE_TEST_ARCH_BASENAME} $${AVAILABLE_TEST_FILE_BASENAME%.*} $$TEST_FILE $$BEACON_OS $$BEACON_ARCH $$TEST_METAMORPHICATION; \
+				$(PYTHON_PATH) ./ditto/scripts/tests/test.py $${AVAILABLE_TEST_OS_BASENAME} $${AVAILABLE_TEST_ARCH_BASENAME} $${AVAILABLE_TEST_FILE_BASENAME%.*} $$TEST_FILE $$BEACON_OS $$BEACON_ARCH $$TEST_METAMORPHICATION; \
 			done; \
 		done; \
 	done; \
@@ -208,9 +208,9 @@ endif
 WIN_AMD64_TARGET            := x86_64-w64-mingw32
 WIN_AMD64_DEFINES           := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellcode
 WIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone 
+WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone 
+WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -231,7 +231,7 @@ $(WIN_AMD64_BEACON_PATH).meta1.mir: $(WIN_AMD64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).meta2.mir: $(WIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -243,7 +243,7 @@ $(WIN_AMD64_BEACON_PATH).meta3.mir: $(WIN_AMD64_BEACON_PATH).meta2.mir
 	MACHINE_TRANSPILER_STEP=last \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -255,7 +255,7 @@ $(WIN_AMD64_BEACON_PATH).lkd: $(WIN_AMD64_BEACON_PATH).obj
 
 $(WIN_AMD64_BEACON_PATH).bin: $(WIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
 $(WIN_AMD64_BEACON_NAME): $(WIN_AMD64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -271,9 +271,9 @@ endif
 WIN_ARM64_TARGET            := aarch64-w64-mingw32
 WIN_ARM64_DEFINES           := -D__WINDOWS__ -D__ARM64__ -DEntryFunction=shellcode
 WIN_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-WIN_ARM64_BEACON_CL1FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
+WIN_ARM64_BEACON_CL1FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 WIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(WIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-WIN_ARM64_BEACON_CL2FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
+WIN_ARM64_BEACON_CL2FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(WIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -294,7 +294,7 @@ $(WIN_ARM64_BEACON_PATH).meta1.mir: $(WIN_ARM64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).meta2.mir: $(WIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -306,7 +306,7 @@ $(WIN_ARM64_BEACON_PATH).meta3.mir: $(WIN_ARM64_BEACON_PATH).meta2.mir
 	MACHINE_TRANSPILER_STEP=last \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -318,7 +318,7 @@ $(WIN_ARM64_BEACON_PATH).lkd: $(WIN_ARM64_BEACON_PATH).obj
 
 $(WIN_ARM64_BEACON_PATH).bin: $(WIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
 $(WIN_ARM64_BEACON_NAME): $(WIN_ARM64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -334,9 +334,9 @@ endif
 LIN_AMD64_TARGET            := x86_64-linux-gnu
 LIN_AMD64_DEFINES           := -D__LINUX__ -D__AMD64__ -DEntryFunction=shellcode
 LIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(LIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-LIN_AMD64_BEACON_CL1FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
+LIN_AMD64_BEACON_CL1FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 LIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(LIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-LIN_AMD64_BEACON_CL2FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
+LIN_AMD64_BEACON_CL2FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(LIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(LIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -357,7 +357,7 @@ $(LIN_AMD64_BEACON_PATH).meta1.mir: $(LIN_AMD64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).meta2.mir: $(LIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -369,7 +369,7 @@ $(LIN_AMD64_BEACON_PATH).meta3.mir: $(LIN_AMD64_BEACON_PATH).meta2.mir
 	MACHINE_TRANSPILER_STEP=last \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -381,7 +381,7 @@ $(LIN_AMD64_BEACON_PATH).lkd: $(LIN_AMD64_BEACON_PATH).obj
 
 $(LIN_AMD64_BEACON_PATH).bin: $(LIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
 $(LIN_AMD64_BEACON_NAME): $(LIN_AMD64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -397,9 +397,9 @@ endif
 LIN_ARM64_TARGET            := aarch64-linux-gnu
 LIN_ARM64_DEFINES           := -D__LINUX__ -D__ARM64__ -DEntryFunction=shellcode
 LIN_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(LIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-LIN_ARM64_BEACON_CL1FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
+LIN_ARM64_BEACON_CL1FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 LIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(LIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-LIN_ARM64_BEACON_CL2FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone
+LIN_ARM64_BEACON_CL2FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(LIN_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(LIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -420,7 +420,7 @@ $(LIN_ARM64_BEACON_PATH).meta1.mir: $(LIN_ARM64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).meta2.mir: $(LIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -432,7 +432,7 @@ $(LIN_ARM64_BEACON_PATH).meta3.mir: $(LIN_ARM64_BEACON_PATH).meta2.mir
 	MACHINE_TRANSPILER_STEP=last \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -444,7 +444,7 @@ $(LIN_ARM64_BEACON_PATH).lkd: $(LIN_ARM64_BEACON_PATH).obj
 
 $(LIN_ARM64_BEACON_PATH).bin: $(LIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
 $(LIN_ARM64_BEACON_NAME): $(LIN_ARM64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -460,9 +460,9 @@ endif
 MAC_AMD64_TARGET            := x86_64-apple-darwin
 MAC_AMD64_DEFINES           := -D__MACOS__ -D__AMD64__ -DEntryFunction=main
 MAC_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(MAC_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-MAC_AMD64_BEACON_CL1FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
+MAC_AMD64_BEACON_CL1FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 MAC_AMD64_BEACON_LLCFLAGS   := -mtriple $(MAC_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-MAC_AMD64_BEACON_CL2FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib
+MAC_AMD64_BEACON_CL2FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(MAC_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(MAC_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -483,7 +483,7 @@ $(MAC_AMD64_BEACON_PATH).meta1.mir: $(MAC_AMD64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).meta2.mir: $(MAC_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -495,7 +495,7 @@ $(MAC_AMD64_BEACON_PATH).meta3.mir: $(MAC_AMD64_BEACON_PATH).meta2.mir
 	MACHINE_TRANSPILER_STEP=last \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -507,7 +507,7 @@ $(MAC_AMD64_BEACON_PATH).lkd: $(MAC_AMD64_BEACON_PATH).obj
 
 $(MAC_AMD64_BEACON_PATH).bin: $(MAC_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
 $(MAC_AMD64_BEACON_NAME): $(MAC_AMD64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -523,9 +523,9 @@ endif
 MAC_ARM64_TARGET         := arm64-apple-darwin
 MAC_ARM64_DEFINES        := -D__MACOS__ -D__ARM64__ -DEntryFunction=main
 MAC_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(MAC_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-MAC_ARM64_BEACON_CL1FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone
+MAC_ARM64_BEACON_CL1FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 MAC_ARM64_BEACON_LLCFLAGS   := -mtriple $(MAC_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-MAC_ARM64_BEACON_CL2FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib
+MAC_ARM64_BEACON_CL2FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(MAC_ARM64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(MAC_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -546,7 +546,7 @@ $(MAC_ARM64_BEACON_PATH).meta1.mir: $(MAC_ARM64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).meta2.mir: $(MAC_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -558,7 +558,7 @@ $(MAC_ARM64_BEACON_PATH).meta3.mir: $(MAC_ARM64_BEACON_PATH).meta2.mir
 	MACHINE_TRANSPILER_STEP=last \
 	MM_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) MM_TEST_TRANSFORM_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -570,7 +570,7 @@ $(MAC_ARM64_BEACON_PATH).lkd: $(MAC_ARM64_BEACON_PATH).obj
 
 $(MAC_ARM64_BEACON_PATH).bin: $(MAC_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
-	@$(PYTHON_PATH) ./scripts/make/extract-text-segment.py $< $@
+	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
 $(MAC_ARM64_BEACON_NAME): $(MAC_ARM64_BEACON_PATH).bin
 ifeq ($(DEBUG), false)
@@ -590,7 +590,7 @@ $(BUILD_DIR):
 dependencies:
 	@echo "[+] Installing Python dependencies."
 	@$(PYTHON_PATH) -m pip install --upgrade pip
-	@$(PYTHON_PATH) -m pip install -r scripts/requirements.txt --break-system-packages
+	@$(PYTHON_PATH) -m pip install -r ditto/scripts/requirements.txt --break-system-packages
 
 clean:
 	@echo "[+] Removing beacons from build folder."
@@ -600,13 +600,13 @@ clean-beacons: clean
 
 clean-loaders:
 	@echo "[+] Calling \`clean\` in loaders makefile."
-	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./loaders/ clean
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/loaders/ clean
 
 clean-transpilers:
 	@echo "[+] Calling \`clean\` in intermediate transpiler makefile."
-	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/intermediate/ clean
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/intermediate/ clean
 	@echo "[+] Calling \`clean\` in machine transpiler makefile."
-	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./transpilers/machine/ clean
+	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/machine/ clean
 
 clean-extensive: clean-transpilers clean-loaders clean-beacons
 

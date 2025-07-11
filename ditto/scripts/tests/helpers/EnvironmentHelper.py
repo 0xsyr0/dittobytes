@@ -88,7 +88,7 @@ class EnvironmentHelper:
 
         """
 
-        build_dir = './builds'
+        build_dir = './build'
 
         available_loaders = {
             'win-amd64-to-win-amd64': f'{build_dir}/loader-win-amd64.exe',

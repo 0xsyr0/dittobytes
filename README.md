@@ -90,7 +90,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
     Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
 </p>
 
-The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used for testing purposes.
+The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
 ## Hardware requirements
 
@@ -98,7 +98,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Requirements to compile with Docker (<strong>easy</strong>)</summary>
     <hr>
     <p>
-        You can <a href="#4-compiling">easily compile</a> <code>./beacon/main.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
+        You can <a href="#4-compiling">easily compile</a> <code>./code/beacon.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
         <blockquote>⚠️ If Docker cannot allocate enough resources, the build might fail with an error like <code>ResourceExhausted: cannot allocate memory</code>.</blockquote>
         <ul>
             <li>Set CPU limit to: <code>8</code>.</li>
@@ -114,7 +114,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Requirements to compile on your host (<strong>advanced</strong>)</summary>
     <hr>
     <p>
-        You can <a href="#4-compiling">compile</a> <code>./beacon/main.c</code> on your host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
+        You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> on your host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
         <ul>
             <li>CPU cores: <code>8</code>.</li>
             <li>Memory: <code>10 GB</code>.</li>
@@ -133,33 +133,34 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <hr>
 
     dittobytes/
-    ├── beacon/                         # Your C-code that will compile to shellcode.
-    │   ├── main.c                       
-    ├── loaders/                        # Simple shellcode loaders for testing purposes (pre-built).
-    │   └── [platform]/
-    │       ├── src/
-    │       │   └── main.c
-    │       └── lib/
-    │           └── ...
-    ├── builds/                         # Build dir containing loaders and your shellcodes.
+    ├── code/                           # Your C-code that will compile to shellcode.
+    │   ├── beacon.c                    # Example file that you can compile using Dittobytes.
+    ├── build/                          # Build dir containing loaders and your shellcodes.
     │   ├── beacon-[platform]-[arch].bin
     │   ├── loader-[platform]-[arch].[ext]
     │   └── ...
-    ├── scripts/                        # Helper scripts used by the makefile(s).
-    │   ├── extract-text-segment.py
-    │   └── ...
-    ├── tests/                          # C-code files used for feature testing.
-    │   ├── [feature-test].c
-    │   └── ...
-    └── transpilers/                    # The LLVM plugins that act as metamorphic engine.
-        ├── intermediate/
-        │   └── src/
-        │       ├── IntermediateTranspiler.cpp
-        │       └── ...
-        └── machine/
-            └── src/
-                ├── MachineTranspiler.cpp
-                └── ...
+    └── ditto/                          # Internal files supporting the Dittobytes project.
+        ├── loaders/                        # Simple shellcode loaders for testing purposes (pre-built).
+        │   └── [platform]/
+        │       ├── src/
+        │       │   └── main.c
+        │       └── lib/
+        │           └── ...
+        ├── scripts/                        # Helper scripts used by the makefile(s).
+        │   ├── extract-text-segment.py
+        │   └── ...
+        ├── tests/                          # C-code files used for feature testing.
+        │   ├── [feature-test].c
+        │   └── ...
+        └── transpilers/                    # The LLVM plugins that act as metamorphic engine.
+            ├── intermediate/
+            │   └── src/
+            │       ├── IntermediateTranspiler.cpp
+            │       └── ...
+            └── machine/
+                └── src/
+                    ├── MachineTranspiler.cpp
+                    └── ...
 
 <hr>
 </details>
@@ -195,7 +196,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Installing the build tools on your host instead (<strong>advanced</strong>)</summary>
     <hr>
     <p>
-        Clang and LLVM are used to cross-compile the beacon, loaders and transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+        Clang and LLVM are used to cross-compile your code, the loaders and the transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
     </p>
     <hr>
 </details>
@@ -206,7 +207,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>The basics</summary>
     <hr>
     <p>
-        You can modify <code>./beacon/main.c</code> however you like. Just keep the following in mind:
+        You can modify <code>./code/beacon.c</code> however you like. Just keep the following in mind:
         <br>
         <ul>
             <li>The first function in your code must be named <code>EntryFunction</code>.</li>
@@ -217,7 +218,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         </ul>
     </p>
     <p>
-        The following example may give you some guidance. It simulates global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a char[] array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
+        The following example may give you some guidance. It simulates global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a <code>char[]</code> array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
     </p>
     <p>
         <a href="https://gist.github.com/tijme/01331c822a7e6e05fd192d4d3d118647">Example 'The Basics'</a>
@@ -232,7 +233,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         A hello world requires printing to the console, thus requiring an OS API call to e.g. <code>puts</code>. This is OS specific. For example, for Windows it would require loading <code>KERNEL32.dll</code>, ultimately resolving <code>LoadLibraryA</code> and <code>GetProcAddress</code>. With these two functions resolved, you can then load any function address, such as the address of <code>puts</code>.
     </p>
     <p>
-        An example would become quite large, thus for now I'd like to forward you to <a href="https://github.com/tijme/dittobytes/blob/master/tests/win/amd64/1_functional_specific_api_call.c">this</a> feature test file. It is a Position Independent Code (PIC) for Windows AMD64 which pops a calculator as example.
+        An example would become quite large, thus for now I'd like to forward you to <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-calc/example-calc.c">this</a> example file. It is a Position Independent Code (PIC) for Windows AMD64 which pops a calculator as example.
     </p>
     <hr>
 </details>
@@ -258,7 +259,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         <li>
             Run and test your shellcode using the pre-shipped shellcode loader:
             <br>
-            <code>./builds/loader-[os]-[arch].[ext] ./builds/beacon-[os]-[arch].bin</code>
+            <code>./build/loader-[os]-[arch].[ext] ./build/code-[os]-[arch].bin</code>
         </li>
     </ul>
     <hr>
@@ -285,7 +286,7 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
     <summary>Modification & compilation of the pre-shipped loaders</summary>
     <hr>
     <p>
-        You can modify the pre-shipped loaders by editing the code in <code>./loaders/[platform]/src/main.c</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
+        You can modify the pre-shipped loaders by editing the code in <code>./ditto/loaders/[platform]/src/main.c</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
@@ -296,10 +297,22 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
 </details>
 
 <details>
+    <summary>Using C++ instead of C for your code</summary>
+    <hr>
+    <p>
+        You can easily utilize functionality of C++ by renaming your code file <code>./code/beacon.c</code> to <code>./code/beacon.cpp</code>. Just make sure to prepend the <code>EntryFunction</code> with <code>extern "C"</code>.
+    </p>
+    <p>
+        Please do note that you <b>cannot</b> use external libraries by default. This means you <b>cannot</b> make use of e.g. <code>std::string</code>, as it's part of <code>libstdc++</code> or <code>libc++</code>.
+    </p>
+    <hr>
+</details>
+
+<details>
     <summary>Modification & compilation of the pre-shipped transpilers</summary>
     <hr>
     <p>
-        You can modify the pre-shipped transpiler(s) by editing the code in <code>./transpilers/[type]/src/[type].cpp</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
+        You can modify the pre-shipped transpiler(s) by editing the code in <code>./ditto/transpilers/[type]/src/[type].cpp</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
@@ -318,8 +331,8 @@ The pre-shippped minimal C-code file (`./beacon/main.c`) can cross-compile to al
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-build</code></li>
-            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-test</code></li>
+            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./ditto/tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-build</code></li>
+            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./ditto/tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-test</code></li>
         </ul>
         The above example would build the feature test <code>3_metamorphication_010_transform_nullifications.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case 1 (<code>1 × 1 × 1 × 1</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
     </p>

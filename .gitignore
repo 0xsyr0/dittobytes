@@ -8,6 +8,9 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
+# Temporary
+code/examples/example-bof
+
 # General
 .DS_Store
 .AppleDouble

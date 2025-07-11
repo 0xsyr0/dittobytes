@@ -14,3 +14,4 @@
 # Except for these
 !.gitignore
 !*.c
+!*.cpp

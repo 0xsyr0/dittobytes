@@ -90,7 +90,7 @@ jobs:
       # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
         run: |
-          python3 -m pip install -r scripts/requirements.txt --break-system-packages
+          python3 -m pip install -r ditto/scripts/requirements.txt --break-system-packages
 
       # If not cached, install the MacOS SDK project.
       - name: Setup MacOS SDK project if missing
@@ -151,8 +151,8 @@ jobs:
         with:
           name: dittobytes-tests-${{ github.run_id }}
           path: |
-            ./builds/beacon-*
-            ./builds/loader-*
+            ./build/beacon-*
+            ./build/loader-*
           retention-days: 1
 
   # The second job runs all available Dittobytes tests
@@ -193,22 +193,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dittobytes-tests-${{ github.run_id }}
-          path: ./builds/
+          path: ./build/
 
       # Make the loaders executable
       - name: Make the loaders executable
         shell: bash
-        run: chmod +x ./builds/loader-*
+        run: chmod +x ./build/loader-*
 
-      # List all the ./builds/ files
+      # List all the ./build/ files
       - name: List all the build files
         shell: bash
-        run: ls -lah ./builds/
+        run: ls -lah ./build/
 
       # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
         run: |
-          python3 -m pip install -r scripts/requirements.txt --break-system-packages
+          python3 -m pip install -r ditto/scripts/requirements.txt --break-system-packages
 
       # Conditionally install dependencies on Ubuntu
       - name: Install OS-specific dependencies (Ubuntu only)
