@@ -20,6 +20,11 @@
  *     number, the following file contains a full example to pop `calc.exe` on Windows AMD64: 
  *     `./examples/example-calc/example-calc.c`
  * 
+ * Beacon Object Files (BOFs):
+ *     If you want to develop a Beacon Object File (BOF) for your favorite Command & Control server, use
+ *     the following example BOF and compile it with Dittobytes.
+ *     `./examples/example-bof/example-bof.c`
+ * 
  * Using C++ instead of C-code:
  *     If you want to use C++, rename this file so it has the `cpp` extension, then modify the `makefile` to 
  *     point `SOURCE_PATH` to the new filename. Also ensure `extern "C"` is prepended to the `EntryFunction`

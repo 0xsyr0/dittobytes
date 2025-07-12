@@ -41,6 +41,7 @@ public:
     uint32_t TestGlobalsInClass() {
         return NumberOne + NumberTwo + static_cast<uint32_t>(SomeString[1]);
     }
+
 };
 
 /**

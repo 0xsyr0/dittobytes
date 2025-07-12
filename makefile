@@ -15,6 +15,7 @@
 ##########################################
 
 DEBUG                                := false
+BOF                                  := false
 BUILD_DIR                            := ./build
 TESTS_DIR                            := ./ditto/tests
 SOURCE_PATH                          ?= ./code/beacon.c
@@ -248,6 +249,7 @@ $(WIN_AMD64_BEACON_PATH).meta3.mir: $(WIN_AMD64_BEACON_PATH).meta2.mir
 $(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
+	@$(PYTHON_PATH) ./ditto/scripts/make/notify-user-about-bof.py $<
 
 $(WIN_AMD64_BEACON_PATH).lkd: $(WIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
@@ -257,10 +259,15 @@ $(WIN_AMD64_BEACON_PATH).bin: $(WIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(WIN_AMD64_BEACON_NAME): $(WIN_AMD64_BEACON_PATH).bin
+$(WIN_AMD64_BEACON_NAME): $(if $(filter true,$(BOF)),$(WIN_AMD64_BEACON_PATH).obj,$(WIN_AMD64_BEACON_PATH).bin)
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
-	@rm $(WIN_AMD64_BEACON_PATH)*.lkd $(WIN_AMD64_BEACON_PATH)*.obj $(WIN_AMD64_BEACON_PATH)*.*mir $(WIN_AMD64_BEACON_PATH)*.ll
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.lkd 
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.*mir 
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.ll
+ifeq ($(BOF), false)
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.obj 
+endif
 endif
 	@echo "    - Done building $@."
 
@@ -320,10 +327,15 @@ $(WIN_ARM64_BEACON_PATH).bin: $(WIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(WIN_ARM64_BEACON_NAME): $(WIN_ARM64_BEACON_PATH).bin
+$(WIN_ARM64_BEACON_NAME): $(if $(filter true,$(BOF)),$(WIN_ARM64_BEACON_PATH).obj,$(WIN_ARM64_BEACON_PATH).bin)
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
-	@rm $(WIN_ARM64_BEACON_PATH)*.lkd $(WIN_ARM64_BEACON_PATH)*.obj $(WIN_ARM64_BEACON_PATH)*.*mir $(WIN_ARM64_BEACON_PATH)*.ll
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.lkd 
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.*mir 
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.ll
+ifeq ($(BOF), false)
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.obj 
+endif
 endif
 	@echo "    - Done building $@."
 
@@ -383,10 +395,15 @@ $(LIN_AMD64_BEACON_PATH).bin: $(LIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(LIN_AMD64_BEACON_NAME): $(LIN_AMD64_BEACON_PATH).bin
+$(LIN_AMD64_BEACON_NAME): $(if $(filter true,$(BOF)),$(LIN_AMD64_BEACON_PATH).obj,$(LIN_AMD64_BEACON_PATH).bin)
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
-	@rm $(LIN_AMD64_BEACON_PATH)*.lkd $(LIN_AMD64_BEACON_PATH)*.obj $(LIN_AMD64_BEACON_PATH)*.*mir $(LIN_AMD64_BEACON_PATH)*.ll
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.lkd 
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.*mir 
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.ll
+ifeq ($(BOF), false)
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.obj 
+endif
 endif
 	@echo "    - Done building $@."
 
@@ -446,10 +463,15 @@ $(LIN_ARM64_BEACON_PATH).bin: $(LIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(LIN_ARM64_BEACON_NAME): $(LIN_ARM64_BEACON_PATH).bin
+$(LIN_ARM64_BEACON_NAME): $(if $(filter true,$(BOF)),$(LIN_ARM64_BEACON_PATH).obj,$(LIN_ARM64_BEACON_PATH).bin)
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
-	@rm $(LIN_ARM64_BEACON_PATH)*.lkd $(LIN_ARM64_BEACON_PATH)*.obj $(LIN_ARM64_BEACON_PATH)*.*mir $(LIN_ARM64_BEACON_PATH)*.ll
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.lkd 
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.*mir 
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.ll
+ifeq ($(BOF), false)
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.obj 
+endif
 endif
 	@echo "    - Done building $@."
 
@@ -509,10 +531,15 @@ $(MAC_AMD64_BEACON_PATH).bin: $(MAC_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(MAC_AMD64_BEACON_NAME): $(MAC_AMD64_BEACON_PATH).bin
+$(MAC_AMD64_BEACON_NAME): $(if $(filter true,$(BOF)),$(MAC_AMD64_BEACON_PATH).obj,$(MAC_AMD64_BEACON_PATH).bin)
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
-	@rm $(MAC_AMD64_BEACON_PATH)*.lkd $(MAC_AMD64_BEACON_PATH)*.obj $(MAC_AMD64_BEACON_PATH)*.*mir $(MAC_AMD64_BEACON_PATH)*.ll
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.lkd 
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.*mir 
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.ll
+ifeq ($(BOF), false)
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.obj 
+endif
 endif
 	@echo "    - Done building $@."
 
@@ -572,10 +599,15 @@ $(MAC_ARM64_BEACON_PATH).bin: $(MAC_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(MAC_ARM64_BEACON_NAME): $(MAC_ARM64_BEACON_PATH).bin
+$(MAC_ARM64_BEACON_NAME): $(if $(filter true,$(BOF)),$(MAC_ARM64_BEACON_PATH).obj,$(MAC_ARM64_BEACON_PATH).bin)
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
-	@rm $(MAC_ARM64_BEACON_PATH)*.lkd $(MAC_ARM64_BEACON_PATH)*.obj $(MAC_ARM64_BEACON_PATH)*.*mir $(MAC_ARM64_BEACON_PATH)*.ll
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.lkd 
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.*mir 
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.ll
+ifeq ($(BOF), false)
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.obj 
+endif
 endif
 	@echo "    - Done building $@."
 
