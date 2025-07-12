@@ -54,7 +54,7 @@ class VerificationMetamorphicationsNotOriginal:
         transpiled_path = feature_test_specification['shellcode']
         transpiled = FileHelper.read_file(transpiled_path, binary=True)
 
-        original_path = transpiled_path.replace(f"{feature_test_specification['metamorphication']}.bin", 'original.bin')
+        original_path = transpiled_path.replace(f"{feature_test_specification['metamorphication']}.raw", 'original.raw')
         original = FileHelper.read_file(original_path, binary=True)
 
         if transpiled == None or original == None:

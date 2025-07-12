@@ -138,7 +138,7 @@ jobs:
       # Build all tests artifacts
       - name: Build Dittobytes transpilers
         working-directory: ${{ github.workspace }}
-        run: make transpilers
+        run: make ditto-transpilers
 
       # Build all tests artifacts
       - name: Build Dittobytes tests

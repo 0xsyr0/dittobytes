@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 /**
- * The main function of your shellcode. In this example we solely return a value.
+ * The main function of your shellcode/payload. In this example we solely return a value.
  * 
  * Popping `calc.exe`:
  *     If you want a more extensive example of what Dittobytes can compile, instead of solely returning a 

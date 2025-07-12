@@ -22,11 +22,7 @@ def main():
 
     if len(sys.argv) != 2:
         print("Usage: python notify-user-about-bof.py <input_obj_file>")
-        sys.exit(1)   
-
-   # Skip warning if BOF is in environment
-    if 'BOF' in os.environ:
-        sys.exit(0)
+        sys.exit(1)
 
     input_file = sys.argv[1]
 
@@ -41,7 +37,8 @@ def main():
 
     if beacon_regex.search(content):
         print("    - Found a DLL import reference with `@Beacon...`. ⚠️")
-        print("      ↳ Please consider pass `BOF=true` in `make` command.")
+        print("      ↳ Please consider compiling to BOF only to prevent compilation errors.")
+        print("      ↳ Example `make beacon-bof-all-all`.")
 
 if __name__ == "__main__":
     main()
