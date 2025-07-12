@@ -283,6 +283,34 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 ## Advanced usage
 
 <details>
+    <summary>Using C++ instead of C for your code</summary>
+    <hr>
+    <p>
+        You can easily utilize functionality of C++ by renaming your code file from <code>./code/beacon.c</code> to <code>./code/beacon.cpp</code>. Just make sure to prepend the <code>EntryFunction</code> in the file with <code>extern "C"</code>. Also ensure that the <code>SOURCE_PATH</code> option in the <code>makefile</code> points to the new filename. Do note that you <b>cannot</b> use functionality from external libraries such as <code>libstdc++</code> or <code>libc++</code>. This means you <b>cannot</b> make use of e.g. <code>std::string</code> ⚠️.
+    </p>
+    <p>Compiling C++ code in Dittobytes works exactly the same as compiling regular C-code.</p>
+    <ul>
+        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+        <li>Then compile your code:<br><code>make</code></li>
+    </ul>
+    <hr>
+</details>
+
+<details>
+    <summary>Compiling a Cobalt Strike Beacon Object File (BOF)</summary>
+    <hr>
+    <p>
+        To compile a Beacon Object File (BOF) for Cobalt Strike or any other Command & Control framework, copy <code>./code/examples/example-bof/example-bof.c</code> to <code>./code/beacon.c</code>. Then adjust the source code to your needs.
+    </p>
+    <p>Remember to pass the <code>BOF=true</code> argument to the <code>make</code> command ⚠️.</p>
+    <ul>
+        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
+        <li>Then compile your:<br><code>make BOF=true beacon-win-amd64</code></li>
+    </ul>
+    <hr>
+</details>
+
+<details>
     <summary>Modification & compilation of the pre-shipped loaders</summary>
     <hr>
     <p>
@@ -292,18 +320,6 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
             <li>Compile the loaders:<br><code>make loaders</code></li>
         </ul>
-    </p>
-    <hr>
-</details>
-
-<details>
-    <summary>Using C++ instead of C for your code</summary>
-    <hr>
-    <p>
-        You can easily utilize functionality of C++ by renaming your code file <code>./code/beacon.c</code> to <code>./code/beacon.cpp</code>. Just make sure to prepend the <code>EntryFunction</code> with <code>extern "C"</code>.
-    </p>
-    <p>
-        Please do note that you <b>cannot</b> use external libraries by default. This means you <b>cannot</b> make use of e.g. <code>std::string</code>, as it's part of <code>libstdc++</code> or <code>libc++</code>.
     </p>
     <hr>
 </details>
