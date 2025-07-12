@@ -95,7 +95,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 ## Hardware requirements
 
 <details>
-    <summary>Requirements to compile with Docker (<strong>easy</strong>)</summary>
+    <summary>Requirements to compile with Docker (difficulty: <strong>easy</strong>)</summary>
     <hr>
     <p>
         You can <a href="#4-compiling">easily compile</a> <code>./code/beacon.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
@@ -111,7 +111,21 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Requirements to compile on your host (<strong>advanced</strong>)</summary>
+    <summary>Requirements to compile with Windows Subsystem for Linux (difficulty: <strong>intermediate</strong>)</summary>
+    <hr>
+    <p>
+        You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> via Windows Subsystem for Linux (WSL). However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
+        <ul>
+            <li>CPU cores: <code>8</code>.</li>
+            <li>Memory: <code>10 GB</code>.</li>
+            <li>Disk space: <code>1 TB</code> (though this can likely be much lower).</li>
+        </ul>
+    </p>
+    <hr>
+</details>
+
+<details>
+    <summary>Requirements to compile on your host (difficulty: <strong>advanced</strong>)</summary>
     <hr>
     <p>
         You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> on your host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
@@ -133,13 +147,14 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 
     dittobytes/
-    ├── code/                           # Your C-code that will compile to shellcode.
-    │   ├── beacon.c                    # Example file that you can compile using Dittobytes.
-    ├── build/                          # Build dir containing loaders and your shellcodes.
-    │   ├── beacon-[platform]-[arch].bin
-    │   ├── loader-[platform]-[arch].[ext]
+    ├── code/                               # Your C-code that will compile to shellcode.
+    │   ├── beacon.c                        # Example file that you can compile using Dittobytes.
+    ├── build/                              # Build dir containing loaders and your shellcodes.
+    │   ├── beacon-[platform]-[arch].raw    # Your C-code compiled to raw shellcode (.text segment only).
+    │   ├── beacon-[platform]-[arch].obj    # Your C-code compiled to BOF/COFF format.
+    │   ├── loader-[platform]-[arch].[ext]  # Pre-built raw shellcode loaders for testing purposes.
     │   └── ...
-    └── ditto/                          # Internal files supporting the Dittobytes project.
+    └── ditto/                              # Internal files supporting the Dittobytes project.
         ├── loaders/                        # Simple shellcode loaders for testing purposes (pre-built).
         │   └── [platform]/
         │       ├── src/
@@ -179,7 +194,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Building the build tools in a Docker container (<strong>easy</strong>)</summary>
+    <summary>Building the build tools in a Docker container (difficulty: <strong>easy</strong>)</summary>
     <hr>
     <p>
         The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>.
@@ -193,10 +208,26 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Installing the build tools on your host instead (<strong>advanced</strong>)</summary>
+    <summary>Installing the build tools on Windows Subsystem for Linux instead (difficulty: <strong>intermediate</strong>)</summary>
     <hr>
     <p>
-        Clang and LLVM are used to cross-compile your code, the loaders and the transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. For now, there is no further documentation on setting up the environment on your host machine.
+        If you are on Windows, a more performant option to build the build tools is to use Windows Subsystem for Linux (WSL). However, in contrast to Docker, the installation of the build tools is a manual process.
+        <br>
+        <ul>
+            <li>First of all, run a WSL Debian container:<br><pre><code>wsl -d Debian</code></pre></li>
+        </ul>
+        <p>
+            Custom versions of Clang and LLVM are eventually used to cross-compile your code, the loaders and the transpilers. Performing this compilation in WSL requires you to configure your WSL the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. Follow the exact same steps as in one of those files. For now, there is no further documentation on setting up the environment in WSL.
+        </p>
+    </p>
+    <hr>
+</details>
+
+<details>
+    <summary>Installing the build tools on your host instead (difficulty: <strong>advanced</strong>)</summary>
+    <hr>
+    <p>
+        Custom versions of Clang and LLVM are used to cross-compile your code, the loaders and the transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. Follow the exact same steps as in one of those files. For now, there is no further documentation on setting up the environment on your host machine.
     </p>
     <hr>
 </details>
@@ -259,7 +290,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         <li>
             Run and test your shellcode using the pre-shipped shellcode loader:
             <br>
-            <code>./build/loader-[os]-[arch].[ext] ./build/code-[os]-[arch].bin</code>
+            <code>./build/loader-[os]-[arch].[ext] ./build/beacon-[os]-[arch].raw</code>
         </li>
     </ul>
     <hr>
@@ -302,10 +333,10 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <p>
         To compile a Beacon Object File (BOF) for Cobalt Strike or any other Command & Control framework, copy <code>./code/examples/example-bof/example-bof.c</code> to <code>./code/beacon.c</code>. Then adjust the source code to your needs.
     </p>
-    <p>Remember to pass the <code>BOF=true</code> argument to the <code>make</code> command ⚠️.</p>
+    <p>Remember to solely compile to the <code>BOF/COFF</code> format using the <code>make</code> command (see below example) ⚠️.</p>
     <ul>
         <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-        <li>Then compile your:<br><code>make BOF=true beacon-win-amd64</code></li>
+        <li>Then compile your code:<br><code>make beacon-bof-win-amd64</code></li>
     </ul>
     <hr>
 </details>
@@ -318,7 +349,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Compile the loaders:<br><code>make loaders</code></li>
+            <li>Compile the loaders:<br><code>make ditto-loaders</code></li>
         </ul>
     </p>
     <hr>
@@ -332,7 +363,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         <br>
         <ul>
             <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Compile the transpilers:<br><code>make transpilers</code></li>
+            <li>Compile the transpilers:<br><code>make ditto-transpilers</code></li>
         </ul>
         Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphism.
     </p>

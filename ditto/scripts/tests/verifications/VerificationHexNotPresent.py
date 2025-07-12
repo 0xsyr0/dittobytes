@@ -60,7 +60,7 @@ class VerificationHexNotPresent:
             ))
 
         if not feature_test_specification['metamorphication_is_filtered']:
-            original_path = feature_test_specification['shellcode'].replace(f"{feature_test_specification['metamorphication']}.bin", 'original.bin')
+            original_path = feature_test_specification['shellcode'].replace(f"{feature_test_specification['metamorphication']}.raw", 'original.raw')
             haystack = FileHelper.read_file(original_path, 'rb')
             hex_is_present_in_original = needle in haystack
 

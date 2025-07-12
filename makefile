@@ -14,28 +14,43 @@
 ## Globals                              ##
 ##########################################
 
-DEBUG                                := false
-BOF                                  := false
-BUILD_DIR                            := ./build
-TESTS_DIR                            := ./ditto/tests
-SOURCE_PATH                          ?= ./code/beacon.c
-PYTHON_PATH                          := python3
-LLVM_DIR_WIN                         := /opt/llvm-winlin/bin
-LLVM_DIR_LIN                         := /opt/llvm-winlin/bin
-LLVM_DIR_MAC                         := /usr/bin
+SOURCE_PATH                             ?= ./code/beacon.c
+BUILD_DIR                               := ./build
+TESTS_DIR                               := ./ditto/tests
+PYTHON_PATH                             := python3
+LLVM_DIR_WIN                            := /opt/llvm-winlin/bin
+LLVM_DIR_LIN                            := /opt/llvm-winlin/bin
+LLVM_DIR_MAC                            := /usr/bin
 
-WIN_AMD64_BEACON_NAME                := beacon-win-amd64
-WIN_ARM64_BEACON_NAME                := beacon-win-arm64
-LIN_AMD64_BEACON_NAME                := beacon-lin-amd64
-LIN_ARM64_BEACON_NAME                := beacon-lin-arm64
-MAC_AMD64_BEACON_NAME                := beacon-mac-amd64
-MAC_ARM64_BEACON_NAME                := beacon-mac-arm64
+DEBUG                                   := false
+EXPAND_MEMCPY_CALLS                     ?= true
+EXPAND_MEMSET_CALLS                     ?= true
+MOVE_GLOBALS_TO_STACK                   ?= true
 
-EXPAND_MEMCPY_CALLS 				 ?= true
-EXPAND_MEMSET_CALLS 				 ?= true
-MOVE_GLOBALS_TO_STACK				 ?= true
+IS_COMPILER_CONTAINER                   := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
 
-IS_COMPILER_CONTAINER  := $(shell if [ "$(IS_COMPILER_CONTAINER)" = "true" ] || [ -f /tmp/.dittobytes-env-all-encompassing ]; then echo "true"; else echo "false"; fi)
+##########################################
+## Your build(s)                        ##
+##########################################
+
+WIN_AMD64_BEACON_NAME                   := beacon-win-amd64
+RAW_WIN_AMD64_BEACON_NAME               := beacon-raw-win-amd64
+BOF_WIN_AMD64_BEACON_NAME               := beacon-bof-win-amd64
+WIN_ARM64_BEACON_NAME                   := beacon-win-arm64
+RAW_WIN_ARM64_BEACON_NAME               := beacon-raw-win-arm64
+BOF_WIN_ARM64_BEACON_NAME               := beacon-bof-win-arm64
+LIN_AMD64_BEACON_NAME                   := beacon-lin-amd64
+RAW_LIN_AMD64_BEACON_NAME               := beacon-raw-lin-amd64
+BOF_LIN_AMD64_BEACON_NAME               := beacon-bof-lin-amd64
+LIN_ARM64_BEACON_NAME                   := beacon-lin-arm64
+RAW_LIN_ARM64_BEACON_NAME               := beacon-raw-lin-arm64
+BOF_LIN_ARM64_BEACON_NAME               := beacon-bof-lin-arm64
+MAC_AMD64_BEACON_NAME                   := beacon-mac-amd64
+RAW_MAC_AMD64_BEACON_NAME               := beacon-raw-mac-amd64
+BOF_MAC_AMD64_BEACON_NAME               := beacon-bof-mac-amd64
+MAC_ARM64_BEACON_NAME                   := beacon-mac-arm64
+RAW_MAC_ARM64_BEACON_NAME               := beacon-raw-mac-arm64
+BOF_MAC_ARM64_BEACON_NAME               := beacon-bof-mac-arm64
 
 ##########################################
 ## Metamorphications                    ##
@@ -96,40 +111,72 @@ endif
 all: check_environment beacons
 
 # Alias for all beacons
-beacons: check_environment beacon-all-all
+beacons: check_environment beacon-all-all-all
 
-# All beacons
-beacon-all-all: check_environment \
-	$(WIN_AMD64_BEACON_NAME) \
-	$(WIN_ARM64_BEACON_NAME) \
-	$(LIN_AMD64_BEACON_NAME) \
-	$(LIN_ARM64_BEACON_NAME) \
-	$(MAC_AMD64_BEACON_NAME) \
-	$(MAC_ARM64_BEACON_NAME)
+# All code/beacons
+beacon-all-all-all: check_environment \
+	$(RAW_WIN_AMD64_BEACON_NAME) \
+	$(RAW_WIN_ARM64_BEACON_NAME) \
+	$(BOF_WIN_AMD64_BEACON_NAME) \
+	$(BOF_WIN_ARM64_BEACON_NAME) \
+	$(RAW_LIN_AMD64_BEACON_NAME) \
+	$(RAW_LIN_ARM64_BEACON_NAME) \
+	$(BOF_LIN_AMD64_BEACON_NAME) \
+	$(BOF_LIN_ARM64_BEACON_NAME) \
+	$(RAW_MAC_AMD64_BEACON_NAME) \
+	$(RAW_MAC_ARM64_BEACON_NAME) \
+	$(BOF_MAC_AMD64_BEACON_NAME) \
+	$(BOF_MAC_ARM64_BEACON_NAME)
 
-# Platform specific beacons
-beacon-win-all: check_environment $(WIN_AMD64_BEACON_NAME) $(WIN_ARM64_BEACON_NAME)
-beacon-lin-all: check_environment $(LIN_AMD64_BEACON_NAME) $(LIN_ARM64_BEACON_NAME)
-beacon-mac-all: check_environment $(MAC_AMD64_BEACON_NAME) $(MAC_ARM64_BEACON_NAME)
+# Format specific code/beacons (compile all code for a specific format)
+beacon-raw-all-all: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
+beacon-bof-all-all: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
 
-# Architecture specific beacons
-beacon-all-amd64: check_environment $(WIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_NAME) $(MAC_AMD64_BEACON_NAME)
-beacon-all-arm64: check_environment $(WIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_NAME) $(MAC_ARM64_BEACON_NAME)
+# Platform specific code/beacons (compile all code for a specific platform)
+beacon-all-win-all: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) 
+beacon-all-lin-all: check_environment $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) 
+beacon-all-mac-all: check_environment $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) 
 
-# Loaders
-loaders: check_environment 
+# Architecture specific code/beacons (compile all code for a specific architecture)
+beacon-all-all-amd64: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) 
+beacon-all-all-arm64: check_environment $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) 
+
+# Format & platform specific code/beacons
+beacon-raw-win-all: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME)
+beacon-raw-lin-all: check_environment $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME)
+beacon-raw-mac-all: check_environment $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
+beacon-bof-win-all: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME)
+beacon-bof-lin-all: check_environment $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME)
+beacon-bof-mac-all: check_environment $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+
+# Format & architecture specific code/beacons
+beacon-raw-all-amd64: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME)
+beacon-raw-all-arm64: check_environment $(RAW_WIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
+beacon-bof-all-amd64: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME)
+beacon-bof-all-arm64: check_environment $(BOF_WIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+
+# Platform & architecture specific code/beacons
+beacon-all-win-amd64: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME)
+beacon-all-lin-amd64: check_environment $(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME)
+beacon-all-mac-amd64: check_environment $(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME)
+beacon-all-win-arm64: check_environment $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME)
+beacon-all-lin-arm64: check_environment $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME)
+beacon-all-mac-arm64: check_environment $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+
+# Dittobytes loaders
+ditto-loaders: check_environment 
 	@echo "[+] Calling \`all\` in loaders makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/loaders/
 
-# Transpilers
-transpilers: check_environment
+# Dittobytes transpilers
+ditto-transpilers: check_environment
 	@echo "[+] Calling \`all\` in intermediate transpiler makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/intermediate/
 	@echo "[+] Calling \`all\` in machine transpiler makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/machine/
 
 # Everything
-extensive: check_environment transpilers loaders beacons
+extensive: check_environment ditto-transpilers ditto-loaders code
 
 ##########################################
 ## Test suite                           ##
@@ -150,13 +197,13 @@ test-suite-build: check_environment
 				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$$AVAILABLE_TEST_OS_BASENAME"; fi; \
 				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$$AVAILABLE_TEST_ARCH_BASENAME"; fi; \
 				echo "[+] TestSuite building \`$$AVAILABLE_TEST_OS_BASENAME-$$AVAILABLE_TEST_ARCH_BASENAME-$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "original" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_mov_immediates" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_mov_immediates MM_DEFAULT=false MM_TRANSFORM_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_MOV_IMMEDIATES=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_nullifications" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_nullifications MM_DEFAULT=false MM_TRANSFORM_NULLIFICATIONS=true MM_TEST_TRANSFORM_NULLIFICATIONS=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_register_allocation" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_register_allocation MM_DEFAULT=false MM_RANDOMIZE_REGISTER_ALLOCATION=true MM_TEST_RANDOMIZE_REGISTER_ALLOCATION=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_frame_insertions" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_frame_insertions MM_DEFAULT=false MM_RANDOMIZE_FRAME_INSERTIONS=true MM_TEST_RANDOMIZE_FRAME_INSERTIONS=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "original" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_mov_immediates" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_mov_immediates MM_DEFAULT=false MM_TRANSFORM_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_MOV_IMMEDIATES=true --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_nullifications" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_nullifications MM_DEFAULT=false MM_TRANSFORM_NULLIFICATIONS=true MM_TEST_TRANSFORM_NULLIFICATIONS=true --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_register_allocation" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_register_allocation MM_DEFAULT=false MM_RANDOMIZE_REGISTER_ALLOCATION=true MM_TEST_RANDOMIZE_REGISTER_ALLOCATION=true --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_frame_insertions" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_frame_insertions MM_DEFAULT=false MM_RANDOMIZE_FRAME_INSERTIONS=true MM_TEST_RANDOMIZE_FRAME_INSERTIONS=true --no-print-directory beacon-raw-$$BEACON_OS-$$BEACON_ARCH; \
 			done \
 		done \
 	done
@@ -206,12 +253,12 @@ endif
 ## Windows AMD64                        ##
 ##########################################
 
-WIN_AMD64_TARGET            := x86_64-w64-mingw32
-WIN_AMD64_DEFINES           := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellcode
-WIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-WIN_AMD64_BEACON_CL1FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
-WIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
-WIN_AMD64_BEACON_CL2FLAGS   := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+WIN_AMD64_TARGET              := x86_64-w64-mingw32
+WIN_AMD64_DEFINES             := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=shellcode
+WIN_AMD64_BEACON_PATH         := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
+WIN_AMD64_BEACON_CL1FLAGS     := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+WIN_AMD64_BEACON_LLCFLAGS     := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
+WIN_AMD64_BEACON_CL2FLAGS     := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -e shellcode -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
 $(WIN_AMD64_BEACON_PATH).ll: $(SOURCE_PATH) | $(BUILD_DIR)
 	@echo "[+] Compiling $(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))."
@@ -255,21 +302,27 @@ $(WIN_AMD64_BEACON_PATH).lkd: $(WIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) clang $(WIN_AMD64_BEACON_CL2FLAGS) -o $@ $<
 
-$(WIN_AMD64_BEACON_PATH).bin: $(WIN_AMD64_BEACON_PATH).lkd
+$(WIN_AMD64_BEACON_PATH).raw: $(WIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(WIN_AMD64_BEACON_NAME): $(if $(filter true,$(BOF)),$(WIN_AMD64_BEACON_PATH).obj,$(WIN_AMD64_BEACON_PATH).bin)
+$(BOF_WIN_AMD64_BEACON_NAME): $(WIN_AMD64_BEACON_PATH).obj
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm -f $(WIN_AMD64_BEACON_PATH)*.lkd 
 	@rm -f $(WIN_AMD64_BEACON_PATH)*.*mir 
 	@rm -f $(WIN_AMD64_BEACON_PATH)*.ll
-ifeq ($(BOF), false)
-	@rm -f $(WIN_AMD64_BEACON_PATH)*.obj 
 endif
+	@echo "    - Done building BOF $@."	
+
+$(RAW_WIN_AMD64_BEACON_NAME): $(WIN_AMD64_BEACON_PATH).raw
+ifeq ($(DEBUG), false)
+	@echo "    - Intermediate cleanup of build files."
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.lkd 
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.*mir 
+	@rm -f $(WIN_AMD64_BEACON_PATH)*.ll
 endif
-	@echo "    - Done building $@."
+	@echo "    - Done building RAW $@."	
 
 ##########################################
 ## Windows ARM64                        ##
@@ -318,26 +371,33 @@ $(WIN_ARM64_BEACON_PATH).meta3.mir: $(WIN_ARM64_BEACON_PATH).meta2.mir
 $(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(WIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
+	@$(PYTHON_PATH) ./ditto/scripts/make/notify-user-about-bof.py $<
 
 $(WIN_ARM64_BEACON_PATH).lkd: $(WIN_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) clang $(WIN_ARM64_BEACON_CL2FLAGS) -o $@ $<
 
-$(WIN_ARM64_BEACON_PATH).bin: $(WIN_ARM64_BEACON_PATH).lkd
+$(WIN_ARM64_BEACON_PATH).raw: $(WIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(WIN_ARM64_BEACON_NAME): $(if $(filter true,$(BOF)),$(WIN_ARM64_BEACON_PATH).obj,$(WIN_ARM64_BEACON_PATH).bin)
+$(BOF_WIN_ARM64_BEACON_NAME): $(WIN_ARM64_BEACON_PATH).obj
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm -f $(WIN_ARM64_BEACON_PATH)*.lkd 
 	@rm -f $(WIN_ARM64_BEACON_PATH)*.*mir 
 	@rm -f $(WIN_ARM64_BEACON_PATH)*.ll
-ifeq ($(BOF), false)
-	@rm -f $(WIN_ARM64_BEACON_PATH)*.obj 
 endif
+	@echo "    - Done building BOF $@."	
+
+$(RAW_WIN_ARM64_BEACON_NAME): $(WIN_ARM64_BEACON_PATH).raw
+ifeq ($(DEBUG), false)
+	@echo "    - Intermediate cleanup of build files."
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.lkd 
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.*mir 
+	@rm -f $(WIN_ARM64_BEACON_PATH)*.ll
 endif
-	@echo "    - Done building $@."
+	@echo "    - Done building RAW $@."	
 
 ##########################################
 ## Linux AMD64                          ##
@@ -386,26 +446,33 @@ $(LIN_AMD64_BEACON_PATH).meta3.mir: $(LIN_AMD64_BEACON_PATH).meta2.mir
 $(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
+	@$(PYTHON_PATH) ./ditto/scripts/make/notify-user-about-bof.py $<
 
 $(LIN_AMD64_BEACON_PATH).lkd: $(LIN_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) clang $(LIN_AMD64_BEACON_CL2FLAGS) -o $@ $<
 
-$(LIN_AMD64_BEACON_PATH).bin: $(LIN_AMD64_BEACON_PATH).lkd
+$(LIN_AMD64_BEACON_PATH).raw: $(LIN_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(LIN_AMD64_BEACON_NAME): $(if $(filter true,$(BOF)),$(LIN_AMD64_BEACON_PATH).obj,$(LIN_AMD64_BEACON_PATH).bin)
+$(BOF_LIN_AMD64_BEACON_NAME): $(LIN_AMD64_BEACON_PATH).obj
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm -f $(LIN_AMD64_BEACON_PATH)*.lkd 
 	@rm -f $(LIN_AMD64_BEACON_PATH)*.*mir 
 	@rm -f $(LIN_AMD64_BEACON_PATH)*.ll
-ifeq ($(BOF), false)
-	@rm -f $(LIN_AMD64_BEACON_PATH)*.obj 
 endif
+	@echo "    - Done building BOF $@."	
+
+$(RAW_LIN_AMD64_BEACON_NAME): $(LIN_AMD64_BEACON_PATH).raw
+ifeq ($(DEBUG), false)
+	@echo "    - Intermediate cleanup of build files."
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.lkd 
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.*mir 
+	@rm -f $(LIN_AMD64_BEACON_PATH)*.ll
 endif
-	@echo "    - Done building $@."
+	@echo "    - Done building RAW $@."	
 
 ##########################################
 ## Linux ARM64                          ##
@@ -454,26 +521,33 @@ $(LIN_ARM64_BEACON_PATH).meta3.mir: $(LIN_ARM64_BEACON_PATH).meta2.mir
 $(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_WIN):$(PATH) llc $(LIN_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
+	@$(PYTHON_PATH) ./ditto/scripts/make/notify-user-about-bof.py $<
 
 $(LIN_ARM64_BEACON_PATH).lkd: $(LIN_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_LIN):$(PATH) clang $(LIN_ARM64_BEACON_CL2FLAGS) -o $@ $<
 
-$(LIN_ARM64_BEACON_PATH).bin: $(LIN_ARM64_BEACON_PATH).lkd
+$(LIN_ARM64_BEACON_PATH).raw: $(LIN_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(LIN_ARM64_BEACON_NAME): $(if $(filter true,$(BOF)),$(LIN_ARM64_BEACON_PATH).obj,$(LIN_ARM64_BEACON_PATH).bin)
+$(BOF_LIN_ARM64_BEACON_NAME): $(LIN_ARM64_BEACON_PATH).obj
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm -f $(LIN_ARM64_BEACON_PATH)*.lkd 
 	@rm -f $(LIN_ARM64_BEACON_PATH)*.*mir 
 	@rm -f $(LIN_ARM64_BEACON_PATH)*.ll
-ifeq ($(BOF), false)
-	@rm -f $(LIN_ARM64_BEACON_PATH)*.obj 
 endif
+	@echo "    - Done building BOF $@."	
+
+$(RAW_LIN_ARM64_BEACON_NAME): $(LIN_ARM64_BEACON_PATH).raw
+ifeq ($(DEBUG), false)
+	@echo "    - Intermediate cleanup of build files."
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.lkd 
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.*mir 
+	@rm -f $(LIN_ARM64_BEACON_PATH)*.ll
 endif
-	@echo "    - Done building $@."
+	@echo "    - Done building RAW $@."	
 
 ##########################################
 ## MacOS AMD64                          ##
@@ -522,26 +596,33 @@ $(MAC_AMD64_BEACON_PATH).meta3.mir: $(MAC_AMD64_BEACON_PATH).meta2.mir
 $(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_AMD64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
+	@$(PYTHON_PATH) ./ditto/scripts/make/notify-user-about-bof.py $<
 
 $(MAC_AMD64_BEACON_PATH).lkd: $(MAC_AMD64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) clang $(MAC_AMD64_BEACON_CL2FLAGS) -o $@ $<
 
-$(MAC_AMD64_BEACON_PATH).bin: $(MAC_AMD64_BEACON_PATH).lkd
+$(MAC_AMD64_BEACON_PATH).raw: $(MAC_AMD64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(MAC_AMD64_BEACON_NAME): $(if $(filter true,$(BOF)),$(MAC_AMD64_BEACON_PATH).obj,$(MAC_AMD64_BEACON_PATH).bin)
+$(BOF_MAC_AMD64_BEACON_NAME): $(MAC_AMD64_BEACON_PATH).obj
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm -f $(MAC_AMD64_BEACON_PATH)*.lkd 
 	@rm -f $(MAC_AMD64_BEACON_PATH)*.*mir 
 	@rm -f $(MAC_AMD64_BEACON_PATH)*.ll
-ifeq ($(BOF), false)
-	@rm -f $(MAC_AMD64_BEACON_PATH)*.obj 
 endif
+	@echo "    - Done building BOF $@."	
+
+$(RAW_MAC_AMD64_BEACON_NAME): $(MAC_AMD64_BEACON_PATH).raw
+ifeq ($(DEBUG), false)
+	@echo "    - Intermediate cleanup of build files."
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.lkd 
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.*mir 
+	@rm -f $(MAC_AMD64_BEACON_PATH)*.ll
 endif
-	@echo "    - Done building $@."
+	@echo "    - Done building RAW $@."	
 
 ##########################################
 ## MacOS ARM64                          ##
@@ -590,26 +671,33 @@ $(MAC_ARM64_BEACON_PATH).meta3.mir: $(MAC_ARM64_BEACON_PATH).meta2.mir
 $(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) llc $(MAC_ARM64_BEACON_LLCFLAGS) -filetype=obj -start-after=virtregrewriter -o $@ $<
+	@$(PYTHON_PATH) ./ditto/scripts/make/notify-user-about-bof.py $<
 
 $(MAC_ARM64_BEACON_PATH).lkd: $(MAC_ARM64_BEACON_PATH).obj
 	@echo "    - Intermediate compile of $@."
 	@PATH=$(LLVM_DIR_MAC):$(PATH) clang $(MAC_ARM64_BEACON_CL2FLAGS) -o $@ $<
 
-$(MAC_ARM64_BEACON_PATH).bin: $(MAC_ARM64_BEACON_PATH).lkd
+$(MAC_ARM64_BEACON_PATH).raw: $(MAC_ARM64_BEACON_PATH).lkd
 	@echo "    - Intermediate compile of $@."
 	@$(PYTHON_PATH) ./ditto/scripts/make/extract-text-segment.py $< $@
 
-$(MAC_ARM64_BEACON_NAME): $(if $(filter true,$(BOF)),$(MAC_ARM64_BEACON_PATH).obj,$(MAC_ARM64_BEACON_PATH).bin)
+$(BOF_MAC_ARM64_BEACON_NAME): $(MAC_ARM64_BEACON_PATH).obj
 ifeq ($(DEBUG), false)
 	@echo "    - Intermediate cleanup of build files."
 	@rm -f $(MAC_ARM64_BEACON_PATH)*.lkd 
 	@rm -f $(MAC_ARM64_BEACON_PATH)*.*mir 
 	@rm -f $(MAC_ARM64_BEACON_PATH)*.ll
-ifeq ($(BOF), false)
-	@rm -f $(MAC_ARM64_BEACON_PATH)*.obj 
 endif
+	@echo "    - Done building BOF $@."	
+
+$(RAW_MAC_ARM64_BEACON_NAME): $(MAC_ARM64_BEACON_PATH).raw
+ifeq ($(DEBUG), false)
+	@echo "    - Intermediate cleanup of build files."
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.lkd 
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.*mir 
+	@rm -f $(MAC_ARM64_BEACON_PATH)*.ll
 endif
-	@echo "    - Done building $@."
+	@echo "    - Done building RAW $@."	
 
 ##########################################
 ## Utility targets                      ##
@@ -625,44 +713,51 @@ dependencies:
 	@$(PYTHON_PATH) -m pip install -r ditto/scripts/requirements.txt --break-system-packages
 
 clean:
-	@echo "[+] Removing beacons from build folder."
+	@echo "[+] Removing compiled user beacons from build folder."
 	@rm -f $(BUILD_DIR)/beacon-*
 
 clean-beacons: clean
 
-clean-loaders:
+clean-ditto-loaders:
 	@echo "[+] Calling \`clean\` in loaders makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/loaders/ clean
 
-clean-transpilers:
+clean-ditto-transpilers:
 	@echo "[+] Calling \`clean\` in intermediate transpiler makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/intermediate/ clean
 	@echo "[+] Calling \`clean\` in machine transpiler makefile."
 	@$(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) --no-print-directory -C ./ditto/transpilers/machine/ clean
 
-clean-extensive: clean-transpilers clean-loaders clean-beacons
+clean-extensive: clean-ditto-transpilers clean-ditto-loaders clean-beacons
 
-list:
-	@echo "[+] Available generic targets:"
-	@echo "    - beacons                      // (Re-)compile all beacons"
-	@echo "    - loaders                      // (Re-)compile all loaders"
-	@echo "    - transpilers                  // (Re-)compile the transpilers"
-	@echo "    - extensive                    // (Re-)compile everything"
-	@echo "[+] Available test targets:"
-	@echo "    - test-suite-build             // (Re-)compile all feature tests"
-	@echo "    - test-suite-test              // Run all feature tests (for the current architecture)"
-	@echo "[+] Available beacon targets:"
-	@echo "    - $(WIN_AMD64_BEACON_NAME)             // (Re)compile the Windows beacon for AMD64"
-	@echo "    - $(WIN_ARM64_BEACON_NAME)             // (Re)compile the Windows beacon for ARM64"
-	@echo "    - $(LIN_AMD64_BEACON_NAME)             // (Re)compile the Linux beacon for AMD64"
-	@echo "    - $(LIN_ARM64_BEACON_NAME)             // (Re)compile the Linux beacon for ARM64"
-	@echo "    - $(MAC_AMD64_BEACON_NAME)             // (Re)compile the MacOS beacon for AMD64"
-	@echo "    - $(MAC_ARM64_BEACON_NAME)             // (Re)compile the MacOS beacon for ARM64"
+help:
+	@echo "[+] Building your code:"
+	@echo "    - make beacon-[format]-[platform]-[arch]            // (Re-)compile your code"
+	@echo "      ↳ Available formats: raw,bof"
+	@echo "      ↳ Available platforms: win,lin,mac"
+	@echo "      ↳ Available architectures: amd64,arm64"
+	@echo "    - make beacon-bof-win-amd64                         // (Re-)compile your code to Windows AMD64 BOF/COFF"
+	@echo "    - make beacon-raw-mac-arm64                         // (Re-)compile your code to MacOS ARM64 raw shellcode"
+	@echo "    - make beacon-raw-lin-all                           // (Re-)compile your shellcode to raw shellcode for Linux and any architecture"
+	@echo "    - make beacon-raw-all-all                           // (Re-)compile your shellcode to raw shellcode for any platform and architecture"
+	@echo "    - make beacon-all-all-all                           // (Re-)compile your shellcode to BOF/COFF and raw shellcode for any platform and architecture"
+	@echo "[+] Dittobytes internals"
+	@echo "    - make ditto-loaders                                // (Re-)compile all pre-shipped Ditto shellcode loaders"
+	@echo "    - make ditto-transpilers                            // (Re-)compile the pre-shipped Ditto LLVM transpilers/passes"
+	@echo "[+] Test suite:"
+	@echo "    - make test-suite-build                             // (Re-)compile all feature tests"
+	@echo "    - make test-suite-test                              // Run all feature tests (for the current architecture)"
+	@echo "[+] Cleanup:"
+	@echo "    - make clean                                        // Remove all your code builds ('beacon-*') from the build folder"
+	@echo "    - make clean-ditto-loaders                          // Remove all loader builds ('loaders-*') from the build folder"
+	@echo "    - make clean-ditto-transpilers                      // Remove all transpiler builds from the transpiler build folders"
+	@echo "[+] Help:"
+	@echo "    - make help                                         // Show this help message"
 
 .PHONY: all check_environment dependencies clean \
-	$(WIN_AMD64_BEACON_NAME) $(WIN_AMD64_BEACON_PATH) $(WIN_AMD64_BEACON_PATH).exe $(WIN_AMD64_BEACON_PATH).obj $(WIN_AMD64_BEACON_PATH).bin $(WIN_AMD64_BEACON_PATH).lkd $(WIN_AMD64_BEACON_PATH).ll $(WIN_AMD64_BEACON_PATH).meta.mir $(WIN_AMD64_BEACON_PATH).mir \
-	$(WIN_ARM64_BEACON_NAME) $(WIN_ARM64_BEACON_PATH) $(WIN_ARM64_BEACON_PATH).exe $(WIN_ARM64_BEACON_PATH).obj $(WIN_ARM64_BEACON_PATH).bin $(WIN_ARM64_BEACON_PATH).lkd $(WIN_ARM64_BEACON_PATH).ll $(WIN_ARM64_BEACON_PATH).meta.mir $(WIN_ARM64_BEACON_PATH).mir \
-	$(LIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_PATH) $(LIN_AMD64_BEACON_PATH).exe $(LIN_AMD64_BEACON_PATH).obj $(LIN_AMD64_BEACON_PATH).bin $(LIN_AMD64_BEACON_PATH).lkd $(LIN_AMD64_BEACON_PATH).ll $(LIN_AMD64_BEACON_PATH).meta.mir $(LIN_AMD64_BEACON_PATH).mir \
-	$(LIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_PATH) $(LIN_ARM64_BEACON_PATH).exe $(LIN_ARM64_BEACON_PATH).obj $(LIN_ARM64_BEACON_PATH).bin $(LIN_ARM64_BEACON_PATH).lkd $(LIN_ARM64_BEACON_PATH).ll $(LIN_ARM64_BEACON_PATH).meta.mir $(LIN_ARM64_BEACON_PATH).mir \
-	$(MAC_AMD64_BEACON_NAME) $(MAC_AMD64_BEACON_PATH) $(MAC_AMD64_BEACON_PATH).exe $(MAC_AMD64_BEACON_PATH).obj $(MAC_AMD64_BEACON_PATH).bin $(MAC_AMD64_BEACON_PATH).lkd $(MAC_AMD64_BEACON_PATH).ll $(MAC_AMD64_BEACON_PATH).meta.mir $(MAC_AMD64_BEACON_PATH).mir \
-	$(MAC_ARM64_BEACON_NAME) $(MAC_ARM64_BEACON_PATH) $(MAC_ARM64_BEACON_PATH).exe $(MAC_ARM64_BEACON_PATH).obj $(MAC_ARM64_BEACON_PATH).bin $(MAC_ARM64_BEACON_PATH).lkd $(MAC_ARM64_BEACON_PATH).ll $(MAC_ARM64_BEACON_PATH).meta.mir $(MAC_ARM64_BEACON_PATH).mir
+	$(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(WIN_AMD64_BEACON_PATH) $(WIN_AMD64_BEACON_PATH).exe $(WIN_AMD64_BEACON_PATH).obj $(WIN_AMD64_BEACON_PATH).raw $(WIN_AMD64_BEACON_PATH).lkd $(WIN_AMD64_BEACON_PATH).ll $(WIN_AMD64_BEACON_PATH).meta0.mir $(WIN_AMD64_BEACON_PATH).meta1.mir $(WIN_AMD64_BEACON_PATH).meta2.mir $(WIN_AMD64_BEACON_PATH).meta3.mir \
+	$(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(WIN_ARM64_BEACON_PATH) $(WIN_ARM64_BEACON_PATH).exe $(WIN_ARM64_BEACON_PATH).obj $(WIN_ARM64_BEACON_PATH).raw $(WIN_ARM64_BEACON_PATH).lkd $(WIN_ARM64_BEACON_PATH).ll $(WIN_ARM64_BEACON_PATH).meta0.mir $(WIN_ARM64_BEACON_PATH).meta1.mir $(WIN_ARM64_BEACON_PATH).meta2.mir $(WIN_ARM64_BEACON_PATH).meta3.mir \
+	$(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(LIN_AMD64_BEACON_PATH) $(LIN_AMD64_BEACON_PATH).exe $(LIN_AMD64_BEACON_PATH).obj $(LIN_AMD64_BEACON_PATH).raw $(LIN_AMD64_BEACON_PATH).lkd $(LIN_AMD64_BEACON_PATH).ll $(LIN_AMD64_BEACON_PATH).meta0.mir $(LIN_AMD64_BEACON_PATH).meta1.mir $(LIN_AMD64_BEACON_PATH).meta2.mir $(LIN_AMD64_BEACON_PATH).meta3.mir \
+	$(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(LIN_ARM64_BEACON_PATH) $(LIN_ARM64_BEACON_PATH).exe $(LIN_ARM64_BEACON_PATH).obj $(LIN_ARM64_BEACON_PATH).raw $(LIN_ARM64_BEACON_PATH).lkd $(LIN_ARM64_BEACON_PATH).ll $(LIN_ARM64_BEACON_PATH).meta0.mir $(LIN_ARM64_BEACON_PATH).meta1.mir $(LIN_ARM64_BEACON_PATH).meta2.mir $(LIN_ARM64_BEACON_PATH).meta3.mir \
+	$(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(MAC_AMD64_BEACON_PATH) $(MAC_AMD64_BEACON_PATH).exe $(MAC_AMD64_BEACON_PATH).obj $(MAC_AMD64_BEACON_PATH).raw $(MAC_AMD64_BEACON_PATH).lkd $(MAC_AMD64_BEACON_PATH).ll $(MAC_AMD64_BEACON_PATH).meta0.mir $(MAC_AMD64_BEACON_PATH).meta1.mir $(MAC_AMD64_BEACON_PATH).meta2.mir $(MAC_AMD64_BEACON_PATH).meta3.mir \
+	$(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) $(MAC_ARM64_BEACON_PATH) $(MAC_ARM64_BEACON_PATH).exe $(MAC_ARM64_BEACON_PATH).obj $(MAC_ARM64_BEACON_PATH).raw $(MAC_ARM64_BEACON_PATH).lkd $(MAC_ARM64_BEACON_PATH).ll $(MAC_ARM64_BEACON_PATH).meta0.mir $(MAC_ARM64_BEACON_PATH).meta1.mir $(MAC_ARM64_BEACON_PATH).meta2.mir $(MAC_ARM64_BEACON_PATH).meta3.mir \
