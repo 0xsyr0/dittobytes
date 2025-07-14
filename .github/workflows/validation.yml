@@ -198,7 +198,9 @@ jobs:
       # Make the executables executable
       - name: Make the executables executable
         shell: bash
-        run: chmod +x ./build/*.exe
+        run: |
+          chmod +x ./build/*.exe
+          chmod +x ./build/loader-
 
       # List all the ./build/ files
       - name: List all the build files
