@@ -28,7 +28,7 @@ class StatusHelper:
     ERROR_TEST_FUNCTION_FAILED = (0x00000005, '!', 'The test function {} failed')
     ERROR_EXE_FILE_NOT_FOUND = (0x00000006, '!', 'EXE file not found {}')
     ERROR_RAW_FILE_NOT_FOUND = (0x00000007, '!', 'RAW file not found {}')
-    ERROR_BOF_FILE_NOT_FOUND = (0x00000008, '!', 'BOF file not found {}')
+    ERROR_OBJ_FILE_NOT_FOUND = (0x00000008, '!', 'OBJ file not found {}')
     ERROR_RETURN_VERIFICATION_PROCESS_FAILED = (0x00000009, '!', 'Returns verification process did not exit successfully')
 
     @staticmethod

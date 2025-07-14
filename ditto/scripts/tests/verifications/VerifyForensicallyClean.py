@@ -12,6 +12,8 @@
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
 
+import string
+import binary2strings as b2s
 from helpers.FileHelper import FileHelper
 
 class VerifyForensicallyClean:
@@ -38,7 +40,17 @@ class VerifyForensicallyClean:
 
         """
 
-        haystack = FileHelper.read_file(feature_test_specification['raw_file_path'], 'rb')
-        
-        # TODO: Implement this check (verify whether e.g. the string 'beacon' is present)
+        for file_type in ['exe', 'raw', 'obj']:
+            haystack = FileHelper.read_file(feature_test_specification['{}_file_path'.format(file_type)], 'rb')
+            results = b2s.extract_all_strings(haystack, min_chars=4)
+
+            for needle in ['beacon', 'ditto', 'shellcode']:
+
+                if any(needle in item[0].lower() for item in results):
+                    print('      Dittobytes traceable string `{}` found in EXE `{}`.'.format(
+                        needle,
+                        feature_test_specification['{}_file_path'.format(file_type)]
+                    ))
+                    return False
+
         return True

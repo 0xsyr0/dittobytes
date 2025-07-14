@@ -153,7 +153,7 @@ class VerificationHelper:
 
                         exe_file_path = '{}.exe'.format(binary_file_path)
                         raw_file_path = '{}.raw'.format(binary_file_path)
-                        bof_file_path = '{}.obj'.format(binary_file_path)
+                        obj_file_path = '{}.obj'.format(binary_file_path)
 
                         if not FileHelper.file_exists(exe_file_path):
                             StatusHelper.fatal(StatusHelper.ERROR_EXE_FILE_NOT_FOUND, [exe_file_path])
@@ -161,8 +161,8 @@ class VerificationHelper:
                         if not FileHelper.file_exists(raw_file_path):
                             StatusHelper.fatal(StatusHelper.ERROR_RAW_FILE_NOT_FOUND, [raw_file_path])
 
-                        if not FileHelper.file_exists(bof_file_path):
-                            StatusHelper.fatal(StatusHelper.ERROR_BOF_FILE_NOT_FOUND, [bof_file_path])
+                        if not FileHelper.file_exists(obj_file_path):
+                            StatusHelper.fatal(StatusHelper.ERROR_OBJ_FILE_NOT_FOUND, [obj_file_path])
 
                         if binary_file_path not in results.keys():
                             results[binary_file_path] = {}
@@ -185,7 +185,7 @@ class VerificationHelper:
                             'test_arguments': verify_match_test_arguments,
                             'exe_file_path': exe_file_path,
                             'raw_file_path': raw_file_path,
-                            'bof_file_path': bof_file_path,
+                            'obj_file_path': obj_file_path,
                             'compiled_for_os': verify_match_os,
                             'compiled_for_arch': verify_match_arch,
                             'source_can_compile_to_os': verify_match[0],
