@@ -29,6 +29,32 @@ class VerifyForensicallyClean:
 
         return False
 
+    def __verify_spoiler_keywords(self, feature_test_specification):
+        """Checks whether the given file does not contain obvious traces leading back to Dittobytes string wise.
+
+        Args:
+            feature_test_specification (dict): A dict containing all test details.
+
+        Returns:
+            bool: Positive if the verification was successful.
+        
+        """
+        
+        for file_type in ['exe', 'raw', 'obj']:
+            haystack = FileHelper.read_file(feature_test_specification['{}_file_path'.format(file_type)], 'rb')
+            results = b2s.extract_all_strings(haystack, min_chars=4)
+
+            for needle in ['beacon', 'ditto', 'shellcode']:
+
+                if any(needle in item[0].lower() for item in results):
+                    print('      Dittobytes traceable string `{}` found in EXE `{}`.'.format(
+                        needle,
+                        feature_test_specification['{}_file_path'.format(file_type)]
+                    )) 
+                    return False
+
+        return True
+
     def verify(self, feature_test_specification):
         """Checks whether the given file does not contain obvious traces leading back to Dittobytes.
 
@@ -40,17 +66,10 @@ class VerifyForensicallyClean:
 
         """
 
-        for file_type in ['exe', 'raw', 'obj']:
-            haystack = FileHelper.read_file(feature_test_specification['{}_file_path'.format(file_type)], 'rb')
-            results = b2s.extract_all_strings(haystack, min_chars=4)
+        if not self.__verify_spoiler_keywords(feature_test_specification):
+            return False
 
-            for needle in ['beacon', 'ditto', 'shellcode']:
-
-                if any(needle in item[0].lower() for item in results):
-                    print('      Dittobytes traceable string `{}` found in EXE `{}`.'.format(
-                        needle,
-                        feature_test_specification['{}_file_path'.format(file_type)]
-                    ))
-                    return False
+        if not self.__verify_instructions_mismatch(feature_test_specification):
+            return False
 
         return True

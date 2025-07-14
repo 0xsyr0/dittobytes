@@ -12,24 +12,19 @@
 
 #include <stdint.h>
 
+#include <windows.h>
+
 /**
  * The main function of your shellcode/payload. In this example we solely return a value.
+ *
+ * Please note that you CANNOT use any API calls unless you resolve them by yourself. 
+ * Take at the following examples to learn how to utilize OS API calls.
+ *
+ * Examples:
+ *   - A Cobalt Strike BOF: `./examples/example-bof/example-bof.c`
+ *   - Popping a calculator: `./examples/example-calc/example-calc.c`
+ *   - Using C++ instead of C: `./examples/example-cpp/example-cpp.cpp`
  * 
- * Popping `calc.exe`:
- *     If you want a more extensive example of what Dittobytes can compile, instead of solely returning a 
- *     number, the following file contains a full example to pop `calc.exe` on Windows AMD64: 
- *     `./examples/example-calc/example-calc.c`
- * 
- * Beacon Object Files (BOFs):
- *     If you want to develop a Beacon Object File (BOF) for your favorite Command & Control server, use
- *     the following example BOF and compile it with Dittobytes.
- *     `./examples/example-bof/example-bof.c`
- * 
- * Using C++ instead of C-code:
- *     If you want to use C++, rename this file so it has the `cpp` extension, then modify the `makefile` to 
- *     point `SOURCE_PATH` to the new filename. Also ensure `extern "C"` is prepended to the `EntryFunction`
- *     function in this file. The following file contains a full example to use C++:
- *     `./examples/example-cpp/example-cpp.cpp`
  * 
  * @return uint64_t A return value of your shellcode.
  */
