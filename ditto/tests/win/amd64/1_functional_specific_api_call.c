@@ -148,8 +148,8 @@ uint8_t EntryFunction() {
     PopulateTables(&context);
 
     // Run WinExec and return its return value
-    DEFINE_STRING(CalculatorBinary, "cmd.exe /c calc.exe");
-    return (uint8_t) context.functions.WinExec(CalculatorBinary, SW_SHOW) > 31;
+    DEFINE_STRING(WhoamiBinary, "whoami");
+    return (uint8_t) context.functions.WinExec(WhoamiBinary, SW_SHOW) > 31;
 }
 
 /**
