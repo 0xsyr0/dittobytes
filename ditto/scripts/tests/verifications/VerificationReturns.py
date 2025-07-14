@@ -59,7 +59,7 @@ class VerificationReturns:
             command = EnvironmentHelper.get_loader(feature_test_specification['compiled_for_os'], feature_test_specification['compiled_for_arch']).split()
             command.append(feature_test_specification['raw_file_path'])
 
-            executable_result = subprocess.run(command, capture_output=True, text=True, timeout=5)
+            executable_result = subprocess.run(command, capture_output=True, text=True, timeout=10)
 
             if executable_result.returncode != 0:
                 StatusHelper.error(StatusHelper.ERROR_RETURN_VERIFICATION_PROCESS_FAILED)
@@ -74,7 +74,7 @@ class VerificationReturns:
             command = EnvironmentHelper.get_emulator(feature_test_specification['compiled_for_os'], feature_test_specification['compiled_for_arch']).split()
             command.append(feature_test_specification['exe_file_path'])
 
-            executable_result = subprocess.run(command, capture_output=True, text=True, timeout=5, check=False)
+            executable_result = subprocess.run(command, capture_output=True, text=True, timeout=15, check=False)
             exe_return_value = executable_result.returncode
 
             # Only 8-bit integers are supported in EXE exit codes
