@@ -138,9 +138,9 @@ void PopulateTables(struct Relocatable* context);
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,30                  There must be a minimum % change per compile.
- * @verify    win    amd64    all                     returns                           uint32_t,1                       Must always be the return value.
+ * @verify    win    amd64    all                     returns                           uint8_t,1                        Must always be the return value.
  */
-uint32_t EntryFunction() {
+uint8_t EntryFunction() {
     struct Relocatable context;
 
     // Populate module & function tables
@@ -149,7 +149,7 @@ uint32_t EntryFunction() {
 
     // Run WinExec and return its return value
     DEFINE_STRING(CalculatorBinary, "calc.exe");
-    return (uint32_t) context.functions.WinExec(CalculatorBinary, SW_SHOW) > 31;
+    return (uint8_t) context.functions.WinExec(CalculatorBinary, SW_SHOW) > 31;
 }
 
 /**

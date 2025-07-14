@@ -38,7 +38,7 @@ class VerificationHexNotPresent:
 
         """
 
-        haystack = FileHelper.read_file(feature_test_specification['shellcode'], 'rb')
+        haystack = FileHelper.read_file(feature_test_specification['raw_file_path'], 'rb')
         needle = bytes.fromhex(feature_test_specification['test_arguments'][0])
         hex_is_not_present_in_shellcode = needle not in haystack
         hex_is_present_in_original = True
@@ -56,11 +56,11 @@ class VerificationHexNotPresent:
                 feature_test_specification['compiled_for_os'],
                 feature_test_specification['compiled_for_arch'],
                 feature_test_specification['metamorphication'],
-                feature_test_specification['shellcode']
+                feature_test_specification['raw_file_path']
             ))
 
         if not feature_test_specification['metamorphication_is_filtered']:
-            original_path = feature_test_specification['shellcode'].replace(f"{feature_test_specification['metamorphication']}.raw", 'original.raw')
+            original_path = feature_test_specification['raw_file_path'].replace(f"{feature_test_specification['metamorphication']}.raw", 'original.raw')
             haystack = FileHelper.read_file(original_path, 'rb')
             hex_is_present_in_original = needle in haystack
 

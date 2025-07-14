@@ -19,6 +19,7 @@
  * @verify    all    amd64    transform_mov_immediates    hex_not_present                   B080               Is `mov w0, #0x80` in HEX.
  * @verify    all    arm64    transform_mov_immediates    hex_not_present                   E00F8012           Is `mov w0, #-0x80` in HEX.
  * @verify    all    all      transpiled_1                minimum_levenshtein_distance      transpiled_2,10    There must be a minimum % change per compile.
+ * @verify    all    all      all                         forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
  * @verify    all    all      all                         returns                           int8_t,-128        Must be the case without metamorphications.
  */
 int8_t EntryFunction() {

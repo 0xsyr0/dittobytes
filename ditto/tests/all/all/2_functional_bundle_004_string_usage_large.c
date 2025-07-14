@@ -56,16 +56,17 @@ uint8_t get_5_o(int index);
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,5                   There must be a minimum % change per compile.
- * @verify    all    all      all                     returns                           uint16_t,500                     Must be the case without metamorphications (ASCII values: 72+101+108+108+111).
+ * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                     returns                           uint8_t,10                       Must be the case without metamorphications (ASCII values: 72+101+108+108+111).
  */
-uint16_t EntryFunction() {
+uint8_t EntryFunction() {
     uint8_t h = get_1_h();
     uint8_t e = get_2_e();
     uint8_t l_1 = get_3_l();
     uint8_t l_2 = get_4_l();
     uint8_t o = get_5_o(10);
 
-    return h+e+l_1+l_2+o;
+    return (h+e+l_1+l_2+o) % 49; // 500 % 49 = 10
 }
 
 /**

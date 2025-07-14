@@ -30,9 +30,10 @@ bool is_prime(int num);
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,15                  There must be a minimum % change per compile.
- * @verify    all    all      all                     returns                           uint32_t,104729                  Must be the case without metamorphications.
+ * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                     returns                           uint8_t,17                       Must be the case without metamorphications.
  */
-uint32_t EntryFunction() {
+uint8_t EntryFunction() {
     int count = 0;
     int num = 2;
     int result = 0;
@@ -46,7 +47,7 @@ uint32_t EntryFunction() {
         ++num;
     }
 
-    return result;
+    return (uint8_t) (result % 24); // 104729 % 24 = 17
 }
 
 /**

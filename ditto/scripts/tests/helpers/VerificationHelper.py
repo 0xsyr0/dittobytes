@@ -24,6 +24,7 @@ from verifications.VerificationHexNotPresent import VerificationHexNotPresent
 from verifications.VerificationMinimumLevenshteinDistance import VerificationMinimumLevenshteinDistance
 from verifications.VerificationMetamorphicationsNotOriginal import VerificationMetamorphicationsNotOriginal
 from verifications.VerificationReturns import VerificationReturns
+from verifications.VerifyForensicallyClean import VerifyForensicallyClean
 
 class VerificationHelper:
     """The VerificationHelper class contains functions to parse feature test files."""
@@ -141,7 +142,7 @@ class VerificationHelper:
                             continue
                
                         # Define shellcode test file index key
-                        shellcode_file_path = './build/beacon-{}-{}-tests_{}_{}_{}_{}.raw'.format(
+                        binary_file_path = './build/beacon-{}-{}-tests_{}_{}_{}_{}'.format(
                             verify_match_os,
                             verify_match_arch,
                             shellcode_is_compatible_with_os,
@@ -149,11 +150,22 @@ class VerificationHelper:
                             shellcode_feature_test_file_name,
                             metamorphication
                         )
-                        if not FileHelper.file_exists(shellcode_file_path):
-                            StatusHelper.fatal(StatusHelper.ERROR_SHELLCODE_NOT_FOUND, [shellcode_file_path])
 
-                        if shellcode_file_path not in results.keys():
-                            results[shellcode_file_path] = {}
+                        exe_file_path = '{}.exe'.format(binary_file_path)
+                        raw_file_path = '{}.raw'.format(binary_file_path)
+                        bof_file_path = '{}.obj'.format(binary_file_path)
+
+                        if not FileHelper.file_exists(exe_file_path):
+                            StatusHelper.fatal(StatusHelper.ERROR_EXE_FILE_NOT_FOUND, [exe_file_path])
+
+                        if not FileHelper.file_exists(raw_file_path):
+                            StatusHelper.fatal(StatusHelper.ERROR_RAW_FILE_NOT_FOUND, [raw_file_path])
+
+                        if not FileHelper.file_exists(bof_file_path):
+                            StatusHelper.fatal(StatusHelper.ERROR_BOF_FILE_NOT_FOUND, [bof_file_path])
+
+                        if binary_file_path not in results.keys():
+                            results[binary_file_path] = {}
 
                         # Define verify specification index key
                         verify_specification_index_key = '{}_{}_{}_{}_{}'.format(
@@ -164,14 +176,16 @@ class VerificationHelper:
                             verify_match_test_arguments
                         )
 
-                        results[shellcode_file_path][verify_specification_index_key] = {
+                        results[binary_file_path][verify_specification_index_key] = {
                             'metamorphication': metamorphication,
                             'metamorphication_is_filtered': filter_metamorphication != 'all',
                             'test_file_name': shellcode_feature_test_file_name,
                             'test_file_path': shellcode_feature_test_file_path,
                             'test_function': verify_match_test_function,
                             'test_arguments': verify_match_test_arguments,
-                            'shellcode': shellcode_file_path,
+                            'exe_file_path': exe_file_path,
+                            'raw_file_path': raw_file_path,
+                            'bof_file_path': bof_file_path,
                             'compiled_for_os': verify_match_os,
                             'compiled_for_arch': verify_match_arch,
                             'source_can_compile_to_os': verify_match[0],
@@ -195,8 +209,8 @@ class VerificationHelper:
             'hex_not_present': VerificationHexNotPresent(),
             'metamorphications_not_original': VerificationMetamorphicationsNotOriginal(),
             'minimum_levenshtein_distance': VerificationMinimumLevenshteinDistance(),
-            'returns': VerificationReturns()
-
+            'returns': VerificationReturns(),
+            'forensically_clean': VerifyForensicallyClean()
         }
 
 

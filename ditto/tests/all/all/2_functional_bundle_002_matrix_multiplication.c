@@ -36,7 +36,8 @@ void multiply_matrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SI
  * 
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,20                  There must be a minimum % change per compile.
- * @verify    all    all      all                     returns                           uint32_t,100621                  Must be the case without metamorphications.
+ * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                     returns                           uint8_t,221                      Must be the case without metamorphications.
  */
 uint32_t EntryFunction() {
     int a[SIZE][SIZE] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
@@ -52,7 +53,7 @@ uint32_t EntryFunction() {
         }
     }
 
-    return checksum + 100000;
+    return checksum % 400; // 621 % 400 = 221
 }
 
 /**

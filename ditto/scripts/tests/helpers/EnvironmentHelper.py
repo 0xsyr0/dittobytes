@@ -76,6 +76,39 @@ class EnvironmentHelper:
             return None
 
     @staticmethod
+    def get_emulator(target_os, target_arch):
+        """Get a test command emulator prefix for the target os/arch (if supported).
+
+        Args:
+            target_os (str): The OS to get the emulator for.
+            target_arch (str): The arch to get the emulator for.
+
+        Returns:
+            str: The emulator command (if available).
+
+        """
+
+        build_dir = './build'
+
+        available_emulators = {
+            'win-amd64-to-win-amd64': f'',
+            'win-arm64-to-win-amd64': f'',
+            'lin-amd64-to-lin-amd64': f'',
+            'lin-amd64-to-lin-arm64': f'qemu-aarch64 -L /usr/aarch64-linux-gnu',
+            'lin-arm64-to-lin-arm64': f'',
+            'mac-amd64-to-mac-amd64': f'',
+            'mac-arm64-to-mac-arm64': f''
+        }
+
+        current_os = EnvironmentHelper.get_current_os()
+        current_arch = EnvironmentHelper.get_current_arch()
+
+        try:
+            return available_emulators[f'{current_os}-{current_arch}-to-{target_os}-{target_arch}']
+        except Exception as exception:
+            return None
+
+    @staticmethod
     def get_loader(target_os, target_arch):
         """Get a test command prefix (with a loader) for the target os/arch (if supported).
 
