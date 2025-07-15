@@ -14,7 +14,7 @@
 ## Globals                              ##
 ##########################################
 
-BUILD_DIR              := ../build
+BUILD_DIR              := ../../build
 PYTHON_PATH            := /usr/bin/python3
 LLVM_DIR_WIN           := /opt/llvm-winlin/bin
 LLVM_DIR_LIN           := /opt/llvm-winlin/bin

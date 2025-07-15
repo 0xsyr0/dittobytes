@@ -175,6 +175,26 @@ int main(int argc, char** argv) {
         PRINT_SUCCESS("Read shellcode file into allocated memory region.");
     }
 
+    // Check for Mach-O magic in memory (Mach-O header)
+    if (iShellcodeSize >= 16) {
+        uint32_t iPossibleMagic = * (uint32_t*) &((uint8_t*) lpShellcode)[0];
+        if (iPossibleMagic != 0xFEEDFACE && iPossibleMagic != 0xCEFAEDFE && iPossibleMagic != 0xFEEDFACF && iPossibleMagic != 0xCFFAEDFE && iPossibleMagic != 0xCAFEBABE) {
+            goto SHELLCODE_IS_NOT_MACHO;
+        }
+
+        uint32_t iPossibleType = * (uint32_t*) &((uint8_t*) lpShellcode)[12];
+        if (iPossibleType != 1 && iPossibleType != 2 && iPossibleType != 6) {
+            goto SHELLCODE_IS_NOT_MACHO;
+        }
+
+        PRINT_FAILURE("Shellcode appears to be a Mach-O file. This loader only supports raw shellcode (.raw-file).");
+        iResult = EXIT_FAILURE;
+        goto CLEANUP_AND_RETURN;
+
+SHELLCODE_IS_NOT_MACHO:
+        PRINT_SUCCESS("Shellcode is not a Mach-O file.");
+    }
+
     // Change shellcode memory permissions to RX
     if (mprotect(lpShellcode, iShellcodeSize, PROT_READ | PROT_EXEC) < 0) {
         PrintMessageFromLastError("Failed to change memory protection to PAGE_EXECUTE_READ.");
