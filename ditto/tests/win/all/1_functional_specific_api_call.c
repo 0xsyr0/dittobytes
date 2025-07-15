@@ -149,7 +149,7 @@ uint8_t EntryFunction() {
     PopulateTables(&context);
 
     // Run WinExec and return its return value
-    DEFINE_STRING(WhoamiBinary, "whoami");
+    DEFINE_STRING(WhoamiBinary, "whoami.exe");
     return (uint8_t) context.functions.WinExec(WhoamiBinary, SW_SHOW) > 31;
 }
 
@@ -159,11 +159,19 @@ uint8_t EntryFunction() {
  * @return PEB* The current PEB.
  */
 void* RelocatableNtGetPeb() {
-    #ifdef _M_X64
-        return (void*) __readgsqword(0x60);
+    void* lpTEB;
+    void* lpPEB;
+
+    #if defined(__AMD64__)
+        lpPEB = (void*) __readgsqword(0x60);
+    #elif defined(__ARM64__)
+        __asm__("mov %0, x18" : "=r" (lpTEB));
+        lpPEB = * (void**) ((char*) lpTEB + 0x60);
     #else
         #error "This architecture is currently unsupported"
     #endif
+
+    return lpPEB;
 }
 
 /**

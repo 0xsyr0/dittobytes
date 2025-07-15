@@ -143,6 +143,42 @@ int main(int argc, char** argv) {
         PRINT_SUCCESS("Read shellcode file into allocated memory region.");
     }
 
+    // Check for PE magic in memory (MZ header)
+    uint8_t* lpPossibleExe = (uint8_t*) lpShellcode;
+    if (dwShellcodeSize >= 2 && lpPossibleExe[0] == 'M' && lpPossibleExe[1] == 'Z') {
+        PRINT_FAILURE("Shellcode appears to be a PE-file with MZ header. Execute the file directly (without a loader) instead.");
+        dwResult = STATUS_INVALID_IMAGE_FORMAT;
+        goto CLEANUP_AND_RETURN;
+    } else {
+        PRINT_SUCCESS("Shellcode is not a PE-file with MZ header.");
+    }
+
+    // Check for COFF magic in memory (machine & section size headers)
+    if (dwShellcodeSize >= 18) {
+        uint16_t wPossibleMachine = * (uint16_t*) &((uint8_t*) lpShellcode)[0];
+        uint16_t wPossibleNumberOfSections = * (uint16_t*) &((uint8_t*) lpShellcode)[2];
+        uint16_t wPossibleSizeOptionalHeader = * (uint16_t*) &((uint8_t*) lpShellcode)[16];
+
+        if (wPossibleMachine != 0x014C && wPossibleMachine != 0x8664 && wPossibleMachine != 0x01C0 && wPossibleMachine != 0x01C4 && wPossibleMachine != 0xAA64) {
+            goto SHELLCODE_IS_NOT_COFF;
+        }
+
+        if (wPossibleNumberOfSections <= 0 || wPossibleNumberOfSections >= 128) {
+            goto SHELLCODE_IS_NOT_COFF;
+        }
+
+        if (wPossibleSizeOptionalHeader != 0) {
+            goto SHELLCODE_IS_NOT_COFF;
+        }
+
+        PRINT_FAILURE("Shellcode appears to be a COFF-file. Execute it with TrustedSec's COFFLoader instead.");
+        dwResult = STATUS_INVALID_IMAGE_FORMAT;
+        goto CLEANUP_AND_RETURN;
+
+SHELLCODE_IS_NOT_COFF:
+        PRINT_SUCCESS("Shellcode is not a COFF-file.");
+    }
+
     // Change shellcode memory permissions to RX
     if (!VirtualProtect(lpShellcode, dwShellcodeSize, PAGE_EXECUTE_READ, &lpMemoryProtection)) {
         PrintMessageFromLastError("Failed to change memory protection to PAGE_EXECUTE_READ.");

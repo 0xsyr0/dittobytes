@@ -11,10 +11,10 @@
  */
 
 /**
- * This `calc.exe` pop example only works on Windows AMD64.
+ * This `calc.exe` pop example only works on Windows.
  */
-#if !defined(__WINDOWS__) || !defined(__AMD64__)
-#error "This `calc.exe` pop example only works on Windows AMD64."
+#if !defined(__WINDOWS__)
+#error "This `calc.exe` pop example only works on Windows AMD64 & ARM64."
 #endif
 
 /**
@@ -161,11 +161,19 @@ uint32_t EntryFunction() {
  * @return PEB* The current PEB.
  */
 void* RelocatableNtGetPeb() {
-    #ifdef _M_X64
-        return (void*) __readgsqword(0x60);
+    void* lpTEB;
+    void* lpPEB;
+
+    #if defined(__AMD64__)
+        lpPEB = (void*) __readgsqword(0x60);
+    #elif defined(__ARM64__)
+        __asm__("mov %0, x18" : "=r" (lpTEB));
+        lpPEB = * (void**) ((char*) lpTEB + 0x60);
     #else
         #error "This architecture is currently unsupported"
     #endif
+
+    return lpPEB;
 }
 
 /**

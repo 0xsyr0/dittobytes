@@ -175,6 +175,16 @@ int main(int argc, char** argv) {
         PRINT_SUCCESS("Read shellcode file into allocated memory region.");
     }
 
+    // Check for ELF magic in memory (ELF header)
+    uint8_t* lpPossibleExe = (uint8_t*) lpShellcode;
+    if (iShellcodeSize >= 4 && lpPossibleExe[0] == 0x7F && lpPossibleExe[1] == 'E' && lpPossibleExe[2] == 'L' && lpPossibleExe[3] == 'F') {
+        PRINT_FAILURE("Shellcode appears to be a ELF-file with ELF header. This loader only supports raw shellcode (.raw-file).");
+        iResult = EXIT_FAILURE;
+        goto CLEANUP_AND_RETURN;
+    } else {
+        PRINT_SUCCESS("Shellcode is not a ELF-file with ELF header.");
+    }
+
     // Change shellcode memory permissions to RX
     if (mprotect(lpShellcode, iShellcodeSize, PROT_READ | PROT_EXEC) < 0) {
         PrintMessageFromLastError("Failed to change memory protection to PAGE_EXECUTE_READ.");

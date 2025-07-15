@@ -135,10 +135,15 @@ jobs:
       - name: Indicate that this is a Dittobytes environment
         run: touch /tmp/.dittobytes-env-all-encompassing
 
-      # Build all tests artifacts
+      # Build all tests artifacts (transpilers)
       - name: Build Dittobytes transpilers
         working-directory: ${{ github.workspace }}
         run: make ditto-transpilers
+
+      # Build all tests artifacts (loaders)
+      - name: Build Dittobytes loaders
+        working-directory: ${{ github.workspace }}
+        run: make ditto-loaders
 
       # Build all tests artifacts
       - name: Build Dittobytes tests
