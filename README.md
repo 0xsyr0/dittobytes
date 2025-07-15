@@ -20,7 +20,7 @@
     <img src="https://gist.githubusercontent.com/tijme/a5e815ace37e12dc8e36060cc31cee4d/raw/2f6fba67d2d597294de5ccaec48d1325f0c76354/arch_arm64.svg" alt="ARCH64 logo" width="50" height="50" />
 </p>
 <p align="center">
-    <b>Metamorphic cross-compilation of C-code to Truly Position Independent Code (PIC).</b>
+    <b>Metamorphic cross-compilation of C++ & C-code to PIC, BOF & EXE.</b>
     <br/>
     <sup>Built with ♥ by <a href="https://www.linkedin.com/in/tijme/">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
     <br/>
@@ -42,7 +42,7 @@
 </p>
 <hr>
 
-Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a [metamorphic engine](https://en.wikipedia.org/wiki/Metamorphic_code) that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it compiles your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
+Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Windows, MacOS, and Linux, and both AMD64 and ARM64. It features a [metamorphic engine](https://en.wikipedia.org/wiki/Metamorphic_code) that ensures each compilation produces unique, functional shellcode. It does *not* rely on the classic decrypt stubs often seen in e.g. polymorphic compilations, and additionally it does *not* require reflective loaders such as Donut or sRDI as it can compile your C-code directly to PIC. A subsequent advantage is that the output size of the shellcode is extremely small (almost no overhead), and remains very simple.
 
 <table align=center>
     <tr>
@@ -84,13 +84,13 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 </td>
 </tr>
 </table>
-<p align=center><sup>Illustration A: Example metamorphications by Dittobytes.</sup></p>
+<p align=center><sup>Illustration A: Example metamorphications by Dittobytes (left and right are functionally equivalent).</sup></p>
 
 <p>
-    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your C-code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
+    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
 </p>
 
-The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms and architectures. Additionally, it ships with loaders (for each platform and architecture) that can be used for testing purposes.
+The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms (Windows, Linux & MacOS), architectures (AMD64 & ARM64) and formats (PIC, BOF, EXE). Additionally, Dittobytes ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
 ## Hardware requirements
 
@@ -281,7 +281,33 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-#### 5. Testing
+#### 5. Outputs
+
+<details>
+    <summary>Position Independent Code (<code>.raw</code>)</summary>
+    <hr>
+    <p>Dittobytes was originally designed to output Truly Position Independent Code (PIC). Simply put, PIC consists of the executable assembly instructions from the <code>.text</code> segment of an executable binary, without any reference to other segments or absolute memory addresses.</p>
+    <p>Dittobytes generates <code>.raw</code> files for Windows, Linux and MacOS (and both AMD64 and ARM64).</p>
+    <hr>
+</details>
+
+<details>
+    <summary>Beacon Object File (<code>.obj</code>)</summary>
+    <hr>
+    <p>In the process of creating Position Independent Code, Dittobytes creates an <code>.obj</code> file (COFF/ELF format). This file is later used to extract the <code>.text</code> segment (<code>.raw</code>) from, or create the executable format (<code>.exe</code>) with. However, the <code>.obj</code> file itself can be used as Cobalt Strike (or any other C&C framework) Beacon Object File (BOF) as well.</p>
+    <p>Dittobytes generates <code>.obj</code> files for Windows, Linux and MacOS (and both AMD64 and ARM64).</p>
+    <hr>
+</details>
+
+<details>
+    <summary>Executable/Clickable (<code>.exe</code>)</summary>
+    <hr>
+    <p>Dittobytes uses the generated Position Independent Code (PIC) in the <code>.obj</code> file to eventually generate an executable/clickable file format (<code>.exe</code>). This means that all executables generated by Dittobytes solely contain Position Independent Code (PIC). For example, constants are inlined instead of stored in the <code>.rodata</code> segment.</p>
+    <p>Dittobytes generates <code>.exe</code> files for Windows, Linux and MacOS (and both AMD64 and ARM64).</p>
+    <hr>
+</details>
+
+#### 6. Testing
 
 <details>
     <summary>Running your shellcode</summary>
@@ -577,6 +603,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 There is currently one known limitation in the use of Dittobytes.
 
 * LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types only work in full executables and not in the shellcode.
+* The pre-shipped loaders can currently solely load raw shellcode. Use TrustedSec's [COFFLoader](https://github.com/trustedsec/COFFLoader) to load the BOF/COFF output format.
 
 ## Issues & requests
 

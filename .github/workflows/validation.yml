@@ -195,10 +195,12 @@ jobs:
           name: dittobytes-tests-${{ github.run_id }}
           path: ./build/
 
-      # Make the loaders executable
-      - name: Make the loaders executable
+      # Make the executables executable
+      - name: Make the executables executable
         shell: bash
-        run: chmod +x ./build/loader-*
+        run: |
+          chmod +x ./build/*.exe
+          chmod +x ./build/loader-*
 
       # List all the ./build/ files
       - name: List all the build files

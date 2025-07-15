@@ -39,7 +39,7 @@ class VerificationMinimumLevenshteinDistance:
 
         """
 
-        transpiled_1_path = feature_test_specification['shellcode']
+        transpiled_1_path = feature_test_specification['raw_file_path']
         transpiled_1 = FileHelper.read_file(transpiled_1_path, binary=True)
 
         transpiled_2_path = transpiled_1_path.replace(f"{feature_test_specification['metamorphication']}.raw", f"{feature_test_specification['test_arguments'][0]}.raw")

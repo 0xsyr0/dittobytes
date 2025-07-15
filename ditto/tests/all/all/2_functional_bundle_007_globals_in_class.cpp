@@ -19,18 +19,18 @@ class ExampleClass {
 
 private:
     char SomeString[4] = "ABC";
-    uint32_t NumberOne = 1;
+    uint8_t NumberOne = 1;
 
 public:
-    uint32_t NumberTwo = 2;
+    uint8_t NumberTwo = 2;
   
     /**
      * Return the sum of different variable values in this class.
      * 
-     * @return uint32_t The sum of different variable values in this class.
+     * @return uint8_t The sum of different variable values in this class.
      */
-    uint32_t TestGlobalsInClass() {
-        return NumberOne + NumberTwo + static_cast<uint32_t>(SomeString[1]);
+    uint8_t TestGlobalsInClass() {
+        return NumberOne + NumberTwo + static_cast<uint8_t>(SomeString[1]);
     }
 };
 
@@ -43,11 +43,12 @@ public:
  * @verify    all    all      randomize_register_allocation     metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transpiled_1                      metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transpiled_2                      metamorphications_not_original    None                             Must be the case without metamorphications.
- * @verify    all    all      all                               returns                           uint64_t,70                      Must be the case for all compiles.
+ * @verify    all    all      all                               forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                               returns                           uint8_t,70                       Must be the case for all compiles.
  */
-extern "C" uint64_t EntryFunction() {
+extern "C" uint8_t EntryFunction() {
     ExampleClass example;
-    uint64_t result = 1;
+    uint8_t result = 1;
 
     result += example.TestGlobalsInClass();
 

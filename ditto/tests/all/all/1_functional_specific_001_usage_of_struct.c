@@ -26,9 +26,10 @@ typedef struct {
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,35                  There must be a minimum % change per compile.
- * @verify    all    all      all                     returns                           uint64_t,6352075299651498008     The return value must always be correct.
+ * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                     returns                           uint8_t,24                       The return value must always be correct.
  */
-uint64_t EntryFunction() {
+uint8_t EntryFunction() {
     // Usually stored in `.rodata`
     const MyCustomStruct result = {
         0xDEADBEEFCAFEBABE,
@@ -36,5 +37,5 @@ uint64_t EntryFunction() {
         0x0123456789ABCDEF
     };
 
-    return (uint64_t) result.b;
+    return (uint8_t) result.b;
 }

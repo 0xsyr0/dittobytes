@@ -30,9 +30,10 @@ DECLSPEC_IMPORT UINT WINAPI KERNEL32$WinExec(LPCSTR, UINT);
 #define WinExec KERNEL32$WinExec
 
 /**
- * The main function of your Beacon Object File (BOF).
+ * The main function of your Beacon Object File (BOF). Do not change the name
+ * of the `EntryFunction` to `go` (this will be automatically done).
  * 
- * Compile using `make BOF=true beacon-win-amd64`
+ * Compile using `make beacon-bof-win-amd64`
  * 
  * @param char* args The arguments passed by the COFF loader.
  * @param char* alen The lenght of the arguments passed by the COFF loader.
@@ -41,14 +42,4 @@ void EntryFunction(char* args, int alen) {
     BeaconPrintf(CALLBACK_OUTPUT, "Example BOF!\n");
 
     WinExec("calc.exe", SW_SHOW);
-}
-
-/**
- * Main function alias required for most COFF loaders.
- * 
- * @param char* args The arguments passed by the COFF loader.
- * @param char* alen The lenght of the arguments passed by the COFF loader.
- */
-void go(char* args, int alen) {
-	EntryFunction(args, alen);
 }

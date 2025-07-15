@@ -69,9 +69,10 @@ int count_primes(int n);
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,30                  There must be a minimum % change per compile.
- * @verify    all    all      all                     returns                           uint64_t,9876543454              Must be the case without metamorphications.
+ * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                     returns                           uint8_t,244                      Must be the case without metamorphications.
  */
-uint64_t EntryFunction() {
+uint8_t EntryFunction() {
     int values[5] = {
         add(3, 5),
         factorial(5),
@@ -84,7 +85,7 @@ uint64_t EntryFunction() {
     for (int i = 0; i < 5; ++i)
         mixed += values[i];
 
-    return 9876543210ULL + (uint64_t) mixed;
+    return mixed; // 244
 }
 
 /**

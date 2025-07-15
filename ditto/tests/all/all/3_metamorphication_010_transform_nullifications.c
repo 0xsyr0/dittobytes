@@ -21,8 +21,9 @@
  * @verify    lin    arm64    transform_nullifications      hex_not_present                   E0031F2A                         Is `mov w0, wzr` in HEX.
  * @verify    mac    arm64    transform_nullifications      hex_not_present                   00008052                         Is `mov w0, wzr` in HEX.
  * @verify    all    all      transpiled_1                  minimum_levenshtein_distance      transpiled_2,0                   There must be a minimum % change per compile.
- * @verify    all    all      all                           returns                           uint32_t,0                       Must be the case without metamorphications.
+ * @verify    all    all      all                           forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                           returns                           uint8_t,0                        Must be the case without metamorphications.
  */
-uint32_t EntryFunction() {
+uint8_t EntryFunction() {
     return 0UL;
 }

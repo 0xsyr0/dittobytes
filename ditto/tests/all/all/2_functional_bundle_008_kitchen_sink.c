@@ -255,9 +255,10 @@ uint32_t TestNullification();
  * @verify    all    all      transpiled_1                      metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transpiled_2                      metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transpiled_1                      minimum_levenshtein_distance      transpiled_2,10                  There must be a minimum % change per compile.
- * @verify    all    all      all                               returns                           uint64_t,18154888378             Must be the case without metamorphications.
+ * @verify    all    all      all                               forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                               returns                           uint8_t,106                      Must be the case without metamorphications.
  */
-uint64_t EntryFunction() {
+uint8_t EntryFunction() {
     uint64_t result = 0;
     
     // Call all test functions and sum their results
@@ -282,7 +283,7 @@ uint64_t EntryFunction() {
     result += TestMatrixMultiplication();
     result += TestNullification();
     
-    return result;
+    return (uint8_t) (result % 333); // 18154888378 % 333 = 106
 }
 
 /**

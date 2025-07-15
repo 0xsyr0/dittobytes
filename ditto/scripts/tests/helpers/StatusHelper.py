@@ -26,8 +26,10 @@ class StatusHelper:
     ERROR_CANNOT_TEST_OS_OR_ARCH = (0x00000003, '!', 'This os/arch is not supported in the current runtime')
     ERROR_TEST_FUNCTION_NOT_SUPPORTED = (0x00000004, '!', 'The test function {} is not supported')
     ERROR_TEST_FUNCTION_FAILED = (0x00000005, '!', 'The test function {} failed')
-    ERROR_SHELLCODE_NOT_FOUND = (0x00000006, '!', 'Shellcode not found {}')
-    ERROR_RETURN_VERIFICATION_PROCESS_FAILED = (0x00000007, '!', 'Returns verification process did not exit successfully')
+    ERROR_EXE_FILE_NOT_FOUND = (0x00000006, '!', 'EXE file not found {}')
+    ERROR_RAW_FILE_NOT_FOUND = (0x00000007, '!', 'RAW file not found {}')
+    ERROR_OBJ_FILE_NOT_FOUND = (0x00000008, '!', 'OBJ file not found {}')
+    ERROR_RETURN_VERIFICATION_PROCESS_FAILED = (0x00000009, '!', 'Returns verification process did not exit successfully')
 
     @staticmethod
     def exit(status, variables=[]):
