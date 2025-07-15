@@ -159,8 +159,12 @@ uint8_t EntryFunction() {
  * @return PEB* The current PEB.
  */
 void* RelocatableNtGetPeb() {
-    #ifdef _M_X64
+    #if defined(__AMD64__)
         return (void*) __readgsqword(0x60);
+    #elif defined(__ARM64__)
+        void* teb;
+        __asm__("mrs %0, tpidr_el0" : "=r"(teb));
+        return *(void**)((char*)teb + 0x60);  // TEB + 0x60 = PEB
     #else
         #error "This architecture is currently unsupported"
     #endif

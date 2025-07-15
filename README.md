@@ -128,7 +128,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <summary>Requirements to compile on your host (difficulty: <strong>advanced</strong>)</summary>
     <hr>
     <p>
-        You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> on your host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
+        You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> on your Linux host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
         <ul>
             <li>CPU cores: <code>8</code>.</li>
             <li>Memory: <code>10 GB</code>.</li>
@@ -152,7 +152,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     ├── build/                              # Build dir containing loaders and your shellcodes.
     │   ├── beacon-[platform]-[arch].raw    # Your C-code compiled to raw shellcode (.text segment only).
     │   ├── beacon-[platform]-[arch].obj    # Your C-code compiled to BOF/COFF format.
-    │   ├── loader-[platform]-[arch].[ext]  # Pre-built raw shellcode loaders for testing purposes.
+    │   ├── beacon-[platform]-[arch].exe    # Your C-code compiled to executable format.
+    │   ├── loader-[platform]-[arch]        # Pre-built raw shellcode loaders for testing purposes.
     │   └── ...
     └── ditto/                              # Internal files supporting the Dittobytes project.
         ├── loaders/                        # Simple shellcode loaders for testing purposes (pre-built).
@@ -603,7 +604,6 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 There is currently one known limitation in the use of Dittobytes.
 
 * LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types only work in full executables and not in the shellcode.
-* The pre-shipped loaders can currently solely load raw shellcode. Use TrustedSec's [COFFLoader](https://github.com/trustedsec/COFFLoader) to load the BOF/COFF output format.
 
 ## Issues & requests
 
