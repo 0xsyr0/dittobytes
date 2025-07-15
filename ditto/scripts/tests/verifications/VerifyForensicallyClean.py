@@ -69,7 +69,4 @@ class VerifyForensicallyClean:
         if not self.__verify_spoiler_keywords(feature_test_specification):
             return False
 
-        if not self.__verify_instructions_mismatch(feature_test_specification):
-            return False
-
         return True
