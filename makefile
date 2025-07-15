@@ -864,7 +864,7 @@ dependencies:
 
 clean:
 	@echo "[+] Removing compiled user beacons from build folder."
-	@rm -r $(BUILD_DIR)/beacon-*
+	@rm -rf $(BUILD_DIR)/beacon-*
 
 clean-beacons: clean
 
