@@ -124,22 +124,17 @@ public:
                 }
 
                 // 1. mov [xor key register], [xor key immediate value]
-                // 2. mov [rbp+offset], [encoded immediate value]
-                // 3. xor [rbp+offset], [xor key register]
                 BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(movRegImmediateOpcode), virtualXorKeyRegister).addImm(xorKey);
         
-                // 2. mov [destinationFrameIndex], immediateValueEncoded
-                // MachineInstr* StackMovImmediateEncoded = MF.CloneMachineInstr(&Instruction);
-                // StackMovImmediateEncoded->getOperand(StackMovImmediateEncoded->getNumOperands() - 1).setImm(immediateValueEncoded);
-                // MachineBasicBlock.insert(MachineInstruction, StackMovImmediateEncoded);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode))
-                    .addFrameIndex(destinationFrameIndex).addImm(1).addReg(0).addImm(0).addReg(0)
-                    .addImm(immediateValueEncoded);
-
-                // // 3. xor [destinationFrameIndex], virtualXorKeyRegister
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode))
-                    .addFrameIndex(destinationFrameIndex).addImm(1).addReg(0).addImm(0).addReg(0)
-                    .addReg(virtualXorKeyRegister);
+                // 2. mov [rbp+offset], [encoded immediate value]
+                MachineInstr* StackMovImmediateEncoded = MF.CloneMachineInstr(&Instruction);
+                StackMovImmediateEncoded->getOperand(StackMovImmediateEncoded->getNumOperands() - 1).setImm(immediateValueEncoded);
+                MachineBasicBlock.insert(MachineInstruction, StackMovImmediateEncoded);
+       
+                // 3. xor [rbp+offset], [xor key register]
+                MachineInstrBuilder NewXorInstruction = BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode));
+                for (unsigned i = 0; i < Instruction.getNumOperands() - 1; ++i) NewXorInstruction.add(Instruction.getOperand(i));
+                NewXorInstruction.addReg(virtualXorKeyRegister);
 
                 // Erase the original instruction after inserting the new ones
                 Instruction.eraseFromParent();

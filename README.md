@@ -492,6 +492,37 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             </table>
         </li>
         <li>
+            ✅ <b>TransformStackMovImmediates</b>: Substitutes instructions that move an immediate value to the stack in various ways.
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.9">release 1.0.9</a>.</sup>
+            <table>
+                <tr>
+                    <td align=center>Original</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
+                </tr>
+                <tr>
+                    <td>
+
+```diff
+- mov     [rbp+var_8], 0FFFFFFFFFFFFFFFFh
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, 0D3F57F4h
++ mov     [rbp+var_8], 0FFFFFFFFF2C0A80Bh
++ xor     [rbp+var_8], rax
+```
+
+</td>
+                </tr>
+            </table>
+        </li>
+        <li>
             ✅ <b>TransformNullifications</b>: Substitutes various instructions that nullify a register.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.</sup>
