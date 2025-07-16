@@ -634,7 +634,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 
 There is currently one known limitation in the use of Dittobytes.
 
-* LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types only work in full executables and not in the shellcode.
+* LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types do not work when compiled with Dittobytes.
 
 ## 🀄 Issues & requests
 
