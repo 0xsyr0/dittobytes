@@ -50,6 +50,14 @@ uint8_t get_4_l();
 uint8_t get_5_o(int index);
 
 /**
+ * Get the character at a dynamic index from "aaa\x0\x0.\x0\x0bbb".
+ * 
+ * @param int index The index to retrieve.
+ * @return uint8_t The value at the given index.
+ */
+uint8_t get_6_dot(int index);
+
+/**
  * The main function of the code to test.
  * 
  * This test focusses on string storage and usage, to verify whether strings are stored correctly (inline).
@@ -57,7 +65,7 @@ uint8_t get_5_o(int index);
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,5                   There must be a minimum % change per compile.
  * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
- * @verify    all    all      all                     returns                           uint8_t,10                       Must be the case without metamorphications (ASCII values: 72+101+108+108+111).
+ * @verify    all    all      all                     returns                           uint8_t,7                        Must be the case without metamorphications (ASCII values: 72+101+108+108+111).
  */
 uint8_t EntryFunction() {
     uint8_t h = get_1_h();
@@ -65,8 +73,9 @@ uint8_t EntryFunction() {
     uint8_t l_1 = get_3_l();
     uint8_t l_2 = get_4_l();
     uint8_t o = get_5_o(10);
+    uint8_t dot = get_6_dot(5);
 
-    return (h+e+l_1+l_2+o) % 49; // 500 % 49 = 10
+    return (h+e+l_1+l_2+o+dot) % 49; // 546 % 49 = 7
 }
 
 /**
@@ -75,8 +84,8 @@ uint8_t EntryFunction() {
  * @return uint8_t The value of character 'H' (72).
  */
 uint8_t get_1_h() {
-	char* test = "Hello World!";
-	return test[0];
+    char* test = "Hello World!";
+    return test[0];
 }
 
 /**
@@ -85,9 +94,9 @@ uint8_t get_1_h() {
  * @return uint8_t The value of character at index 10 in "Hello Universe!".
  */
 uint8_t get_2_e() {
-	char test[] = "Hello Universe!";
-	int index = 10;
-	return test[index];
+    char test[] = "Hello Universe!";
+    int index = 10;
+    return test[index];
 }
 
 /**
@@ -96,12 +105,12 @@ uint8_t get_2_e() {
  * @return uint8_t The value of the character at index 359.
  */
 uint8_t get_3_l() {
-	char* test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu tincidunt nisl, nec iaculis mi. Proin at dignissim risus. Suspendisse et nulla orci. Pellentesque tempor laoreet blandit. Curabitur ac tortor sed mauris sagittis pulvinar. Phasellus libero magna, suscipit ac blandit at, malesuada non tellus. Etiam sodales euismod dolor, ut accumsan magna aliquet et.";
+    char* test = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu tincidunt nisl, nec iaculis mi. Proin at dignissim risus. Suspendisse et nulla orci. Pellentesque tempor laoreet blandit. Curabitur ac tortor sed mauris sagittis pulvinar. Phasellus libero magna, suscipit ac blandit at, malesuada non tellus. Etiam sodales euismod dolor, ut accumsan magna aliquet et.";
 
-	int a = test[0] != 'L';
-	int b = test[368] != '.';	
+    int a = test[0] != 'L';
+    int b = test[368] != '.';   
 
-	return test[359] + a + b;
+    return test[359] + a + b;
 }
 
 /**
@@ -110,9 +119,9 @@ uint8_t get_3_l() {
  * @return uint8_t The value of character 'l'.
  */
 uint8_t get_4_l() {
-	char* test = "Greetings World!";
-	char l = test[13];
-	return l;
+    char* test = "Greetings World!";
+    char l = test[13];
+    return l;
 }
 
 /**
@@ -122,6 +131,28 @@ uint8_t get_4_l() {
  * @return uint8_t The value at the given index.
  */
 uint8_t get_5_o(int index) {
-	char test[] = "Goodbye Globe!";
-	return test[index];
+    char test[] = "Goodbye Globe!";
+    return test[index];
+}
+
+/**
+ * Get the character at a dynamic index from "aaa\x0\x0.\x0\x0bbb".
+ * 
+ * @param int index The index to retrieve.
+ * @return uint8_t The value at the given index.
+ */
+uint8_t get_6_dot(int index) {
+    char test[10];
+
+    test[0] = 'a';
+    test[1] = 'a';
+    test[2] = 'a';
+
+    test[5] = '.';
+
+    test[7] = 'b';
+    test[8] = 'b';
+    test[9] = 'b';
+
+    return test[index];
 }
