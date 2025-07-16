@@ -54,7 +54,7 @@ using namespace llvm;
 /**
  * A class to obfuscate `mov` immediate values.
  */
-class TransformMovImmediatesOptionARM64_XOR {
+class TransformRegMovImmediatesOptionARM64_XOR {
 
 private:
 
@@ -66,7 +66,7 @@ private:
 public:
 
     /**
-     * Main execution method for the TransformMovImmediatesOptionARM64_XOR class.
+     * Main execution method for the TransformRegMovImmediatesOptionARM64_XOR class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -78,7 +78,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running ARM64 module: TransformMovImmediates(option=XOR,modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running ARM64 module: TransformRegMovImmediates(option=XOR,modifyAll=" << modifyAll << ").\n";
 
         // First convert `movn`, `movz` or `movk` instructions to regular movs
         normalizeMovs(MF);
@@ -89,7 +89,7 @@ public:
                 MachineInstr &Instruction = *MachineInstruction++;
 
                 // Only modify `mov` instructions with immediate values
-                if (!isMovImmediate(Instruction)) {
+                if (!isRegMovImmediate(Instruction)) {
                     continue;
                 }
 
@@ -166,7 +166,7 @@ private:
                 return 64;
                 break;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformRegMovImmediatesOptionARM64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -190,7 +190,7 @@ private:
             case AArch64::MOVi32imm: return AArch64::EORWrr;
             case AArch64::MOVi64imm: return AArch64::EORXrr;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformRegMovImmediatesOptionARM64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -201,7 +201,7 @@ private:
      * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine if it's a MOV with an immediate operand.
      * @return bool Returns `true` if the instruction is a MOV immediate instruction, otherwise `false`.
      */
-    bool isMovImmediate(const MachineInstr &instruction) {
+    bool isRegMovImmediate(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
         if (instruction.getNumOperands() != 2) return false;

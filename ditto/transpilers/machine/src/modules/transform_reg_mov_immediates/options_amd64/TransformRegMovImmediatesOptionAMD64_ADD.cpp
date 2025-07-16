@@ -55,7 +55,7 @@ using namespace llvm;
 /**
  * A class to obfuscate mov immediate values.
  */
-class TransformMovImmediatesOptionAMD64_SUB {
+class TransformRegMovImmediatesOptionAMD64_ADD {
 
 private:
 
@@ -67,7 +67,7 @@ private:
 public:
 
     /**
-     * Main execution method for the TransformMovImmediatesOptionAMD64_SUB class.
+     * Main execution method for the TransformRegMovImmediatesOptionAMD64_ADD class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -79,7 +79,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running AMD64 module: TransformMovImmediates(option=SUB,modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running AMD64 module: TransformRegMovImmediates(option=ADD,modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
@@ -87,7 +87,7 @@ public:
                 MachineInstr &Instruction = *MachineInstruction++;
 
                 // Only modify `mov` instructions with immediate values
-                if (!isMovImmediate(Instruction)) {
+                if (!isRegMovImmediate(Instruction)) {
                     continue;
                 }
 
@@ -101,39 +101,39 @@ public:
                 size_t immediateValue = (size_t) Instruction.getOperand(1).getImm();
                 size_t immediateSize = getMovImmediateSize(Instruction);
                 size_t originalOpcode = Instruction.getOpcode();
-                unsigned subOpcode = getMovSizeSubReplacement(Instruction);
+                unsigned addOpcode = getMovSizeAddReplacement(Instruction);
 
-                // Generate SUB key on compile time
-                size_t subKey = RandomHelper::getSimilarIntegerForDestination(immediateSize, immediateValue, false);
+                // Generate ADD key on compile time
+                size_t addKey = RandomHelper::getSimilarIntegerForDestination(immediateSize, immediateValue, false);
 
                 // `add` the immediate value and mask it to the correct size
-                size_t immediateValueEncoded = immediateValue + subKey;
+                size_t immediateValueEncoded = immediateValue - addKey;
                 int64_t immediateMask = (immediateSize == 64) ? -1 : ((1ULL << immediateSize) - 1);
                 immediateValueEncoded = immediateValueEncoded & immediateMask;
 
                 // Register to use in the substition
-                Register virtualSubKeyRegister;
+                Register virtualAddKeyRegister;
 
-                // Allocate a virtual register for the `sub` key
+                // Allocate a virtual register for the `add` key
                 switch (immediateSize) {
-                    case 64: virtualSubKeyRegister = MRI.createVirtualRegister(&X86::GR64RegClass); break;
-                    case 32: virtualSubKeyRegister = MRI.createVirtualRegister(&X86::GR32RegClass); break;
-                    case 16: virtualSubKeyRegister = MRI.createVirtualRegister(&X86::GR16RegClass); break;
-                    default: virtualSubKeyRegister = MRI.createVirtualRegister(&X86::GR8RegClass); break;
+                    case 64: virtualAddKeyRegister = MRI.createVirtualRegister(&X86::GR64RegClass); break;
+                    case 32: virtualAddKeyRegister = MRI.createVirtualRegister(&X86::GR32RegClass); break;
+                    case 16: virtualAddKeyRegister = MRI.createVirtualRegister(&X86::GR16RegClass); break;
+                    default: virtualAddKeyRegister = MRI.createVirtualRegister(&X86::GR8RegClass); break;
                 }
 
-                // 1. mov [sub key register], [sub key immediate value]
+                // 1. mov [add key register], [add key immediate value]
                 // 2. mov [original register], [encoded immediate value]
-                // 3. sub [original register], [sub key register]
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), virtualSubKeyRegister).addImm(subKey);
+                // 3. add [original register], [add key register]
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), virtualAddKeyRegister).addImm(addKey);
                 BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), destinationRegister).addImm(immediateValueEncoded);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(subOpcode), destinationRegister).addReg(destinationRegister).addReg(virtualSubKeyRegister);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(addOpcode), destinationRegister).addReg(destinationRegister).addReg(virtualAddKeyRegister);
 
                 Instruction.eraseFromParent();
 
                 // Inform module and user that we've successfully substituted the immediate value.
                 modified = true;
-                dbgs() << "          ✓ Modified immediate value using random option `SUB`.\n";
+                dbgs() << "          ✓ Modified immediate value using random option `ADD`.\n";
             }
         }
         
@@ -172,34 +172,34 @@ private:
                 return 64;
                 break;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_SUB - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformRegMovImmediatesOptionAMD64_ADD - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
 
     /**
-     * Determines the SUB replacement opcode for a given MOV instruction opcode.
+     * Determines the ADD replacement opcode for a given MOV instruction opcode.
      * 
-     * This function maps certain MOV instruction opcodes to corresponding SUB opcodes
+     * This function maps certain MOV instruction opcodes to corresponding ADD opcodes
      * for AMD64 instructions. The provided `MachineInstr`'s opcode is checked and
-     * replaced with an appropriate SUB opcode based on the MOV instruction's immediate size.
+     * replaced with an appropriate ADD opcode based on the MOV instruction's immediate size.
      * 
      * If the opcode does not match any known MOV instruction types, a fatal error is reported.
      *
-     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding SUB opcode.
-     * @return unsigned The corresponding SUB opcode for the MOV instruction's immediate size.
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding ADD opcode.
+     * @return unsigned The corresponding ADD opcode for the MOV instruction's immediate size.
      */
-    unsigned getMovSizeSubReplacement(const MachineInstr &instruction) {
+    unsigned getMovSizeAddReplacement(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
         switch (opcode) {
-            case X86::MOV8ri:    return X86::SUB8rr;
-            case X86::MOV16ri:   return X86::SUB16rr;
-            case X86::MOV32ri:   return X86::SUB32rr;
-            case X86::MOV64ri:   return X86::SUB64rr;
-            case X86::MOV64ri32: return X86::SUB64rr;
+            case X86::MOV8ri:    return X86::ADD8rr;
+            case X86::MOV16ri:   return X86::ADD16rr;
+            case X86::MOV32ri:   return X86::ADD32rr;
+            case X86::MOV64ri:   return X86::ADD64rr;
+            case X86::MOV64ri32: return X86::ADD64rr;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_SUB - Unknown SUB replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformRegMovImmediatesOptionAMD64_ADD - Unknown ADD replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -210,7 +210,7 @@ private:
      * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine if it's a MOV with an immediate operand.
      * @return bool Returns `true` if the instruction is a MOV immediate instruction, otherwise `false`.
      */
-    bool isMovImmediate(const MachineInstr &instruction) {
+    bool isRegMovImmediate(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
         if (instruction.getNumOperands() != 2) return false;

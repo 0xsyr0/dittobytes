@@ -460,7 +460,7 @@ public:
  * 
  *            OS     Arch     Metamorphication                  Test                              Argument(s)                      Description
  * @verify    all    all      randomize_register_allocation     metamorphications_not_original    None                             Must be the case without metamorphications.
- * @verify    all    all      transform_mov_immediates          metamorphications_not_original    None                             Must be the case without metamorphications.
+ * @verify    all    all      transform_reg_mov_immediates      metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transform_nullifications          metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transpiled_1                      metamorphications_not_original    None                             Must be the case without metamorphications.
  * @verify    all    all      transpiled_2                      metamorphications_not_original    None                             Must be the case without metamorphications.

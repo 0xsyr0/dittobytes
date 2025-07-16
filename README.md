@@ -461,7 +461,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             </table>
         </li>
         <li>
-            ✅ <b>TransformMovImmediates</b>: Substitutes instructions that move an immediate value in various ways.
+            ✅ <b>TransformRegMovImmediates</b>: Substitutes instructions that move an immediate value to a register in various ways.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
             <table>

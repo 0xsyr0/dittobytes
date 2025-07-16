@@ -34,8 +34,9 @@
 /**
  * Modules
  */
-#include "modules/transform_mov_immediates/TransformMovImmediatesModule.cpp"
 #include "modules/transform_nullifications/TransformNullificationsModule.cpp"
+#include "modules/transform_reg_mov_immediates/TransformRegMovImmediatesModule.cpp"
+#include "modules/transform_stack_mov_immediates/TransformStackMovImmediatesModule.cpp"
 
 /**
  * Namespace(s) to use
@@ -128,8 +129,10 @@ public:
 
         switch (step) {
             case FirstStep:
-                // Module: Modify `mov` immediate's
-                modified = TransformMovImmediatesModule().runOnMachineFunction(MF) || modified;
+                // Module: Modify `mov reg, imm` immediate's
+                modified = TransformRegMovImmediatesModule().runOnMachineFunction(MF) || modified;
+                // Module: Modify `mov [reg+var_a], imm` immediate's
+                modified = TransformStackMovImmediatesModule().runOnMachineFunction(MF) || modified;
                 break;
             case LastStep:
                 // Module: Replace `xor reg, reg` instructions

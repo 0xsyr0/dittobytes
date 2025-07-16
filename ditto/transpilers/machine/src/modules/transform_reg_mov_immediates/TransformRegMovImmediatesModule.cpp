@@ -48,14 +48,14 @@
 #include "../../../../shared/helpers/RandomHelper.cpp"
 
 /**
- * Modify `mov` immediate substitution options
+ * Modify `mov reg, imm` immediate substitution options
  */
-#include "options_amd64/TransformMovImmediatesOptionAMD64_ADD.cpp"
-#include "options_amd64/TransformMovImmediatesOptionAMD64_SUB.cpp"
-#include "options_amd64/TransformMovImmediatesOptionAMD64_XOR.cpp"
-#include "options_arm64/TransformMovImmediatesOptionARM64_XOR.cpp"
-#include "options_arm64/TransformMovImmediatesOptionARM64_ADD.cpp"
-#include "options_arm64/TransformMovImmediatesOptionARM64_SUB.cpp"
+#include "options_amd64/TransformRegMovImmediatesOptionAMD64_ADD.cpp"
+#include "options_amd64/TransformRegMovImmediatesOptionAMD64_SUB.cpp"
+#include "options_amd64/TransformRegMovImmediatesOptionAMD64_XOR.cpp"
+#include "options_arm64/TransformRegMovImmediatesOptionARM64_XOR.cpp"
+#include "options_arm64/TransformRegMovImmediatesOptionARM64_ADD.cpp"
+#include "options_arm64/TransformRegMovImmediatesOptionARM64_SUB.cpp"
 
 /**
  * Namespace(s) to use
@@ -63,9 +63,9 @@
 using namespace llvm;
 
 /**
- * A class to obfuscate mov immediate values.
+ * A class to obfuscate reg mov immediate values.
  */
-class TransformMovImmediatesModule {
+class TransformRegMovImmediatesModule {
 
 private:
 
@@ -90,8 +90,8 @@ private:
      * @returns bool Positive if enabled.
      */
     bool moduleIsEnabled() {
-        const char* MM_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TRANSFORM_MOV_IMMEDIATES");
-        bool result = (MM_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TRANSFORM_MOV_IMMEDIATES) == "true");
+        const char* MM_TRANSFORM_REG_MOV_IMMEDIATES = std::getenv("MM_TRANSFORM_REG_MOV_IMMEDIATES");
+        bool result = (MM_TRANSFORM_REG_MOV_IMMEDIATES && std::string(MM_TRANSFORM_REG_MOV_IMMEDIATES) == "true");
 
         return result || moduleIsBeingTested();
     }
@@ -102,8 +102,8 @@ private:
      * @returns bool Positive if enabled.
      */
     bool moduleIsBeingTested() {
-        const char* MM_TEST_TRANSFORM_MOV_IMMEDIATES = std::getenv("MM_TEST_TRANSFORM_MOV_IMMEDIATES");
-        bool result = (MM_TEST_TRANSFORM_MOV_IMMEDIATES && std::string(MM_TEST_TRANSFORM_MOV_IMMEDIATES) == "true");
+        const char* MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES = std::getenv("MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES");
+        bool result = (MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES && std::string(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) == "true");
 
         return result;
     }
@@ -113,22 +113,22 @@ public:
     /**
      * Constructor that initializes the list of substitution option classes.
      */
-    TransformMovImmediatesModule() {
+    TransformRegMovImmediatesModule() {
         options_amd64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_ADD().runOnMachineFunction(MF, modifyAll); },
-            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_SUB().runOnMachineFunction(MF, modifyAll); },
-            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return TransformRegMovImmediatesOptionAMD64_ADD().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformRegMovImmediatesOptionAMD64_SUB().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformRegMovImmediatesOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
 
         options_arm64 = {
-            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_ADD().runOnMachineFunction(MF, modifyAll); },
-            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_SUB().runOnMachineFunction(MF, modifyAll); },
-            [&](MachineFunction &MF, bool modifyAll) { return TransformMovImmediatesOptionARM64_XOR().runOnMachineFunction(MF, modifyAll); }
+            [&](MachineFunction &MF, bool modifyAll) { return TransformRegMovImmediatesOptionARM64_ADD().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformRegMovImmediatesOptionARM64_SUB().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformRegMovImmediatesOptionARM64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
     }
 
     /**
-     * Main execution method for the TransformMovImmediatesModule class.
+     * Main execution method for the TransformRegMovImmediatesModule class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @return bool Indicates if the machine function was modified.
@@ -155,7 +155,7 @@ public:
                 break;
             // Unknown architecture
             default:
-                report_fatal_error(formatv("TransformMovImmediatesModule failed due to unknown architecture: {0}.", architecture));
+                report_fatal_error(formatv("TransformRegMovImmediatesModule failed due to unknown architecture: {0}.", architecture));
                 break;
         }
 
