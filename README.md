@@ -253,7 +253,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         The following example may give you some guidance. It simulates global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a <code>char[]</code> array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
     </p>
     <p>
-        <a href="https://github.com/tijme/dittobytes/blob/feature/transform-stack-mov-immediate/code/examples/example-basics/example-basics.c">Example 'The Basics'</a>
+        <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-basics/example-basics.c">Example 'The Basics'</a>
     </p>
     <hr>
 </details>
