@@ -55,7 +55,7 @@ using namespace llvm;
 /**
  * A class to obfuscate mov immediate values.
  */
-class TransformMovImmediatesOptionAMD64_XOR {
+class TransformStackMovImmediatesOptionAMD64_XOR {
 
 private:
 
@@ -67,7 +67,7 @@ private:
 public:
 
     /**
-     * Main execution method for the TransformMovImmediatesOptionAMD64_XOR class.
+     * Main execution method for the TransformStackMovImmediatesOptionAMD64_XOR class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -79,7 +79,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running AMD64 module: TransformMovImmediates(option=XOR,modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running AMD64 module: TransformStackMovImmediates(option=XOR,modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
@@ -87,7 +87,7 @@ public:
                 MachineInstr &Instruction = *MachineInstruction++;
 
                 // Only modify `mov` instructions with immediate values
-                if (!isMovImmediate(Instruction)) {
+                if (!isStackMovImmediate(Instruction)) {
                     continue;
                 }
 
@@ -97,10 +97,11 @@ public:
 
                 // Obtain information about the instruction
                 const DebugLoc& debugLocation = Instruction.getDebugLoc();
-                Register destinationRegister = Instruction.getOperand(0).getReg();
-                size_t immediateValue = (size_t) Instruction.getOperand(1).getImm();
+                int destinationFrameIndex = Instruction.getOperand(0).getIndex();
+                size_t immediateValue = (size_t) Instruction.getOperand((Instruction.getNumOperands() - 1)).getImm();
                 size_t immediateSize = getMovImmediateSize(Instruction);
                 size_t originalOpcode = Instruction.getOpcode();
+                size_t movRegImmediateOpcode = getMovRegImmediateReplacement(Instruction);
                 unsigned xorOpcode = getMovSizeXorReplacement(Instruction);
 
                 // Generate XOR key on compile time
@@ -123,11 +124,17 @@ public:
                 }
 
                 // 1. mov [xor key register], [xor key immediate value]
-                // 2. mov [original register], [encoded immediate value]
-                // 3. xor [original register], [xor key register]
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), virtualXorKeyRegister).addImm(xorKey);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(originalOpcode), destinationRegister).addImm(immediateValueEncoded);
-                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode), destinationRegister).addReg(destinationRegister).addReg(virtualXorKeyRegister);
+                BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(movRegImmediateOpcode), virtualXorKeyRegister).addImm(xorKey);
+        
+                // 2. mov [rbp+offset], [encoded immediate value]
+                MachineInstr* StackMovImmediateEncoded = MF.CloneMachineInstr(&Instruction);
+                StackMovImmediateEncoded->getOperand(StackMovImmediateEncoded->getNumOperands() - 1).setImm(immediateValueEncoded);
+                MachineBasicBlock.insert(MachineInstruction, StackMovImmediateEncoded);
+       
+                // 3. xor [rbp+offset], [xor key register]
+                MachineInstrBuilder NewXorInstruction = BuildMI(MachineBasicBlock, MachineInstruction, debugLocation, TII->get(xorOpcode));
+                for (unsigned i = 0; i < Instruction.getNumOperands() - 1; ++i) NewXorInstruction.add(Instruction.getOperand(i));
+                NewXorInstruction.addReg(virtualXorKeyRegister);
 
                 // Erase the original instruction after inserting the new ones
                 Instruction.eraseFromParent();
@@ -137,11 +144,38 @@ public:
                 dbgs() << "          ✓ Modified immediate value using random option `XOR`.\n";
             }
         }
-        
+
         return modified;
     }
 
 private:
+
+    /**
+     * Checks if the instruction is a MOV to stack memory with immediate.
+     *
+     * @param MachineInstr& instruction The instruction to check.
+     * @return bool True if it's a stack MOV immediate.
+     */
+    bool isStackMovImmediate(const MachineInstr &instruction) {
+        // Match opcode mov instructions that store an immediate into memory.
+        switch (instruction.getOpcode()) {
+            case X86::MOV8mi:
+            case X86::MOV16mi:
+            case X86::MOV32mi:
+            case X86::MOV64mi32:
+                break;
+            default:
+                return false;
+        }
+
+        // First operand must be a frame index (stack variable)
+        if (!instruction.getOperand(0).isFI()) return false;
+
+        // Last operand must be an immediate
+        if (!instruction.getOperand(instruction.getNumOperands() - 1).isImm()) return false;
+
+        return true;
+    }
 
     /**
      * Determines the size of the immediate value for a given machine instruction.
@@ -159,21 +193,20 @@ private:
         unsigned opcode = instruction.getOpcode();
 
         switch (opcode) {
-            case X86::MOV8ri:
+            case X86::MOV8mi:
                 return 8;
                 break;
-            case X86::MOV16ri:
+            case X86::MOV16mi:
                 return 16;
                 break;
-            case X86::MOV32ri:
+            case X86::MOV32mi:
                 return 32;
                 break;
-            case X86::MOV64ri:            
-            case X86::MOV64ri32:
+            case X86::MOV64mi32:
                 return 64;
                 break;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformStackMovImmediatesOptionAMD64_XOR - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -194,41 +227,39 @@ private:
         unsigned opcode = instruction.getOpcode();
 
         switch (opcode) {
-            case X86::MOV8ri:    return X86::XOR8rr;
-            case X86::MOV16ri:   return X86::XOR16rr;
-            case X86::MOV32ri:   return X86::XOR32rr;
-            case X86::MOV64ri:   return X86::XOR64rr;
-            case X86::MOV64ri32: return X86::XOR64rr;
+            case X86::MOV8mi:    return X86::XOR8mr;
+            case X86::MOV16mi:   return X86::XOR16mr;
+            case X86::MOV32mi:   return X86::XOR32mr;
+            case X86::MOV64mi32: return X86::XOR64mr;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformStackMovImmediatesOptionAMD64_XOR - Unknown XOR replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
 
     /**
-     * Checks if the given instruction is a MOV instruction with an immediate operand.
+     * Determines the MOVri replacement opcode for a given MOVmi instruction opcode.
      * 
-     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine if it's a MOV with an immediate operand.
-     * @return bool Returns `true` if the instruction is a MOV immediate instruction, otherwise `false`.
+     * This function maps certain MOVmi instruction opcodes to corresponding MOVri opcodes
+     * for AMD64 instructions. The provided `MachineInstr`'s opcode is checked and
+     * replaced with an appropriate MOVri opcode based on the MOVmi instruction's immediate size.
+     * 
+     * If the opcode does not match any known MOV instruction types, a fatal error is reported.
+     *
+     * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked and replaced with the corresponding MOVri opcode.
+     * @return unsigned The corresponding MOVmi opcode for the MOVri instruction's immediate size.
      */
-    bool isMovImmediate(const MachineInstr &instruction) {
+    unsigned getMovRegImmediateReplacement(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
-        if (instruction.getNumOperands() != 2) return false;
-        if (!instruction.getOperand(0).isReg()) return false;
-        if (!instruction.getOperand(1).isImm()) return false;
-
         switch (opcode) {
-            case X86::MOV8ri:
-            case X86::MOV16ri:
-            case X86::MOV32ri:
-            case X86::MOV64ri:
-            case X86::MOV64ri32:
-                return true;
-                break;
+            case X86::MOV8mi:    return X86::MOV8ri;
+            case X86::MOV16mi:   return X86::MOV16ri;
+            case X86::MOV32mi:   return X86::MOV32ri;
+            case X86::MOV64mi32: return X86::MOV64ri32;
             default:
-                return false;
-                break;
+                report_fatal_error(formatv("TransformStackMovImmediatesOptionAMD64_XOR - Unknown MOVri replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                return 0;
         }
     }
 

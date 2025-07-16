@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/4d1b52f3a38b0b5a4dc03ecb74654ce7b1c07a83/dittobytes.svg" alt="Dittobytes Logo" />
+    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/ee78799b52a91183009476eef62909ab2655abfd/dittobytes.svg" alt="Dittobytes Logo" />
 </p>
 <p align="center">
     <a href="https://github.com/tijme/dittobytes/releases"><img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=850447&color=ba0745" alt="Latest Dittobytes release" /></a>
@@ -253,7 +253,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         The following example may give you some guidance. It simulates global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a <code>char[]</code> array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
     </p>
     <p>
-        <a href="https://gist.github.com/tijme/01331c822a7e6e05fd192d4d3d118647">Example 'The Basics'</a>
+        <a href="https://github.com/tijme/dittobytes/blob/feature/transform-stack-mov-immediate/code/examples/example-basics/example-basics.c">Example 'The Basics'</a>
     </p>
     <hr>
 </details>
@@ -461,7 +461,7 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             </table>
         </li>
         <li>
-            ✅ <b>TransformMovImmediates</b>: Substitutes instructions that move an immediate value in various ways.
+            ✅ <b>TransformRegMovImmediates</b>: Substitutes instructions that move an immediate value to a register in various ways.
             <br/>
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
             <table>
@@ -485,6 +485,37 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 + mov     rax, 4BC202D525C93492h
 + mov     rcx, 6BB16BF556A05CE6h
 + xor     rcx, rax
+```
+
+</td>
+                </tr>
+            </table>
+        </li>
+        <li>
+            ✅ <b>TransformStackMovImmediates</b>: Substitutes instructions that move an immediate value to the stack in various ways.
+            <br/>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.9">release 1.0.9</a>.</sup>
+            <table>
+                <tr>
+                    <td align=center>Original</td>
+                    <td></td>
+                    <td align=center>Metamorphicated (example)</td>
+                </tr>
+                <tr>
+                    <td>
+
+```diff
+- mov     [rbp+var_8], 0FFFFFFFFFFFFFFFFh
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, 0D3F57F4h
++ mov     [rbp+var_8], 0FFFFFFFFF2C0A80Bh
++ xor     [rbp+var_8], rax
 ```
 
 </td>

@@ -55,7 +55,7 @@ using namespace llvm;
 /**
  * A class to obfuscate mov immediate values.
  */
-class TransformMovImmediatesOptionAMD64_SUB {
+class TransformRegMovImmediatesOptionAMD64_SUB {
 
 private:
 
@@ -67,7 +67,7 @@ private:
 public:
 
     /**
-     * Main execution method for the TransformMovImmediatesOptionAMD64_SUB class.
+     * Main execution method for the TransformRegMovImmediatesOptionAMD64_SUB class.
      *
      * @param MachineFunction& MF The machine function to run the substitution on.
      * @param bool modifyAll Whether all the occurrences should be modified (for testing purposes).
@@ -79,7 +79,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running AMD64 module: TransformMovImmediates(option=SUB,modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running AMD64 module: TransformRegMovImmediates(option=SUB,modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
@@ -87,7 +87,7 @@ public:
                 MachineInstr &Instruction = *MachineInstruction++;
 
                 // Only modify `mov` instructions with immediate values
-                if (!isMovImmediate(Instruction)) {
+                if (!isRegMovImmediate(Instruction)) {
                     continue;
                 }
 
@@ -172,7 +172,7 @@ private:
                 return 64;
                 break;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_SUB - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformRegMovImmediatesOptionAMD64_SUB - Unknown immediate size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -199,7 +199,7 @@ private:
             case X86::MOV64ri:   return X86::SUB64rr;
             case X86::MOV64ri32: return X86::SUB64rr;
             default:
-                report_fatal_error(formatv("TransformMovImmediatesOptionAMD64_SUB - Unknown SUB replacement size for opcode {0:X}: {1}.", opcode, instruction));
+                report_fatal_error(formatv("TransformRegMovImmediatesOptionAMD64_SUB - Unknown SUB replacement size for opcode {0:X}: {1}.", opcode, instruction));
                 return 0;
         }
     }
@@ -210,7 +210,7 @@ private:
      * @param MachineFunction& MF instruction The `MachineInstr` whose opcode will be checked to determine if it's a MOV with an immediate operand.
      * @return bool Returns `true` if the instruction is a MOV immediate instruction, otherwise `false`.
      */
-    bool isMovImmediate(const MachineInstr &instruction) {
+    bool isRegMovImmediate(const MachineInstr &instruction) {
         unsigned opcode = instruction.getOpcode();
 
         if (instruction.getNumOperands() != 2) return false;
