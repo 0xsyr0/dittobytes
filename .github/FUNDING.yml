@@ -9,4 +9,6 @@
 # include this same license and copyright notice.
 
 github: [tijme]
-custom: [paypal.me/tijmegommers]
+custom:
+  - https://dittobytes.com/sponsor-via-paypal
+  - https://dittobytes.com/sponsor-via-bunq

@@ -22,23 +22,23 @@
 <p align="center">
     <b>Metamorphic cross-compilation of C++ & C-code to PIC, BOF & EXE.</b>
     <br/>
-    <sup>Built with ♥ by <a href="https://www.linkedin.com/in/tijme/">Tijme Gommers</a> – Buy me a coffee via <a href="https://www.paypal.me/tijmegommers">PayPal</a>.</sup>
+    <sup>Built with ♥ by <a href="https://www.linkedin.com/in/tijme/">Tijme Gommers</a> – Buy me a coffee via <a href="https://dittobytes.com/sponsor-via-paypal">PayPal</a> or <a href="https://dittobytes.com/sponsor-via-bunq">Bunq</a>.</sup>
     <br/>
 </p>
 <p align="center">
-    <a href="#hardware-requirements">Requirements</a>
+    <a href="#-hardware-requirements">Requirements</a>
     &nbsp;•&nbsp;
-    <a href="#getting-started">Getting started</a>
+    <a href="#-getting-started">Getting started</a>
     &nbsp;•&nbsp;
-    <a href="#advanced-usage">Advanced usage</a>
+    <a href="#-advanced-usage">Advanced usage</a>
     &nbsp;•&nbsp;
-    <a href="#roadmap">Metamorphications</a>
+    <a href="#-roadmap">Metamorphications</a>
     &nbsp;•&nbsp;
-    <a href="#limitations">Limitations</a>
+    <a href="#-limitations">Limitations</a>
     &nbsp;•&nbsp;
-    <a href="#issues--requests">Issues</a>
+    <a href="#-issues--requests">Issues</a>
     &nbsp;•&nbsp;
-    <a href="#license--copyright">Copyright</a>
+    <a href="#-license--copyright">Copyright</a>
 </p>
 <hr>
 
@@ -87,12 +87,12 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 <p align=center><sup>Illustration A: Example metamorphications by Dittobytes (left and right are functionally equivalent).</sup></p>
 
 <p>
-    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
+    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#-roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
 </p>
 
 The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms (Windows, Linux & MacOS), architectures (AMD64 & ARM64) and formats (PIC, BOF, EXE). Additionally, Dittobytes ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
-## Hardware requirements
+## 🀄 Hardware requirements
 
 <details>
     <summary>Requirements to compile with Docker (difficulty: <strong>easy</strong>)</summary>
@@ -138,7 +138,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-## Getting started
+## 🀄 Getting started
 
 #### 1. Overview
 
@@ -338,7 +338,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-## Advanced usage
+## 🀄 Advanced usage
 
 <details>
     <summary>Using C++ instead of C for your code</summary>
@@ -413,7 +413,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-## Roadmap
+## 🀄 Roadmap
 
 There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
@@ -630,16 +630,16 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
     <hr>
 </details>
 
-## Limitations
+## 🀄 Limitations
 
 There is currently one known limitation in the use of Dittobytes.
 
 * LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types only work in full executables and not in the shellcode.
 
-## Issues & requests
+## 🀄 Issues & requests
 
 Issues or new feature requests can be reported via the [issue tracker](https://github.com/tijme/dittobytes/issues). Please make sure your issue or feature has not yet been reported by anyone else before submitting a new one.
 
-## License & copyright
+## 🀄 License & copyright
 
 Copyright &copy; 2025 Tijme Gommers. Dittobytes is released under the Mozilla Public License Version 2.0. View [LICENSE.md](https://github.com/tijme/dittobytes/blob/master/LICENSE.md) for the full license. Dittobytes depends on various open-source components which all have their own license and copyright.
