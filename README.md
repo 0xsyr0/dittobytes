@@ -95,10 +95,10 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 <h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Hardware requirements</h1>
 
 <details>
-    <summary>Requirements to compile with Docker (difficulty: <strong>easy</strong>)</summary>
+    <summary>Requirements to compile with Docker<br><sup>Difficulty: <strong>easy</strong></summary>
     <hr>
     <p>
-        You can <a href="#4-compiling">easily compile</a> <code>./code/beacon.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
+        You can <a href="#compiling">easily compile</a> <code>./code/beacon.c</code> via Docker, using the provided <code>Dockerfile</code>. However, this <code>Dockerfile</code> builds a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, which requires quite some memory and disk space to be allocated by Docker. The build takes around 2.5 hours. I got it to work with the following Docker resource configuration.
         <blockquote>⚠️ If Docker cannot allocate enough resources, the build might fail with an error like <code>ResourceExhausted: cannot allocate memory</code>.</blockquote>
         <ul>
             <li>Set CPU limit to: <code>8</code>.</li>
@@ -111,10 +111,10 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Requirements to compile with Windows Subsystem for Linux (difficulty: <strong>intermediate</strong>)</summary>
+    <summary>Requirements to compile with Windows Subsystem for Linux<br><sup>Difficulty: <strong>intermediate</strong></summary>
     <hr>
     <p>
-        You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> via Windows Subsystem for Linux (WSL). However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
+        You can <a href="#compiling">compile</a> <code>./code/beacon.c</code> via Windows Subsystem for Linux (WSL). However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
         <ul>
             <li>CPU cores: <code>8</code>.</li>
             <li>Memory: <code>10 GB</code>.</li>
@@ -125,10 +125,10 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Requirements to compile on your host (difficulty: <strong>advanced</strong>)</summary>
+    <summary>Requirements to compile on your host<br><sup>Difficulty: <strong>advanced</strong></summary>
     <hr>
     <p>
-        You can <a href="#4-compiling">compile</a> <code>./code/beacon.c</code> on your Linux host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
+        You can <a href="#compiling">compile</a> <code>./code/beacon.c</code> on your Linux host as well. However, as you would need to build a custom version of <a href="https://github.com/tijme/forked-dittobytes-llvm-project/tree/release/18.x">LLVM</a> from source, quite some memory and disk space is required. The build takes around 2.5 hours. I got it to work with the following resources.
         <ul>
             <li>CPU cores: <code>8</code>.</li>
             <li>Memory: <code>10 GB</code>.</li>
@@ -140,7 +140,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 
 <h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Getting started</h1>
 
-#### 1. Overview
+### Overview
 
 <details>
     <summary>Directory structure</summary>
@@ -181,7 +181,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 <hr>
 </details>
 
-#### 2. Preparing
+### Preparing
 
 <details>
     <summary>Cloning the repository</summary>
@@ -195,7 +195,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Building the build tools in a Docker container (difficulty: <strong>easy</strong>)</summary>
+    <summary>Building the build tools in a Docker container<br><sup>Difficulty: <strong>easy</strong></summary>
     <hr>
     <p>
         The easiest way to use Dittobytes is via Docker. For this, you need to build a Docker image using the provided <code>Dockerfile</code>.
@@ -209,7 +209,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Installing the build tools on Windows Subsystem for Linux instead (difficulty: <strong>intermediate</strong>)</summary>
+    <summary>Installing the build tools on Windows Subsystem for Linux instead<br><sup>Difficulty: <strong>intermediate</strong></summary>
     <hr>
     <p>
         If you are on Windows, a more performant option to build the build tools is to use Windows Subsystem for Linux (WSL). However, in contrast to Docker, the installation of the build tools is a manual process.
@@ -225,7 +225,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <details>
-    <summary>Installing the build tools on your host instead (difficulty: <strong>advanced</strong>)</summary>
+    <summary>Installing the build tools on your host instead<br><sup>Difficulty: <strong>advanced</strong></summary>
     <hr>
     <p>
         Custom versions of Clang and LLVM are used to cross-compile your code, the loaders and the transpilers. If you want to perform this compilation on your host machine, configure your host the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. Follow the exact same steps as in one of those files. For now, there is no further documentation on setting up the environment on your host machine.
@@ -233,7 +233,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-#### 3. Developing
+### Developing
 
 <details>
     <summary>The basics</summary>
@@ -253,7 +253,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         The following example may give you some guidance. It simulates global variables by using a context struct that you would need to pass to any function you call. It initializes a string by using a <code>char[]</code> array. It calls another function by defining its definition first (as the other function needs to be defined before you can call it, but it cannot be the first function in your code).
     </p>
     <p>
-        <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-basics/example-basics.c">Example 'The Basics'</a>
+        <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-basics/example-basics.c">Example 'The Basics' (<code>example-basics.c</code>)</a>
     </p>
     <hr>
 </details>
@@ -265,12 +265,15 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         A hello world requires printing to the console, thus requiring an OS API call to e.g. <code>puts</code>. This is OS specific. For example, for Windows it would require loading <code>KERNEL32.dll</code>, ultimately resolving <code>LoadLibraryA</code> and <code>GetProcAddress</code>. With these two functions resolved, you can then load any function address, such as the address of <code>puts</code>.
     </p>
     <p>
-        An example would become quite large, thus for now I'd like to forward you to <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-calc/example-calc.c">this</a> example file. It is a Position Independent Code (PIC) for Windows AMD64 which pops a calculator as example.
+        An example would become quite large, thus for now I'd like to forward you to example file below. It is a Position Independent Code (PIC) for Windows AMD64 & ARM64 which pops a calculator as example.
+    </p>
+    <p>
+        <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-calc/example-calc.c">Example 'Popping Calc' (<code>example-calc.c</code>)</a>
     </p>
     <hr>
 </details>
 
-#### 4. Compiling
+### Compiling
 
 <details>
     <summary>Compile your code</summary>
@@ -282,7 +285,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-#### 5. Outputs
+### Outputs
 
 <details>
     <summary>Position Independent Code (<code>.raw</code>)</summary>
@@ -308,7 +311,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-#### 6. Testing
+### Testing
 
 <details>
     <summary>Running your shellcode</summary>
@@ -346,6 +349,9 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <p>
         You can easily utilize functionality of C++ by renaming your code file from <code>./code/beacon.c</code> to <code>./code/beacon.cpp</code>. Just make sure to prepend the <code>EntryFunction</code> in the file with <code>extern "C"</code>. Also ensure that the <code>SOURCE_PATH</code> option in the <code>makefile</code> points to the new filename. Do note that you <b>cannot</b> use functionality from external libraries such as <code>libstdc++</code> or <code>libc++</code>. This means you <b>cannot</b> make use of e.g. <code>std::string</code> ⚠️.
     </p>
+    <p>
+        <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-cpp/example-cpp.cpp">Example 'C++ instead of C-code' (<code>example-cpp.c</code>)</a>
+    </p>
     <p>Compiling C++ code in Dittobytes works exactly the same as compiling regular C-code.</p>
     <ul>
         <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
@@ -359,6 +365,9 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
     <p>
         To compile a Beacon Object File (BOF) for Cobalt Strike or any other Command & Control framework, copy <code>./code/examples/example-bof/example-bof.c</code> to <code>./code/beacon.c</code>. Then adjust the source code to your needs.
+    </p>
+    <p>
+        <a href="https://github.com/tijme/dittobytes/blob/master/code/examples/example-bof/example-bof.c">Example 'Beacon Object File' (<code>example-bof.c</code>)</a>
     </p>
     <p>Remember to solely compile to the <code>BOF/COFF</code> format using the <code>make</code> command (see below example) ⚠️.</p>
     <ul>
@@ -622,9 +631,9 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
             <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.4">release 1.0.4</a>.
         </li>
         <li>
-            ⏳ Generate regular executable files alongside the already compiled shellcodes.
+            ✅  Generate regular executable files alongside the already compiled shellcodes.
             <br/>
-            <sup>Yet to implement.</sup>
+            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.7">release 1.0.7</a>.
         </li>
     </ul>
     <hr>
