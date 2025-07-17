@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/ee78799b52a91183009476eef62909ab2655abfd/dittobytes.svg" alt="Dittobytes Logo" />
+    <img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/dittobytes.svg" alt="Dittobytes Logo" />
 </p>
 <p align="center">
     <a href="https://github.com/tijme/dittobytes/releases"><img src="https://img.shields.io/github/v/release/tijme/dittobytes?style=for-the-badge&labelColor=850447&color=ba0745" alt="Latest Dittobytes release" /></a>
@@ -84,7 +84,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 </td>
 </tr>
 </table>
-<p align=center><sup>Illustration A: Example metamorphications by Dittobytes (left and right are functionally equivalent).</sup></p>
+<p align=center><sup>Illustration 1: Example metamorphications by Dittobytes (left and right are functionally equivalent).</sup></p>
 
 <p>
     Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#-roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
@@ -92,7 +92,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 
 The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms (Windows, Linux & MacOS), architectures (AMD64 & ARM64) and formats (PIC, BOF, EXE). Additionally, Dittobytes ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
-## 🀄 Hardware requirements
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Hardware requirements</h1>
 
 <details>
     <summary>Requirements to compile with Docker (difficulty: <strong>easy</strong>)</summary>
@@ -138,7 +138,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-## 🀄 Getting started
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Getting started</h1>
 
 #### 1. Overview
 
@@ -338,7 +338,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-## 🀄 Advanced usage
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Advanced usage</h1>
 
 <details>
     <summary>Using C++ instead of C for your code</summary>
@@ -413,7 +413,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-## 🀄 Roadmap
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Roadmap</h1>
 
 There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
@@ -630,16 +630,16 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
     <hr>
 </details>
 
-## 🀄 Limitations
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Limitations</h1>
 
 There is currently one known limitation in the use of Dittobytes.
 
 * LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types do not work when compiled with Dittobytes.
 
-## 🀄 Issues & requests
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Issues & requests</h1>
 
 Issues or new feature requests can be reported via the [issue tracker](https://github.com/tijme/dittobytes/issues). Please make sure your issue or feature has not yet been reported by anyone else before submitting a new one.
 
-## 🀄 License & copyright
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> License & copyright</h1>
 
 Copyright &copy; 2025 Tijme Gommers. Dittobytes is released under the Mozilla Public License Version 2.0. View [LICENSE.md](https://github.com/tijme/dittobytes/blob/master/LICENSE.md) for the full license. Dittobytes depends on various open-source components which all have their own license and copyright.
