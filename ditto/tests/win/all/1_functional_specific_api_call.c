@@ -66,7 +66,7 @@ struct FunctionTable {
     FARPROC (*GetProcAddress)(HMODULE hModule, LPCSTR lpProcName);
 
     // Any other functions we use in this verification
-    UINT (*WinExec)(LPCSTR, UINT);
+    DWORD (*GetCurrentProcessId)();
 };
 
 /**
@@ -148,9 +148,8 @@ uint8_t EntryFunction() {
     InitializeRelocatable(&context);
     PopulateTables(&context);
 
-    // Run WinExec and return its return value
-    DEFINE_STRING(WhoamiBinary, "whoami.exe");
-    return (uint8_t) context.functions.WinExec(WhoamiBinary, SW_SHOW) > 31;
+    // Run GetCurrentProcessId and return 1 if a process ID was returned
+    return (uint8_t) (context.functions.GetCurrentProcessId() > 0);
 }
 
 /**
@@ -274,8 +273,8 @@ void PopulateTables(struct Relocatable* context) {
     context->modules.hKernel32 = context->functions.LoadLibraryA(Kernel32ModuleName);
 
     // Define functions
-    DEFINE_STRING(WinExecFunctionName, "WinExec");
+    DEFINE_STRING(GetCurrentProcessIdFunctionName, "GetCurrentProcessId");
 
     // Load functions
-    context->functions.WinExec = (UINT (*)(LPCSTR, UINT)) context->functions.GetProcAddress(context->modules.hKernel32, WinExecFunctionName);
+    context->functions.GetCurrentProcessId = (DWORD (*)()) context->functions.GetProcAddress(context->modules.hKernel32, GetCurrentProcessIdFunctionName);
 }
