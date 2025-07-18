@@ -92,7 +92,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 
 The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms (Windows, Linux & MacOS), architectures (AMD64 & ARM64) and formats (PIC, BOF, EXE). Additionally, Dittobytes ships with loaders (for each platform and architecture) that can be used for testing purposes.
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Hardware requirements</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Hardware requirements</h1>
 
 <details>
     <summary>Requirements to compile with Docker<br><sup>Difficulty: <strong>easy</strong></summary>
@@ -138,7 +138,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Getting started</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Getting started</h1>
 
 ### Overview
 
@@ -341,7 +341,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Advanced usage</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Advanced usage</h1>
 
 <details>
     <summary>Using C++ instead of C for your code</summary>
@@ -422,7 +422,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Roadmap</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Roadmap</h1>
 
 There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
 
@@ -639,16 +639,16 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
     <hr>
 </details>
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Limitations</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Limitations</h1>
 
 There is currently one known limitation in the use of Dittobytes.
 
 * LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types do not work when compiled with Dittobytes.
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> Issues & requests</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Issues & requests</h1>
 
 Issues or new feature requests can be reported via the [issue tracker](https://github.com/tijme/dittobytes/issues). Please make sure your issue or feature has not yet been reported by anyone else before submitting a new one.
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/029692c26cb1dd1c05f1c4544a96d333544b9f3a/logo-emblem.svg" width=30 height=30 /> License & copyright</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> License & copyright</h1>
 
 Copyright &copy; 2025 Tijme Gommers. Dittobytes is released under the Mozilla Public License Version 2.0. View [LICENSE.md](https://github.com/tijme/dittobytes/blob/master/LICENSE.md) for the full license. Dittobytes depends on various open-source components which all have their own license and copyright.
