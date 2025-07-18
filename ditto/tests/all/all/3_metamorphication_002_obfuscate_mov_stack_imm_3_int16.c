@@ -17,14 +17,14 @@
  * 
  * We test ARM64 as `mov reg, imm` as `mov [reg+offset], imm` does not exist in ARM64.
  * 
- *            OS     Arch     Metamorphication                Test                              Argument(s)        Description
- * @verify    win    amd64    transform_stack_mov_immediates  hex_not_present                   66C745060080       Is `mov [rbp+var_a], 0x8000` in HEX.
- * @verify    lin    amd64    transform_stack_mov_immediates  hex_not_present                   66C745FE0080       Is `mov [rbp+var_a], 0x8000` in HEX.
- * @verify    mac    amd64    transform_stack_mov_immediates  hex_not_present                   66C745FE0080       Is `mov [rbp+var_a], 0x8000` in HEX.
- * @verify    all    arm64    transform_reg_mov_immediates    hex_not_present                   08009052           Is `mov w8, #0x8000` in HEX.
- * @verify    all    all      transpiled_1                    minimum_levenshtein_distance      transpiled_2,10    There must be a minimum % change per compile.
- * @verify    all    all      all                             forensically_clean                None               All compiled versions must have the minimum amount of potential forensic traces.
- * @verify    all    all      all                             returns                           int16_t,-32768     Must be the case without metamorphications.
+ *            OS     Arch     Metamorphication                Test                              Argument(s)               Description
+ * @verify    win    amd64    transform_stack_mov_immediates  hex_not_present                   66C745060080              Is `mov [rbp+var_a], 0x8000` in HEX.
+ * @verify    lin    amd64    transform_stack_mov_immediates  hex_not_present                   66C745FE0080              Is `mov [rbp+var_a], 0x8000` in HEX.
+ * @verify    mac    amd64    transform_stack_mov_immediates  hex_not_present                   66C745FE0080              Is `mov [rbp+var_a], 0x8000` in HEX.
+ * @verify    all    arm64    transform_reg_mov_immediates    hex_not_present                   08009052                  Is `mov w8, #0x8000` in HEX.
+ * @verify    all    all      transpiled_1                    minimum_levenshtein_distance      transpiled_2,10           There must be a minimum % change per compile.
+ * @verify    all    all      all                             forensically_clean                None                      All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                             returns                           int16_t,-32768,raw        Must be the case without metamorphications.
  */
 int16_t EntryFunction() {
     int16_t bStackVar;

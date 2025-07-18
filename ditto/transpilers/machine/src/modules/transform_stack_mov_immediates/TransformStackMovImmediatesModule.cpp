@@ -50,6 +50,8 @@
 /**
  * Modify `mov [reg+var_a], imm` immediate substitution options
  */
+#include "options_amd64/TransformStackMovImmediatesOptionAMD64_ADD.cpp"
+#include "options_amd64/TransformStackMovImmediatesOptionAMD64_SUB.cpp"
 #include "options_amd64/TransformStackMovImmediatesOptionAMD64_XOR.cpp"
 
 /**
@@ -110,6 +112,8 @@ public:
      */
     TransformStackMovImmediatesModule() {
         options_amd64 = {
+            [&](MachineFunction &MF, bool modifyAll) { return TransformStackMovImmediatesOptionAMD64_ADD().runOnMachineFunction(MF, modifyAll); },
+            [&](MachineFunction &MF, bool modifyAll) { return TransformStackMovImmediatesOptionAMD64_SUB().runOnMachineFunction(MF, modifyAll); },
             [&](MachineFunction &MF, bool modifyAll) { return TransformStackMovImmediatesOptionAMD64_XOR().runOnMachineFunction(MF, modifyAll); }
         };
 
@@ -127,7 +131,7 @@ public:
     bool runOnMachineFunction(MachineFunction &MF) {
         // Ensure module is enabled
         if (!moduleIsEnabled()) return false;
-        bool modifyAll = moduleIsBeingTested();
+        bool modifyAll = true || moduleIsBeingTested(); // We always modify all instances
 
         // Run random compatible options
         auto architecture = MF.getTarget().getTargetTriple().getArch();

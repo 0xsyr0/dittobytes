@@ -136,7 +136,7 @@ public:
     bool runOnMachineFunction(MachineFunction &MF) {
         // Ensure module is enabled
         if (!moduleIsEnabled()) return false;
-        bool modifyAll = moduleIsBeingTested();
+        bool modifyAll = true || moduleIsBeingTested(); // We always modify all instances
 
         // Run random compatible options
         auto architecture = MF.getTarget().getTargetTriple().getArch();

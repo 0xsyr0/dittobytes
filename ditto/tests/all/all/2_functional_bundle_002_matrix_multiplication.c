@@ -22,11 +22,11 @@
 /**
  * Multiply two matrices and return the result.
  *
- * @param int a[SIZE][SIZE] The first matrix.
- * @param int b[SIZE][SIZE] The second matrix.
- * @param int result[SIZE][SIZE] The result matrix.
+ * @param int32_t a[SIZE][SIZE] The first matrix.
+ * @param int32_t b[SIZE][SIZE] The second matrix.
+ * @param int32_t result[SIZE][SIZE] The result matrix.
  */
-void multiply_matrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SIZE]);
+void multiply_matrices(int32_t a[SIZE][SIZE], int32_t b[SIZE][SIZE], int32_t result[SIZE][SIZE]);
 
 /**
  * The main function of the code to test.
@@ -37,37 +37,37 @@ void multiply_matrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SI
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,20                  There must be a minimum % change per compile.
  * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
- * @verify    all    all      all                     returns                           uint8_t,221                      Must be the case without metamorphications.
+ * @verify    all    all      all                     returns                           int32_t,24                       Must be the case without metamorphications.
  */
-uint32_t EntryFunction() {
-    int a[SIZE][SIZE] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    int b[SIZE][SIZE] = {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
-    int result[SIZE][SIZE];
+int32_t EntryFunction() {
+    int32_t a[SIZE][SIZE] = {{1, 2, 3}, {-4, 5, 6}, {7, 8, 9}};
+    int32_t b[SIZE][SIZE] = {{9, 8, 7}, {6, 5, -4}, {3, 2, 1}};
+    int32_t result[SIZE][SIZE];
 
     multiply_matrices(a, b, result);
 
-    int checksum = 0;
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
+    int32_t checksum = 0;
+    for (int32_t i = 0; i < SIZE; ++i) {
+        for (int32_t j = 0; j < SIZE; ++j) {
             checksum += result[i][j];
         }
     }
 
-    return checksum % 400; // 621 % 400 = 221
+    return checksum - 285; // 309 - 285 = 24
 }
 
 /**
  * Multiply two matrices and return the result.
  *
- * @param int a[SIZE][SIZE] The first matrix.
- * @param int b[SIZE][SIZE] The second matrix.
- * @param int result[SIZE][SIZE] The result matrix.
+ * @param int32_t a[SIZE][SIZE] The first matrix.
+ * @param int32_t b[SIZE][SIZE] The second matrix.
+ * @param int32_t result[SIZE][SIZE] The result matrix.
  */
-void multiply_matrices(int a[SIZE][SIZE], int b[SIZE][SIZE], int result[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
+void multiply_matrices(int32_t a[SIZE][SIZE], int32_t b[SIZE][SIZE], int32_t result[SIZE][SIZE]) {
+    for (int32_t i = 0; i < SIZE; ++i) {
+        for (int32_t j = 0; j < SIZE; ++j) {
             result[i][j] = 0;
-            for (int k = 0; k < SIZE; ++k) {
+            for (int32_t k = 0; k < SIZE; ++k) {
                 result[i][j] += a[i][k] * b[k][j];
             }
         }
