@@ -17,14 +17,14 @@
  * 
  * We test ARM64 as `mov reg, imm` as `mov [reg+offset], imm` does not exist in ARM64.
 
- *            OS     Arch     Metamorphication                Test                              Argument(s)          Description
- * @verify    win    amd64    transform_stack_mov_immediates  hex_not_present                   C74504FFFFFFFF       Is `mov dword [rbp+var_a], 0xffffffff` in HEX.
- * @verify    lin    amd64    transform_stack_mov_immediates  hex_not_present                   C745FCFFFFFFFF       Is `mov dword [rbp+var_a], 0xffffffff` in HEX.
- * @verify    mac    amd64    transform_stack_mov_immediates  hex_not_present                   C745FCFFFFFFFF       Is `mov dword [rbp+var_a], 0xffffffff` in HEX.
- * @verify    all    arm64    transform_reg_mov_immediates    hex_not_present                   08008012             Is `mov w8, #0xffffffff` in HEX.
- * @verify    all    all      transpiled_1                    minimum_levenshtein_distance      transpiled_2,10      There must be a minimum % change per compile.
- * @verify    all    all      all                             forensically_clean                None                 All compiled versions must have the minimum amount of potential forensic traces.
- * @verify    all    all      all                             returns                           uint32_t,4294967295  Must be the case without metamorphications.
+ *            OS     Arch     Metamorphication                Test                              Argument(s)               Description
+ * @verify    win    amd64    transform_stack_mov_immediates  hex_not_present                   C74504FFFFFFFF            Is `mov dword [rbp+var_a], 0xffffffff` in HEX.
+ * @verify    lin    amd64    transform_stack_mov_immediates  hex_not_present                   C745FCFFFFFFFF            Is `mov dword [rbp+var_a], 0xffffffff` in HEX.
+ * @verify    mac    amd64    transform_stack_mov_immediates  hex_not_present                   C745FCFFFFFFFF            Is `mov dword [rbp+var_a], 0xffffffff` in HEX.
+ * @verify    all    arm64    transform_reg_mov_immediates    hex_not_present                   08008012                  Is `mov w8, #0xffffffff` in HEX.
+ * @verify    all    all      transpiled_1                    minimum_levenshtein_distance      transpiled_2,10           There must be a minimum % change per compile.
+ * @verify    all    all      all                             forensically_clean                None                      All compiled versions must have the minimum amount of potential forensic traces.
+ * @verify    all    all      all                             returns                           uint32_t,4294967295,raw   Must be the case without metamorphications.
  */
 uint32_t EntryFunction() {
     uint32_t bStackVar;
