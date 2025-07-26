@@ -43,14 +43,6 @@
 #include <winternl.h>
 
 /**
- * Windows API.
- * 
- * Contains declarations for all of the functions, macro's & data types in the Windows API.
- * https://docs.microsoft.com/en-us/previous-versions//aa383749(v=vs.85)?redirectedfrom=MSDN
- */
-#include <windows.h>
-
-/**
  * A struct of module definitions we are loading.
  */
 struct ModuleTable {
