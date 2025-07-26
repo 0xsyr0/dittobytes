@@ -119,34 +119,3 @@ void* GetDynamicVariable() {
 
     return lpDynamicVar;
 }
-
-
-// // Get current instruction pointer depending on platform & arch
-// uintptr_t get_ip() {
-// #if defined(__AMD64__)
-//     // x86_64 (GCC/Clang/Windows)
-//     #if defined(__WINDOWS__)
-//         // MSVC on Windows
-//         return (uintptr_t)_ReturnAddress();
-//     #else
-//         // GCC/Clang
-//         void *ip = __builtin_return_address(0);
-//         return (uintptr_t)ip;
-//     #endif
-
-// #elif defined(__ARM64__)
-//     // ARM64
-//     #if defined(__WINDOWS__)
-//         // MSVC doesn't support __builtin_return_address, use inline asm if needed
-//         // Not portable. MSVC has no supported way to get PC.
-//         #error "No portable way to get instruction pointer on ARM64 MSVC"
-//     #else
-//         // Clang/GCC
-//         void *ip = __builtin_return_address(0);
-//         return (uintptr_t)ip;
-//     #endif
-
-// #else
-//     #error "Unsupported architecture"
-// #endif
-// }

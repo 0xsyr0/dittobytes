@@ -32,7 +32,7 @@
     &nbsp;•&nbsp;
     <a href="#-advanced-usage">Advanced usage</a>
     &nbsp;•&nbsp;
-    <a href="#-roadmap">Metamorphications</a>
+    <a href="#-metamorphications">Metamorphications</a>
     &nbsp;•&nbsp;
     <a href="#-limitations">Limitations</a>
     &nbsp;•&nbsp;
@@ -87,7 +87,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 <p align=center><sup>Illustration 1: Example metamorphications by Dittobytes (left and right are functionally equivalent).</sup></p>
 
 <p>
-    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#-roadmap">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
+    Dittobytes uses a custom LLVM build with two transpilers. Any compilation of your code using Dittobytes is done with this LLVM build. The first transpiler uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> (on intermediate level) to inline constant variables otherwise located in e.g. <code>.rodata</code> segments (this aids the development of Position Independent Code). The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphic transformations (e.g. instruction substitutions), introducing randomness in the assembly code during compilation. Check the <a href="#-metamorphications">roadmap</a> for all implemented (and yet to implement) metamorphic transformations.
 </p>
 
 The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to all supported platforms (Windows, Linux & MacOS), architectures (AMD64 & ARM64) and formats (PIC, BOF, EXE). Additionally, Dittobytes ships with loaders (for each platform and architecture) that can be used for testing purposes.
@@ -422,34 +422,30 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <hr>
 </details>
 
-<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Roadmap</h1>
+<h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Metamorphications</h1>
 
-There is no specific planning, so this might be more of a to-do or ideas list. The following items (unordered) would at least be nice to implement in Dittobytes.
+There is no specific planning, so this might be more of a to-do or progress list.
 
 <details>
-    <summary>Metamorphications</summary>
-    <hr>
-    <ul>
-        <li>
-            ✅ <b>RandomizeRegisterAllocation</b>: Randomizes the allocation order of CPU registers.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
-            <table>
-                <tr>
-                    <td align=center>Original</td>
-                    <td></td>
-                    <td align=center>Metamorphicated (example)</td>
-                </tr>
-                <tr>
-                    <td>
+    <summary>
+        ✅ Randomize register allocation<br>
+        <sup>Implemented in release 1.0.0.</sup>
+    </summary>
+    <p>Randomizes the allocation order of CPU registers, causing different registers to be used each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
 
 ```diff
-- mov     r15, 4BC202D525C93492h
-- mov     r10, 6BB16BF556A05CE6h
-- xor     r10, r15
-- mov     [rbp+var_2B], r10
-- mov     r9, 3081F61A6A1776DDh
-- mov     r11, 44EF9F7B066756BCh
+- mov     rcx, 3Eh
+- mov     rdx, 4Fh
+- lea     r8, [rbp+var]
 ```
 
 </td>
@@ -457,185 +453,331 @@ There is no specific planning, so this might be more of a to-do or ideas list. T
 <td>
 
 ```diff
-+ mov     r13, 4BC202D525C93492h
-+ mov     r14, 6BB16BF556A05CE6h
-+ xor     r14, r13
-+ mov     [rbp+var_2B], r14
-+ mov     r10, 3081F61A6A1776DDh
-+ mov     r9, 44EF9F7B066756BCh
++ mov     r11, 3Eh
++ mov     r10, 4Fh
++ lea     r9, [rbp+var]
 ```
 
 </td>
-                </tr>
-            </table>
-        </li>
-        <li>
-            ✅ <b>TransformRegMovImmediates</b>: Substitutes instructions that move an immediate value to a register in various ways.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.0">release 1.0.0</a>.</sup>
-            <table>
-                <tr>
-                    <td align=center>Original</td>
-                    <td></td>
-                    <td align=center>Metamorphicated (example)</td>
-                </tr>
-                <tr>
-                    <td>
-
-```diff
-- mov     rcx, 2073692073696874
-```
-
-</td>
-<td align=center>→</td>
 <td>
 
 ```diff
-+ mov     rax, 4BC202D525C93492h
-+ mov     rcx, 6BB16BF556A05CE6h
-+ xor     rcx, rax
++ mov     r11, 3Eh
++ mov     r10, 4Fh
++ lea     r9, [rbp+var]
 ```
 
 </td>
-                </tr>
-            </table>
-        </li>
-        <li>
-            ✅ <b>TransformStackMovImmediates</b>: Substitutes instructions that move an immediate value to the stack in various ways.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.9">release 1.0.9</a>.</sup>
-            <table>
-                <tr>
-                    <td align=center>Original</td>
-                    <td></td>
-                    <td align=center>Metamorphicated (example)</td>
-                </tr>
-                <tr>
-                    <td>
-
-```diff
-- mov     [rbp+var_8], 0FFFFFFFFFFFFFFFFh
-```
-
-</td>
-<td align=center>→</td>
-<td>
-
-```diff
-+ mov     rax, 0D3F57F4h
-+ mov     [rbp+var_8], 0FFFFFFFFF2C0A80Bh
-+ xor     [rbp+var_8], rax
-```
-
-</td>
-                </tr>
-            </table>
-        </li>
-        <li>
-            ✅ <b>TransformNullifications</b>: Substitutes various instructions that nullify a register.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.2">release 1.0.2</a>.</sup>
-            <table>
-                <tr>
-                    <td align=center>Original</td>
-                    <td></td>
-                    <td align=center>Metamorphicated (example)</td>
-                </tr>
-                <tr>
-                    <td>
-
-```diff
-- xor reg, reg
-```
-
-</td>
-<td align=center>→</td>
-<td>
-
-```diff
-+ mov reg, 0
-```
-
-</td>
-                </tr>
-            </table>
-        </li>
-        <li>
-            ✅ <b>RandomizeFrameInsertions</b>: Randomizes the function prologue/epilogue insertion.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.5">release 1.0.5</a>.</sup>
-            <table>
-                <tr>
-                    <td align=center>Original</td>
-                    <td></td>
-                    <td align=center>Metamorphicated (example)</td>
-                </tr>
-                <tr>
-                    <td>
-
-```diff
-# sub_0
-# push    rbp
-# mov     rbp, rsp
-- push    r11
-- push    r15
-```
-
-</td>
-<td align=center>→</td>
-<td>
-
-```diff
-# sub_0
-# push    rbp
-# mov     rbp, rsp
-+ push    r15
-+ push    r14
-```
-
-</td>
-                </tr>
-            </table>
-        </li>
-        <li>
-            ⏳ Swap simple math (e.g., <code>`sub [reg], imm`</code> → <code>`add [reg], -imm`</code>).
-            <br/>
-            <sup>Yet to implement.</sup>
-        </li>
-        <li>
-            ⏳ Instruction substitution (e.g., <code>`mov [mem], imm`</code> → <code>`push imm; pop [mem]`</code>)
-            <br/>
-            <sup>Yet to implement.</sup>
-        </li>
-        <li>
-            ⏳ Insertion of fake basic blocks based on assembly from trusted software.
-            <br/>
-            <sup>Yet to implement.</sup>
-        </li>
-    </ul>
+        </tr>
+    </table>
     <hr>
 </details>
 
 <details>
-    <summary>Other To-Dos</summary>
+    <summary>
+        ✅ Transform <code>`mov reg, imm`</code><br>
+        <sup>Implemented in release 1.0.0.</sup>
+    </summary>
+    <p>Substitutes instructions that move an immediate value to a register in various ways each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- mov     rcx, BAh
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, EFh
++ mov     rcx, 55h
++ xor     rcx, rax
+```
+
+</td>
+<td>
+
+```diff
++ mov     rax, 3Bh
++ mov     rcx, 7Fh
++ add     rcx, rax
+```
+
+</td>
+        </tr>
+    </table>
     <hr>
-    <ul>
-        <li>
-            ✅ Implement a more complex and larger feature test to verify correctness of compiled shellcode.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.1">release 1.0.1</a>.
-        </li>
-        <li>
-            ✅ Test & report Levenshtein distance of different shellcode compilations.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.4">release 1.0.4</a>.
-        </li>
-        <li>
-            ✅  Generate regular executable files alongside the already compiled shellcodes.
-            <br/>
-            <sup>Implemented in <a href="https://github.com/tijme/dittobytes/releases/tag/release-1.0.7">release 1.0.7</a>.
-        </li>
-    </ul>
+</details>
+
+<details>
+    <summary>
+        ✅ Transform <code>`mov [reg+var], imm`</code><br>
+        <sup>Implemented in release 1.0.9.</sup>
+    </summary>
+    <p>Substitutes instructions that move an immediate value to the stack in various ways each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- mov     [rcx+var_8], 83h
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, D9h
++ mov     [rcx+var_8], AAh
++ add     [rcx+var_8], rax
+```
+
+</td>
+<td>
+
+```diff
++ mov     rax, 11h
++ mov     [rcx+var_8], 92h
++ xor     [rcx+var_8], rax
+```
+
+</td>
+        </tr>
+    </table>
+    <hr>
+</details>
+
+<details>
+    <summary>
+        ✅ Transform nullifications<br>
+        <sup>Implemented in release 1.0.2.</sup>
+    </summary>
+    <p>Substitutes various instructions that nullify a register each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- xor     r12, r12
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     r12, 0
+```
+
+</td>
+<td>
+
+```diff
+! Yet to be implemented
++ sub     r12, r12
+```
+
+</td>
+        </tr>
+    </table>
+    <hr>
+</details>
+
+<details>
+    <summary>
+        ✅ Semantic noise generation<br>
+        <sup>Implemented in release 1.0.10.</sup>
+    </summary>
+    <p>Insertion of opaque instructions or basic blocks (from trusted software) that do not affect code functionality.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- mov     rax, 1
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ mov     rax, 1
++ mov     rbx, [false_flag]
++ cmp     rbx, 1
++ je      skip_next_instr
++ mov     rax, 42
+```
+
+</td>
+<td>
+
+```diff
++ mov     rax, 1
++ mov     rbx, [false_flag]
++ cmp     rbx, 0
++ je      skip_next_instr
++ mov     rax, 1
+```
+
+</td>
+        </tr>
+    </table>
+    <hr>
+</details>
+
+<details>
+    <summary>
+         ⏳ Transform <code>`mov reg, reg`</code><br>
+        <sup>To be implemented.</sup>
+    </summary>
+    <p>Substitutes instructions that move a register value to another register in various ways each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- mov     rax, r8
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ push    r8
++ pop     rax
+```
+
+</td>
+<td>
+
+```diff
++ xor rax, rax
++ add rax, r8
+```
+
+</td>
+        </tr>
+    </table>
+    <hr>
+</details>
+
+<details>
+    <summary>
+         ⏳ Swap simple math<br>
+        <sup>To be implemented.</sup>
+    </summary>
+    <p>Transform mathematical instructions with equivalents each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- sub reg, imm
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ add reg, -imm
+```
+
+</td>
+<td>
+
+```diff
++ lea reg, [reg - imm]
+```
+
+</td>
+        </tr>
+    </table>
+    <hr>
+</details>
+
+<details>
+    <summary>
+         ⏳ Transform <code>`mov reg, reg`</code><br>
+        <sup>To be implemented.</sup>
+    </summary>
+    <p>Substitutes instructions that move a register value to another register in various ways each compile.</p>
+    <table>
+        <tr>
+            <td align=center>Original</td>
+            <td></td>
+            <td align=center>Metamorphicated (sample 1)</td>
+            <td align=center>Metamorphicated (sample 2)</td>
+        </tr>
+        <tr>
+            <td>
+
+```diff
+- mov     rax, r8
+```
+
+</td>
+<td align=center>→</td>
+<td>
+
+```diff
++ push    r8
++ pop     rax
+```
+
+</td>
+<td>
+
+```diff
++ xor rax, rax
++ add rax, r8
+```
+
+</td>
+        </tr>
+    </table>
     <hr>
 </details>
 
