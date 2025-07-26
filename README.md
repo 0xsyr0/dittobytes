@@ -783,9 +783,10 @@ There is no specific planning, so this might be more of a to-do or progress list
 
 <h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Limitations</h1>
 
-There is currently one known limitation in the use of Dittobytes.
+There are currently two known limitation in the use of Dittobytes.
 
 * LLVM cannot inline compile `float`'s and `double`'s, causing them to end up in the `.rodata` segment. As a result, these types do not work when compiled with Dittobytes.
+* C++ exceptions are not yet supported as they generate exception tables outside the `.text` segment.
 
 <h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Issues & requests</h1>
 

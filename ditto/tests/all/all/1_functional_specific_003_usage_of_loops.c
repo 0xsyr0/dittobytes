@@ -35,44 +35,25 @@ void* GetDynamicVariable();
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
  * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,35                  There must be a minimum % change per compile.
  * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
- * @verify    all    all      all                     returns                           uint8_t,24                       The return value must always be correct.
+ * @verify    all    all      all                     returns                           uint8_t,1                        The return value must always be correct.
  */
 uint8_t EntryFunction() {
     uintptr_t lpDynamicVar = (uintptr_t) GetDynamicVariable();
-
-    switch (lpDynamicVar) {
-        case 0: 
-            return (uint8_t) 0xFEFEFEFEFEFEFE00;
-            break;
-        case 1: 
-            return (uint8_t) 0xDEADBEEFCAFEBA01;
-            break;
-        case 2: 
-            return (uint8_t) 0x0123456789ABCD02;
-            break;
-        case 3: 
-            return (uint8_t) 0xAAAAAAAAAAAAAA03;
-            break;
-        case 4: 
-            return (uint8_t) 0xBBBBBBBBBBBBBB04;
-            break;
-        case 5: 
-            return (uint8_t) 0xCCCCCCCCCCCCCC05;
-            break;
-        case 6: 
-            return (uint8_t) 0xDDDDDDDDDDDDDD06;
-            break;
-        case 7: 
-            return (uint8_t) 0xEEEEEEEEEEEEEE07;
-            break;
-        case 8: 
-        case 9: 
-            return (uint8_t) 0xFFFFFFFFFFFFFF08;
-            break;
-        default: 
-            return (uint8_t) 0x58271AD48E42B018;
-            break;
+    uint8_t dwMaxThree = (lpDynamicVar % 4);
+    uint8_t dwResult = 0;
+    
+    // For loop from 0 to ~3 (increases result with 3 at maximum)
+    for (int i = 0; i < dwMaxThree; i ++) {
+        dwResult += 1;
     }
+
+    // Do while loop from ~3 to 0 (increases result with 3 at maximum)
+    do {
+        dwResult += 1;
+        dwMaxThree -= 1;
+    } while (dwMaxThree != 0);
+
+    return (uint8_t) (dwResult <= 6);
 }
 
 /**
