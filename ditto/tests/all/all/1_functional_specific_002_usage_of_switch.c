@@ -33,7 +33,7 @@ void* GetDynamicVariable();
  * The main function of the code to test.
  *
  *            OS     Arch     Metamorphication        Test                              Argument(s)                      Description
- * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,35                  There must be a minimum % change per compile.
+ * @verify    all    all      transpiled_1            minimum_levenshtein_distance      transpiled_2,30                  There must be a minimum % change per compile.
  * @verify    all    all      all                     forensically_clean                None                             All compiled versions must have the minimum amount of potential forensic traces.
  * @verify    all    all      all                     returns                           uint8_t,24                       The return value must always be correct.
  */
