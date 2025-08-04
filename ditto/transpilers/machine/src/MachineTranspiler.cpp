@@ -34,6 +34,7 @@
 /**
  * Modules
  */
+#include "modules/insert_semantic_noise/InsertSemanticNoiseModule.cpp"
 #include "modules/transform_nullifications/TransformNullificationsModule.cpp"
 #include "modules/transform_reg_mov_immediates/TransformRegMovImmediatesModule.cpp"
 #include "modules/transform_stack_mov_immediates/TransformStackMovImmediatesModule.cpp"
@@ -135,6 +136,8 @@ public:
                 modified = TransformStackMovImmediatesModule().runOnMachineFunction(MF) || modified;
                 break;
             case LastStep:
+                // Module: Insert semantic noise (meaningful dead code)
+                // modified = InsertSemanticNoiseModule().runOnMachineFunction(MF) || modified;
                 // Module: Replace `xor reg, reg` instructions
                 modified = TransformNullificationsModule().runOnMachineFunction(MF) || modified;
                 break;

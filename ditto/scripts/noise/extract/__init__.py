@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+
+# -*- coding: utf-8 -*-
+
 # GNU General Public License, version 2.0.
 #
 # Copyright (c) 2025 Tijme Gommers (@tijme).
@@ -7,9 +11,3 @@
 # you are free to use, modify, and distribute this file under 
 # its terms. However, any modified versions of this file must 
 # include this same license and copyright notice.
-
-lief==0.16.6
-levenshtein==0.27.1
-binary2strings==0.1.13
-capstone==5.0.6
-pefile==2024.8.26

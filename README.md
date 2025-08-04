@@ -607,8 +607,8 @@ There is no specific planning, so this might be more of a to-do or progress list
 
 <details>
     <summary>
-        ✅ Semantic noise generation<br>
-        <sup>Implemented in release 1.0.10.</sup>
+        ⏳ Insert semantic noise (meaningful dead code)<br>
+        <sup>To be implemented.</sup>
     </summary>
     <p>Insertion of opaque instructions or basic blocks (from trusted software) that do not affect code functionality.</p>
     <table>
@@ -633,7 +633,9 @@ There is no specific planning, so this might be more of a to-do or progress list
 + mov     rax, 1
 + mov     rbx, [false_flag]
 + cmp     rbx, 1
++ -- more instructions --
 + je      skip_next_instr
++ -- more instructions --
 + mov     rax, 42
 ```
 
@@ -642,10 +644,13 @@ There is no specific planning, so this might be more of a to-do or progress list
 
 ```diff
 + mov     rax, 1
++ -- more instructions --
 + mov     rbx, [false_flag]
++ -- more instructions --
 + cmp     rbx, 0
 + je      skip_next_instr
 + mov     rax, 1
++ -- more instructions --
 ```
 
 </td>

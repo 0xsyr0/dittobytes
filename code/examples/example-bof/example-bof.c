@@ -11,6 +11,13 @@
  */
 
 /**
+ * This `calc.exe` Beacon Object File (BOF) example only works on Windows.
+ */
+#if !defined(__WINDOWS__)
+#error "This `calc.exe` Beacon Object File (BOF) example only works on Windows AMD64 & ARM64. Build with `make beacon-bof-win-all`."
+#endif
+
+/**
  * Windows API.
  * 
  * Contains declarations for all of the functions, macro's & data types in the Windows API.

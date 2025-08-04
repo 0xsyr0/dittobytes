@@ -79,7 +79,7 @@ public:
         MachineRegisterInfo &MRI = MF.getRegInfo();
 
         // Inform user that we are running this option of the module
-        dbgs() << "        ↳ Running ARM64 module: TransformNullifications(modifyAll=" << modifyAll << ").\n";
+        dbgs() << "        ↳ Running AMD64 module: TransformNullifications(modifyAll=" << modifyAll << ").\n";
 
         // For each line in each basic block, perform our substitution
         for (auto &MachineBasicBlock : MF) {
