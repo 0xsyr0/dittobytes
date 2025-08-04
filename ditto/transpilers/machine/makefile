@@ -25,6 +25,7 @@ all: check_environment $(BUILD_DIR)
 	@mkdir -p build 
 	@cd build && cmake ../src/
 	@cd build && cmake --build . -- -s
+	@mv build/libMachineTranspiler.so build/libMachineTranspiler-`arch`.so
 
 ##########################################
 ## Environment check                    ##

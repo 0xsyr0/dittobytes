@@ -38,7 +38,7 @@ def main():
     if beacon_regex.search(content):
         print("    - Found a DLL import reference with `@Beacon...`. ⚠️")
         print("      ↳ Please consider compiling to BOF only to prevent compilation errors.")
-        print("      ↳ Example `make beacon-bof-all-all`.")
+        print("      ↳ Example `make beacon-all-all-bof`.")
 
 if __name__ == "__main__":
     main()

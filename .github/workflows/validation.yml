@@ -85,7 +85,8 @@ jobs:
             libncurses5-dev libxml2-dev libedit-dev \
             swig doxygen graphviz xz-utils gdb git \
             ninja-build curl zlib1g-dev libffi-dev \
-            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
+            gcc-x86-64-linux-gnu binutils-x86-64-linux-gnu libc6-dev-amd64-cross
 
       # Install Python dependencies required by Dittobytes scripts
       - name: Install Python dependencies
@@ -103,10 +104,10 @@ jobs:
         if: steps.cache-llvm-mingw-project.outputs.cache-hit != 'true'
         run: |
           cd /opt
-          wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
-          tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
-          mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin
-          rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+          wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch).tar.xz
+          tar -xf llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch).tar.xz
+          mv llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch) llvm-winlin
+          rm llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch).tar.xz
 
       # If not cached, install and compile LLVM from source
       - name: Build and install LLVM if missing
@@ -231,6 +232,7 @@ jobs:
             swig doxygen graphviz xz-utils gdb git \
             ninja-build curl zlib1g-dev libffi-dev \
             gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
+            gcc-x86-64-linux-gnu binutils-x86-64-linux-gnu libc6-dev-amd64-cross \
             qemu-user qemu-user-static 
 
       # Run all available tests

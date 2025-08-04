@@ -15,10 +15,10 @@ FROM debian:bookworm-slim AS intermediate
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update package lists
-RUN apt update -qqy
+RUN apt update -y
 
 # Install APT dependencies
-RUN apt install -qqy --no-install-recommends \
+RUN apt install -y --no-install-recommends \
     gnupg2 wget ca-certificates apt-transport-https \
     autoconf automake cmake dpkg-dev file make patch \
     libc6-dev mingw-w64 nano python3 python3-pip xxd \
@@ -27,10 +27,12 @@ RUN apt install -qqy --no-install-recommends \
     swig doxygen graphviz xz-utils gdb git \
     ninja-build python3-distutils curl zlib1g-dev libffi-dev \
     gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross \
+    gcc-x86-64-linux-gnu binutils-x86-64-linux-gnu libc6-dev-amd64-cross \
     qemu-user qemu-user-static 
 
 # Install Python dependencies
-RUN python3 -m pip install -r ditto/scripts/requirements.txt --break-system-packages
+COPY ditto/scripts/requirements.txt /tmp/requirements.txt
+RUN python3 -m pip install -r /tmp/requirements.txt --break-system-packages
 
 # Install MacOS SDK
 WORKDIR /opt
@@ -38,10 +40,10 @@ RUN git clone --depth 1 https://github.com/tijme/forked-dittobytes-macos-sdk.git
 
 # Install LLVM (For Windows & Linux X86/ARM64)
 WORKDIR /opt
-RUN wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
-RUN tar -xf llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
-RUN mv llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64 llvm-winlin
-RUN rm llvm-mingw-20240619-msvcrt-ubuntu-20.04-x86_64.tar.xz
+RUN wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240619/llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch).tar.xz
+RUN tar -xf llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch).tar.xz
+RUN mv llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch) llvm-winlin
+RUN rm llvm-mingw-20240619-ucrt-ubuntu-20.04-$(arch).tar.xz
 
 # Clone LLVM project repo at the specified version (shallow clone)
 WORKDIR /opt
@@ -64,10 +66,10 @@ RUN ninja install
 
 # Copy X86 & AArch64 header files manually
 # TODO: Find out why this is required.
-RUN cp -r /src/llvm-project/build/lib/Target/X86/ /opt/llvm/include/llvm/Target/
-RUN cp -r /src/llvm-project/llvm/lib/Target/X86/ /opt/llvm/include/llvm/Target/
-RUN cp -r /src/llvm-project/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
-RUN cp -r /src/llvm-project/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+RUN cp -r /opt/llvm-source/build/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+RUN cp -r /opt/llvm-source/llvm/lib/Target/X86/ /opt/llvm/include/llvm/Target/
+RUN cp -r /opt/llvm-source/build/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
+RUN cp -r /opt/llvm-source/llvm/lib/Target/AArch64/ /opt/llvm/include/llvm/Target/
 
 # Add LLVM binaries to system PATH
 ENV PATH="/opt/llvm/bin:$PATH"
