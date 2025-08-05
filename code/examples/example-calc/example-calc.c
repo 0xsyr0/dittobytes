@@ -14,7 +14,7 @@
  * This `calc.exe` pop example only works on Windows.
  */
 #if !defined(__WINDOWS__)
-#error "This `calc.exe` pop example only works on Windows AMD64 & ARM64."
+#error "This `calc.exe` pop example only works on Windows AMD64 & ARM64. Build with `make beacon-all-win-all`."
 #endif
 
 /**

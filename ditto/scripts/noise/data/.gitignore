@@ -13,4 +13,4 @@
 
 # Except for these
 !.gitignore
-!libMachineTranspiler-*.so
+!*.json

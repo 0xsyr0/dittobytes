@@ -12,8 +12,6 @@
 
 #include <stdint.h>
 
-#include <windows.h>
-
 /**
  * The main function of your shellcode/payload. In this example we solely return a value.
  *
@@ -21,10 +19,10 @@
  * Take at the following examples to learn how to utilize OS API calls.
  *
  * Examples:
+ *   - Basic functionality: `./examples/example-basics/example-basics.c`
  *   - A Cobalt Strike BOF: `./examples/example-bof/example-bof.c`
  *   - Popping a calculator: `./examples/example-calc/example-calc.c`
  *   - Using C++ instead of C: `./examples/example-cpp/example-cpp.cpp`
- * 
  * 
  * @return uint64_t A return value of your shellcode.
  */

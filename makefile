@@ -35,34 +35,34 @@ IS_COMPILER_CONTAINER                   := $(shell if [ "$(IS_COMPILER_CONTAINER
 ##########################################
 
 WIN_AMD64_BEACON_NAME                   := beacon-win-amd64
-EXE_WIN_AMD64_BEACON_NAME               := beacon-exe-win-amd64
-RAW_WIN_AMD64_BEACON_NAME               := beacon-raw-win-amd64
-BOF_WIN_AMD64_BEACON_NAME               := beacon-bof-win-amd64
+EXE_WIN_AMD64_BEACON_NAME               := beacon-win-amd64-exe
+RAW_WIN_AMD64_BEACON_NAME               := beacon-win-amd64-raw
+BOF_WIN_AMD64_BEACON_NAME               := beacon-win-amd64-bof
 
 WIN_ARM64_BEACON_NAME                   := beacon-win-arm64
-EXE_WIN_ARM64_BEACON_NAME               := beacon-exe-win-arm64
-RAW_WIN_ARM64_BEACON_NAME               := beacon-raw-win-arm64
-BOF_WIN_ARM64_BEACON_NAME               := beacon-bof-win-arm64
+EXE_WIN_ARM64_BEACON_NAME               := beacon-win-arm64-exe
+RAW_WIN_ARM64_BEACON_NAME               := beacon-win-arm64-raw
+BOF_WIN_ARM64_BEACON_NAME               := beacon-win-arm64-bof
 
 LIN_AMD64_BEACON_NAME                   := beacon-lin-amd64
-EXE_LIN_AMD64_BEACON_NAME               := beacon-exe-lin-amd64
-RAW_LIN_AMD64_BEACON_NAME               := beacon-raw-lin-amd64
-BOF_LIN_AMD64_BEACON_NAME               := beacon-bof-lin-amd64
+EXE_LIN_AMD64_BEACON_NAME               := beacon-lin-amd64-exe
+RAW_LIN_AMD64_BEACON_NAME               := beacon-lin-amd64-raw
+BOF_LIN_AMD64_BEACON_NAME               := beacon-lin-amd64-bof
 
 LIN_ARM64_BEACON_NAME                   := beacon-lin-arm64
-EXE_LIN_ARM64_BEACON_NAME               := beacon-exe-lin-arm64
-RAW_LIN_ARM64_BEACON_NAME               := beacon-raw-lin-arm64
-BOF_LIN_ARM64_BEACON_NAME               := beacon-bof-lin-arm64
+EXE_LIN_ARM64_BEACON_NAME               := beacon-lin-arm64-exe
+RAW_LIN_ARM64_BEACON_NAME               := beacon-lin-arm64-raw
+BOF_LIN_ARM64_BEACON_NAME               := beacon-lin-arm64-bof
 
 MAC_AMD64_BEACON_NAME                   := beacon-mac-amd64
-EXE_MAC_AMD64_BEACON_NAME               := beacon-exe-mac-amd64
-RAW_MAC_AMD64_BEACON_NAME               := beacon-raw-mac-amd64
-BOF_MAC_AMD64_BEACON_NAME               := beacon-bof-mac-amd64
+EXE_MAC_AMD64_BEACON_NAME               := beacon-mac-amd64-exe
+RAW_MAC_AMD64_BEACON_NAME               := beacon-mac-amd64-raw
+BOF_MAC_AMD64_BEACON_NAME               := beacon-mac-amd64-bof
 
 MAC_ARM64_BEACON_NAME                   := beacon-mac-arm64
-EXE_MAC_ARM64_BEACON_NAME               := beacon-exe-mac-arm64
-RAW_MAC_ARM64_BEACON_NAME               := beacon-raw-mac-arm64
-BOF_MAC_ARM64_BEACON_NAME               := beacon-bof-mac-arm64
+EXE_MAC_ARM64_BEACON_NAME               := beacon-mac-arm64-exe
+RAW_MAC_ARM64_BEACON_NAME               := beacon-mac-arm64-raw
+BOF_MAC_ARM64_BEACON_NAME               := beacon-mac-arm64-bof
 
 ##########################################
 ## Metamorphications                    ##
@@ -85,6 +85,9 @@ MM_TEST_RANDOMIZE_REGISTER_ALLOCATION   ?= $(MM_TEST_DEFAULT)
 
 MM_RANDOMIZE_FRAME_INSERTIONS           ?= $(MM_DEFAULT)
 MM_TEST_RANDOMIZE_FRAME_INSERTIONS      ?= $(MM_TEST_DEFAULT)
+
+MM_INSERT_SEMANTIC_NOISE                ?= $(MM_DEFAULT)
+MM_TEST_INSERT_SEMANTIC_NOISE           ?= $(MM_TEST_DEFAULT)
 
 ##########################################
 ## Platform & architecture              ##
@@ -151,45 +154,45 @@ beacon-all-all-all: check_environment \
 	$(BOF_MAC_ARM64_BEACON_NAME)
 
 # Format specific code/beacons (compile all code for a specific format)
-beacon-exe-all-all: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_WIN_ARM64_BEACON_NAME) $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(EXE_MAC_AMD64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME)
-beacon-raw-all-all: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
-beacon-bof-all-all: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+beacon-all-all-exe: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_WIN_ARM64_BEACON_NAME) $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(EXE_MAC_AMD64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME)
+beacon-all-all-raw: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
+beacon-all-all-bof: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
 
 # Platform specific code/beacons (compile all code for a specific platform)
-beacon-all-win-all: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_WIN_ARM64_BEACON_NAME) $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) 
-beacon-all-lin-all: check_environment $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) 
-beacon-all-mac-all: check_environment $(EXE_MAC_AMD64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) 
+beacon-win-all-all: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_WIN_ARM64_BEACON_NAME) $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) 
+beacon-lin-all-all: check_environment $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) 
+beacon-mac-all-all: check_environment $(EXE_MAC_AMD64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) 
 
 # Architecture specific code/beacons (compile all code for a specific architecture)
-beacon-all-all-amd64: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(EXE_LIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(EXE_MAC_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) 
-beacon-all-all-arm64: check_environment $(EXE_WIN_ARM64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) 
+beacon-all-amd64-all: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME) $(EXE_LIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(EXE_MAC_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME) 
+beacon-all-arm64-all: check_environment $(EXE_WIN_ARM64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME) 
 
 # Format & platform specific code/beacons
-beacon-exe-win-all: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_WIN_ARM64_BEACON_NAME)
-beacon-exe-lin-all: check_environment $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME)
-beacon-exe-mac-all: check_environment $(EXE_MAC_AMD64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME)
-beacon-raw-win-all: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME)
-beacon-raw-lin-all: check_environment $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME)
-beacon-raw-mac-all: check_environment $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
-beacon-bof-win-all: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME)
-beacon-bof-lin-all: check_environment $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME)
-beacon-bof-mac-all: check_environment $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+beacon-win-all-exe: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_WIN_ARM64_BEACON_NAME)
+beacon-lin-all-exe: check_environment $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME)
+beacon-mac-all-exe: check_environment $(EXE_MAC_AMD64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME)
+beacon-win-all-raw: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME)
+beacon-lin-all-raw: check_environment $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME)
+beacon-mac-all-raw: check_environment $(RAW_MAC_AMD64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
+beacon-win-all-bof: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME)
+beacon-lin-all-bof: check_environment $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME)
+beacon-mac-all-bof: check_environment $(BOF_MAC_AMD64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
 
 # Format & architecture specific code/beacons
-beacon-exe-all-amd64: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_MAC_AMD64_BEACON_NAME)
-beacon-exe-all-arm64: check_environment $(EXE_WIN_ARM64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME)
-beacon-raw-all-amd64: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME)
-beacon-raw-all-arm64: check_environment $(RAW_WIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
-beacon-bof-all-amd64: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME)
-beacon-bof-all-arm64: check_environment $(BOF_WIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+beacon-all-amd64-exe: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(EXE_LIN_AMD64_BEACON_NAME) $(EXE_MAC_AMD64_BEACON_NAME)
+beacon-all-arm64-exe: check_environment $(EXE_WIN_ARM64_BEACON_NAME) $(EXE_LIN_ARM64_BEACON_NAME) $(EXE_MAC_ARM64_BEACON_NAME)
+beacon-all-amd64-raw: check_environment $(RAW_WIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME)
+beacon-all-arm64-raw: check_environment $(RAW_WIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME)
+beacon-all-amd64-bof: check_environment $(BOF_WIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME)
+beacon-all-arm64-bof: check_environment $(BOF_WIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
 
 # Platform & architecture specific code/beacons
-beacon-all-win-amd64: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME)
-beacon-all-lin-amd64: check_environment $(EXE_LIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME)
-beacon-all-mac-amd64: check_environment $(EXE_MAC_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME)
-beacon-all-win-arm64: check_environment $(EXE_WIN_ARM64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME)
-beacon-all-lin-arm64: check_environment $(EXE_LIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME)
-beacon-all-mac-arm64: check_environment $(EXE_MAC_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
+beacon-win-amd64-all: check_environment $(EXE_WIN_AMD64_BEACON_NAME) $(RAW_WIN_AMD64_BEACON_NAME) $(BOF_WIN_AMD64_BEACON_NAME)
+beacon-lin-amd64-all: check_environment $(EXE_LIN_AMD64_BEACON_NAME) $(RAW_LIN_AMD64_BEACON_NAME) $(BOF_LIN_AMD64_BEACON_NAME)
+beacon-mac-amd64-all: check_environment $(EXE_MAC_AMD64_BEACON_NAME) $(RAW_MAC_AMD64_BEACON_NAME) $(BOF_MAC_AMD64_BEACON_NAME)
+beacon-win-arm64-all: check_environment $(EXE_WIN_ARM64_BEACON_NAME) $(RAW_WIN_ARM64_BEACON_NAME) $(BOF_WIN_ARM64_BEACON_NAME)
+beacon-lin-arm64-all: check_environment $(EXE_LIN_ARM64_BEACON_NAME) $(RAW_LIN_ARM64_BEACON_NAME) $(BOF_LIN_ARM64_BEACON_NAME)
+beacon-mac-arm64-all: check_environment $(EXE_MAC_ARM64_BEACON_NAME) $(RAW_MAC_ARM64_BEACON_NAME) $(BOF_MAC_ARM64_BEACON_NAME)
 
 # Dittobytes loaders
 ditto-loaders: check_environment 
@@ -225,14 +228,15 @@ test-suite-build: check_environment
 				if [ -n "$(TEST_OS)" ]; then BEACON_OS="$(TEST_OS)"; else BEACON_OS="$$AVAILABLE_TEST_OS_BASENAME"; fi; \
 				if [ -n "$(TEST_ARCH)" ]; then BEACON_ARCH="$(TEST_ARCH)"; else BEACON_ARCH="$$AVAILABLE_TEST_ARCH_BASENAME"; fi; \
 				echo "[+] TestSuite building \`$$AVAILABLE_TEST_OS_BASENAME-$$AVAILABLE_TEST_ARCH_BASENAME-$$AVAILABLE_TEST_FILE_BASENAME\` for \`$$BEACON_OS-$$BEACON_ARCH\`."; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "original" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false MM_TEST_DEFAULT=false --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true MM_TEST_DEFAULT=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true MM_TEST_DEFAULT=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_reg_mov_immediates" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_reg_mov_immediates MM_DEFAULT=false MM_TEST_DEFAULT=false MM_TRANSFORM_REG_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_stack_mov_immediates" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_stack_mov_immediates MM_DEFAULT=false MM_TEST_DEFAULT=false MM_TRANSFORM_STACK_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_nullifications" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_nullifications MM_DEFAULT=false MM_TEST_DEFAULT=false MM_TRANSFORM_NULLIFICATIONS=true MM_TEST_TRANSFORM_NULLIFICATIONS=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_register_allocation" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_register_allocation MM_DEFAULT=false MM_TEST_DEFAULT=false MM_RANDOMIZE_REGISTER_ALLOCATION=true MM_TEST_RANDOMIZE_REGISTER_ALLOCATION=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
-				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_frame_insertions" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_frame_insertions MM_DEFAULT=false MM_TEST_DEFAULT=false MM_RANDOMIZE_FRAME_INSERTIONS=true MM_TEST_RANDOMIZE_FRAME_INSERTIONS=true --no-print-directory beacon-all-$$BEACON_OS-$$BEACON_ARCH; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "original" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_original MM_DEFAULT=false MM_TEST_DEFAULT=false --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_1 MM_DEFAULT=true MM_TEST_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transpiled" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transpiled_2 MM_DEFAULT=true MM_TEST_DEFAULT=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_reg_mov_immediates" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_reg_mov_immediates MM_DEFAULT=false MM_TEST_DEFAULT=false MM_TRANSFORM_REG_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_stack_mov_immediates" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_stack_mov_immediates MM_DEFAULT=false MM_TEST_DEFAULT=false MM_TRANSFORM_STACK_MOV_IMMEDIATES=true MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "transform_nullifications" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_transform_nullifications MM_DEFAULT=false MM_TEST_DEFAULT=false MM_TRANSFORM_NULLIFICATIONS=true MM_TEST_TRANSFORM_NULLIFICATIONS=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_register_allocation" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_register_allocation MM_DEFAULT=false MM_TEST_DEFAULT=false MM_RANDOMIZE_REGISTER_ALLOCATION=true MM_TEST_RANDOMIZE_REGISTER_ALLOCATION=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "randomize_frame_insertions" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_randomize_frame_insertions MM_DEFAULT=false MM_TEST_DEFAULT=false MM_RANDOMIZE_FRAME_INSERTIONS=true MM_TEST_RANDOMIZE_FRAME_INSERTIONS=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
+				[ -z "$(TEST_METAMORPHICATION)" ] || [ "$(TEST_METAMORPHICATION)" = "insert_semantic_noise" ] && $(MAKE) IS_COMPILER_CONTAINER=$(IS_COMPILER_CONTAINER) SOURCE_PATH="$$TEST_FILE" BEACON_NAME=$(basename $(notdir $(TESTS_DIR)))_$${AVAILABLE_TEST_OS_BASENAME}_$${AVAILABLE_TEST_ARCH_BASENAME}_$${AVAILABLE_TEST_FILE_BASENAME%.*}_insert_semantic_noise MM_DEFAULT=false MM_TEST_DEFAULT=false MM_INSERT_SEMANTIC_NOISE=true MM_TEST_INSERT_SEMANTIC_NOISE=true --no-print-directory beacon-$$BEACON_OS-$$BEACON_ARCH-all; \
 			done \
 		done \
 	done
@@ -285,7 +289,7 @@ endif
 WIN_AMD64_TARGET              := x86_64-w64-mingw32
 WIN_AMD64_DEFINES             := -D__WINDOWS__ -D__AMD64__ -DEntryFunction=$(ENTRY_FUNCTION)
 WIN_AMD64_BEACON_PATH         := $(BUILD_DIR)/$(WIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-WIN_AMD64_BEACON_CL1FLAGS     := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+WIN_AMD64_BEACON_CL1FLAGS     := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler-`arch`.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 WIN_AMD64_BEACON_LLCFLAGS     := -mtriple $(WIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
 WIN_AMD64_BEACON_CL2FLAGS     := -target $(WIN_AMD64_TARGET) $(WIN_AMD64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
@@ -309,8 +313,9 @@ $(WIN_AMD64_BEACON_PATH).meta1.mir: $(WIN_AMD64_BEACON_PATH).meta0.mir
 	MACHINE_TRANSPILER_STEP=first \
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
-	MM_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).meta2.mir: $(WIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -323,7 +328,8 @@ $(WIN_AMD64_BEACON_PATH).meta3.mir: $(WIN_AMD64_BEACON_PATH).meta2.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(WIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_AMD64_BEACON_PATH).obj: $(WIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -382,7 +388,7 @@ endif
 WIN_ARM64_TARGET            := aarch64-w64-mingw32
 WIN_ARM64_DEFINES           := -D__WINDOWS__ -D__ARM64__ -DEntryFunction=$(ENTRY_FUNCTION)
 WIN_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(WIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-WIN_ARM64_BEACON_CL1FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+WIN_ARM64_BEACON_CL1FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler-`arch`.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 WIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(WIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
 WIN_ARM64_BEACON_CL2FLAGS   := -target $(WIN_ARM64_TARGET) $(WIN_ARM64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
@@ -407,7 +413,8 @@ $(WIN_ARM64_BEACON_PATH).meta1.mir: $(WIN_ARM64_BEACON_PATH).meta0.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).meta2.mir: $(WIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -420,7 +427,8 @@ $(WIN_ARM64_BEACON_PATH).meta3.mir: $(WIN_ARM64_BEACON_PATH).meta2.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(WIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(WIN_ARM64_BEACON_PATH).obj: $(WIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -479,7 +487,7 @@ endif
 LIN_AMD64_TARGET            := x86_64-linux-gnu
 LIN_AMD64_DEFINES           := -D__LINUX__ -D__AMD64__ -DEntryFunction=$(ENTRY_FUNCTION)
 LIN_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(LIN_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-LIN_AMD64_BEACON_CL1FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+LIN_AMD64_BEACON_CL1FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler-`arch`.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 LIN_AMD64_BEACON_LLCFLAGS   := -mtriple $(LIN_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
 LIN_AMD64_BEACON_CL2FLAGS   := -target $(LIN_AMD64_TARGET) $(LIN_AMD64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
@@ -504,7 +512,8 @@ $(LIN_AMD64_BEACON_PATH).meta1.mir: $(LIN_AMD64_BEACON_PATH).meta0.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).meta2.mir: $(LIN_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -517,7 +526,8 @@ $(LIN_AMD64_BEACON_PATH).meta3.mir: $(LIN_AMD64_BEACON_PATH).meta2.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(LIN_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_AMD64_BEACON_PATH).obj: $(LIN_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -576,7 +586,7 @@ endif
 LIN_ARM64_TARGET            := aarch64-linux-gnu
 LIN_ARM64_DEFINES           := -D__LINUX__ -D__ARM64__ -DEntryFunction=$(ENTRY_FUNCTION)
 LIN_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(LIN_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-LIN_ARM64_BEACON_CL1FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+LIN_ARM64_BEACON_CL1FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler-`arch`.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 LIN_ARM64_BEACON_LLCFLAGS   := -mtriple $(LIN_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
 LIN_ARM64_BEACON_CL2FLAGS   := -target $(LIN_ARM64_TARGET) $(LIN_ARM64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
@@ -601,7 +611,8 @@ $(LIN_ARM64_BEACON_PATH).meta1.mir: $(LIN_ARM64_BEACON_PATH).meta0.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).meta2.mir: $(LIN_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -614,7 +625,8 @@ $(LIN_ARM64_BEACON_PATH).meta3.mir: $(LIN_ARM64_BEACON_PATH).meta2.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(LIN_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(LIN_ARM64_BEACON_PATH).obj: $(LIN_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -673,7 +685,7 @@ endif
 MAC_AMD64_TARGET            := x86_64-apple-darwin
 MAC_AMD64_DEFINES           := -D__MACOS__ -D__AMD64__ -DEntryFunction=$(ENTRY_FUNCTION)
 MAC_AMD64_BEACON_PATH       := $(BUILD_DIR)/$(MAC_AMD64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-MAC_AMD64_BEACON_CL1FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+MAC_AMD64_BEACON_CL1FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler-`arch`.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 MAC_AMD64_BEACON_LLCFLAGS   := -mtriple $(MAC_AMD64_TARGET) -march=x86-64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
 MAC_AMD64_BEACON_CL2FLAGS   := -target $(MAC_AMD64_TARGET) $(MAC_AMD64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
@@ -698,7 +710,8 @@ $(MAC_AMD64_BEACON_PATH).meta1.mir: $(MAC_AMD64_BEACON_PATH).meta0.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).meta2.mir: $(MAC_AMD64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -711,7 +724,8 @@ $(MAC_AMD64_BEACON_PATH).meta3.mir: $(MAC_AMD64_BEACON_PATH).meta2.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(MAC_AMD64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_AMD64_BEACON_PATH).obj: $(MAC_AMD64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -773,7 +787,7 @@ endif
 MAC_ARM64_TARGET         := arm64-apple-darwin
 MAC_ARM64_DEFINES        := -D__MACOS__ -D__ARM64__ -DEntryFunction=$(ENTRY_FUNCTION)
 MAC_ARM64_BEACON_PATH       := $(BUILD_DIR)/$(MAC_ARM64_BEACON_NAME)$(if $(BEACON_NAME),-$(BEACON_NAME))
-MAC_ARM64_BEACON_CL1FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
+MAC_ARM64_BEACON_CL1FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -O0 -emit-llvm -S -g0 -fPIC -ffreestanding -nostdlib -nodefaultlibs -fno-stack-protector -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -I/opt/macos-sdk/MacOSX15.4.sdk/usr/include -fpass-plugin=./ditto/transpilers/intermediate/build/libIntermediateTranspiler-`arch`.so -Xclang -disable-O0-optnone -fPIC -fno-rtti -fno-exceptions -fno-delayed-template-parsing -fno-modules -fno-fast-math -fno-builtin -fno-elide-constructors -fno-access-control -fno-jump-tables -fno-omit-frame-pointer -fno-ident -fno-inline -fno-inline-functions -mno-red-zone -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 MAC_ARM64_BEACON_LLCFLAGS   := -mtriple $(MAC_ARM64_TARGET) -march=aarch64 -O0 --relocation-model=pic $(if $(filter true,$(MM_RANDOMIZE_REGISTER_ALLOCATION)),--fast-randomize-register-allocation) $(if $(filter true,$(MM_RANDOMIZE_FRAME_INSERTIONS)),--randomize-frame-insertions-amd64 --randomize-frame-insertions-arm64)
 MAC_ARM64_BEACON_CL2FLAGS   := -target $(MAC_ARM64_TARGET) $(MAC_ARM64_DEFINES) -fuse-ld=lld -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -isysroot/opt/macos-sdk/MacOSX15.4.sdk/ -L/opt/macos-sdk/MacOSX15.4.sdk/usr/lib -fno-use-cxa-atexit -fno-threadsafe-statics -fvisibility=hidden -fvisibility-inlines-hidden
 
@@ -798,7 +812,8 @@ $(MAC_ARM64_BEACON_PATH).meta1.mir: $(MAC_ARM64_BEACON_PATH).meta0.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).meta2.mir: $(MAC_ARM64_BEACON_PATH).meta1.mir
 	@echo "    - Intermediate compile of $@."
@@ -811,7 +826,8 @@ $(MAC_ARM64_BEACON_PATH).meta3.mir: $(MAC_ARM64_BEACON_PATH).meta2.mir
 	MM_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TRANSFORM_REG_MOV_IMMEDIATES) MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_REG_MOV_IMMEDIATES) \
 	MM_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TRANSFORM_STACK_MOV_IMMEDIATES) MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES=$(MM_TEST_TRANSFORM_STACK_MOV_IMMEDIATES) \
 	MM_TRANSFORM_NULLIFICATIONS=$(MM_TRANSFORM_NULLIFICATIONS) MM_TEST_TRANSFORM_NULLIFICATIONS=$(MM_TEST_TRANSFORM_NULLIFICATIONS) \
-	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler.so --run-pass=MachineTranspiler -o $@ $<
+	MM_INSERT_SEMANTIC_NOISE=$(MM_INSERT_SEMANTIC_NOISE) MM_TEST_INSERT_SEMANTIC_NOISE=$(MM_TEST_INSERT_SEMANTIC_NOISE) \
+	llc $(MAC_ARM64_BEACON_LLCFLAGS) -load ./ditto/transpilers/machine/build/libMachineTranspiler-`arch`.so --run-pass=MachineTranspiler -o $@ $<
 
 $(MAC_ARM64_BEACON_PATH).obj: $(MAC_ARM64_BEACON_PATH).meta3.mir
 	@echo "    - Intermediate compile of $@."
@@ -899,14 +915,14 @@ clean-extensive: clean-ditto-transpilers clean-ditto-loaders clean-beacons
 
 help:
 	@echo "[+] Building your code:"
-	@echo "    - make beacon-[format]-[platform]-[arch]            // (Re-)compile your code"
-	@echo "      ↳ Available formats: exe,raw,bof"
+	@echo "    - make beacon-[platform]-[arch]-[format]            // (Re-)compile your code"
 	@echo "      ↳ Available platforms: win,lin,mac"
 	@echo "      ↳ Available architectures: amd64,arm64"
-	@echo "    - make beacon-bof-win-amd64                         // (Re-)compile your code to Windows AMD64 BOF/COFF"
-	@echo "    - make beacon-raw-mac-arm64                         // (Re-)compile your code to MacOS ARM64 raw shellcode"
-	@echo "    - make beacon-raw-lin-all                           // (Re-)compile your shellcode to raw shellcode for Linux and any architecture"
-	@echo "    - make beacon-raw-all-all                           // (Re-)compile your shellcode to raw shellcode for any platform and architecture"
+	@echo "      ↳ Available formats: exe,raw,bof"
+	@echo "    - make beacon-win-amd64-bof                         // (Re-)compile your code to Windows AMD64 BOF/COFF"
+	@echo "    - make beacon-mac-arm64-raw                         // (Re-)compile your code to MacOS ARM64 raw shellcode"
+	@echo "    - make beacon-lin-all-raw                           // (Re-)compile your shellcode to raw shellcode for Linux and any architecture"
+	@echo "    - make beacon-all-all-raw                           // (Re-)compile your shellcode to raw shellcode for any platform and architecture"
 	@echo "    - make beacon-all-all-all                           // (Re-)compile your shellcode to executable, BOF/COFF and raw shellcode for any platform and architecture"
 	@echo "[+] Dittobytes internals"
 	@echo "    - make ditto-loaders                                // (Re-)compile all pre-shipped Ditto shellcode loaders"

@@ -13,4 +13,4 @@
 
 # Except for these
 !.gitignore
-!libIntermediateTranspiler.so
+!libIntermediateTranspiler-*.so

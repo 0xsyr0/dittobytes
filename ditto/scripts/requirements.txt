@@ -11,3 +11,5 @@
 lief==0.16.6
 levenshtein==0.27.1
 binary2strings==0.1.13
+capstone==5.0.6
+pefile==2024.8.26
