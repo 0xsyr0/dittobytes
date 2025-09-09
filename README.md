@@ -38,7 +38,7 @@
     &nbsp;•&nbsp;
     <a href="#-issues--requests">Issues</a>
     &nbsp;•&nbsp;
-    <a href="#-license--copyright">Copyright</a>
+    <a href="#-license--copyright">License</a>
 </p>
 <hr>
 
@@ -59,9 +59,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 - push    r15
 - push    r11
 - sub     rsp, 40h
-- mov     rax, 2073692073696874h
-
-
+- xor     rax, rax
 - mov     [rbp+var_1B], rax
 ```
 
@@ -75,9 +73,7 @@ Dittobytes compiles your C-code to truly Position Independent Code (PIC) for Win
 + push    r9
 + push    r15
 + sub     rsp, 38h
-+ mov     r14, 6E055571BF8F0D8Eh
-+ mov     rdx, 4E763C51CCE665FAh
-+ xor     rdx, r14
++ mov     rdx, 0
 + mov     [rbp+var_33], rdx
 ```
 
@@ -141,6 +137,10 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
 </details>
 
 <h1><img src="https://gist.githubusercontent.com/tijme/c77f321c8dacd6d8ce8e0f9e2ab8c719/raw/b74e2cd4679ddc3dc6e14c0651d1489cddfd1ea8/logo-heading.svg" width=25 height=25 /> Getting started</h1>
+
+### Presentation
+
+This research has been presented at OrangeCon 2025. [The slides](https://github.com/tijme/dittobytes/blob/master/.github/presentation/In%20Memory%20of%20In-Memory%20Detection.pdf) are available and a recording will be published soon.
 
 ### Overview
 
@@ -217,7 +217,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         If you are on Windows, a more performant option to build the build tools is to use Windows Subsystem for Linux (WSL). However, in contrast to Docker, the installation of the build tools is a manual process.
         <br>
         <ul>
-            <li>First of all, run a WSL Debian container:<br><pre><code>wsl -d Debian</code></pre></li>
+            <li>First of all, install a Debian WSL container:<br><pre><code>wsl --install -d Debian</code></pre></li>
+            <li>Then start & enter the container:<br><pre><code>wsl -d Debian</code></pre></li>
         </ul>
         <p>
             Custom versions of Clang and LLVM are eventually used to cross-compile your code, the loaders and the transpilers. Performing this compilation in WSL requires you to configure your WSL the same way as the Docker container is configured. Take a look at the <a href="https://github.com/tijme/dittobytes/blob/master/Dockerfile">Dockerfile</a> or <a href="https://github.com/tijme/dittobytes/blob/master/.github/workflows/validation.yml">GitHub Workflow</a> for reference. Follow the exact same steps as in one of those files. For now, there is no further documentation on setting up the environment in WSL.
@@ -281,8 +282,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     <summary>Compile your code</summary>
     <hr>
     <ul>
-        <li>If using Docker, run the Dittobytes container (or use an equivalent command for your build environment):<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-        <li>Compile your code (for all platforms, architectures & formats):<br><code>make</code></li>
+        <li>If using Docker, run the Dittobytes container (or use an equivalent command for your build environment):<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+        <li>Compile your code (for all platforms, architectures & formats):<br><pre><code>make</code></pre></li>
         <li>You can also create specific builds: <code>make beacon-[platform]-[arch]-[format]</code>.
             <ul>
                 <li>Options:
@@ -342,7 +343,7 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         <li>
             Run and test your shellcode using the pre-shipped shellcode loader:
             <br>
-            <code>./build/loader-[os]-[arch].[ext] ./build/beacon-[os]-[arch].raw</code>
+            <pre><code>./build/loader-[os]-[arch].[ext] ./build/beacon-[os]-[arch].raw</code></pre>
         </li>
     </ul>
     <hr>
@@ -355,9 +356,9 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         Dittobytes comes pre-shipped with feature tests. A feature test is similar to a unit test, but tests from a large feature perspective, instead of a specific code unit perspective. Currently, you can only run feature tests for shellcodes that are compiled for the platform you are running the tests on. For example, in the Docker container only the Linux shellcode would be tested & verified.
         <br>
         <ul>
-            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Build the tests:<br><code>make test-suite-build</code></li>
-            <li>Run the tests:<br><code>make test-suite-test</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+            <li>Build the tests:<br><pre><code>make test-suite-build</code></pre></li>
+            <li>Run the tests:<br><pre><code>make test-suite-test</code></pre></li>
         </ul>
     </p>
     <hr>
@@ -376,8 +377,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     </p>
     <p>Compiling C++ code in Dittobytes works exactly the same as compiling regular C-code.</p>
     <ul>
-        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-        <li>Then compile your code:<br><code>make</code></li>
+        <li>If using Docker, run a Dittobytes container:<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+        <li>Then compile your code:<br><pre><code>make</code></pre></li>
     </ul>
     <hr>
 </details>
@@ -393,8 +394,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
     </p>
     <p>Remember to solely compile to the <code>BOF/COFF</code> format using the <code>make</code> command (see below example) ⚠️.</p>
     <ul>
-        <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-        <li>Then compile your code:<br><code>make beacon-win-amd64-bof</code></li>
+        <li>If using Docker, run a Dittobytes container:<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+        <li>Then compile your code:<br><pre><code>make beacon-win-amd64-bof</code></pre></li>
     </ul>
     <hr>
 </details>
@@ -406,8 +407,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         You can modify the pre-shipped loaders by editing the code in <code>./ditto/loaders/[platform]/src/main.c</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
         <br>
         <ul>
-            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Compile the loaders:<br><code>make ditto-loaders</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+            <li>Compile the loaders:<br><pre><code>make ditto-loaders</code></pre></li>
         </ul>
     </p>
     <hr>
@@ -420,8 +421,8 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         You can modify the pre-shipped transpiler(s) by editing the code in <code>./ditto/transpilers/[type]/src/[type].cpp</code>, after which you can compile them using the following commands in the root of the Dittobytes project:
         <br>
         <ul>
-            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Compile the transpilers:<br><code>make ditto-transpilers</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+            <li>Compile the transpilers:<br><pre><code>make ditto-transpilers</code></pre></li>
         </ul>
         Dittobytes ships with two transpilers. The first one is the intermediate transpiler that uses a modern <a href="https://llvm.org/docs/WritingAnLLVMNewPMPass.html">LLVM Function Pass</a> to inline constant variables otherwise located in <code>.rodata</code> segments. The second one is the machine transpiler that uses a legacy <a href="https://llvm.org/docs/WritingAnLLVMPass.html#the-machinefunctionpass-class">LLVM MachineFunction Pass</a> to perform the metamorphism.
     </p>
@@ -435,9 +436,9 @@ The pre-shippped minimal C-code file (`./code/beacon.c`) can cross-compile to al
         The test-suite commands in the makefile usually compile and test all feature tests (cross-os and cross-architecture). If you want to test just one specific feature test, or if you want to to test build artifacts for a specific os or architecture, use the commands below. You can adjust the <code>TEST_*</code> arguments to your needs.
         <br>
         <ul>
-            <li>If using Docker, run a Dittobytes container:<br><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></li>
-            <li>Build the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./ditto/tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-build</code></li>
-            <li>Run the test(s):<br><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./ditto/tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-test</code></li>
+            <li>If using Docker, run a Dittobytes container:<br><pre><code>docker run --rm -v ".:/tmp/workdir" -it dittobytes</code></pre></li>
+            <li>Build the test(s):<br><pre><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./ditto/tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-build</code></pre></li>
+            <li>Run the test(s):<br><pre><code>make TEST_OS=win TEST_ARCH=arm64 TEST_SOURCE_PATH=./ditto/tests/all/all/3_metamorphication_010_transform_nullifications.c TEST_METAMORPHICATION=transform_nullifications test-suite-test</code></pre></li>
         </ul>
         The above example would build the feature test <code>3_metamorphication_010_transform_nullifications.c</code> for Windows ARM64. This may result in many build artifacts (<code>[amount of feature tests] × [amount of os's] × [amount of arch's] × [amount of metamorphications]</code>), in this case 1 (<code>1 × 1 × 1 × 1</code>). The second command verifies the build artifacts based on the <code>@verify</code> statements in the feature test source code file(s).
     </p>
@@ -484,9 +485,9 @@ There is no specific planning, so this might be more of a to-do or progress list
 <td>
 
 ```diff
-+ mov     r11, 3Eh
-+ mov     r10, 4Fh
-+ lea     r9, [rbp+var]
++ mov     r9, 3Eh
++ mov     r12, 4Fh
++ lea     rdi, [rbp+var]
 ```
 
 </td>
